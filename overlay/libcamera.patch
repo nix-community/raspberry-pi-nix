@@ -1,0 +1,19 @@
+diff --git a/src/libcamera/source_paths.cpp b/src/libcamera/source_paths.cpp
+index 19689585..1380dfae 100644
+--- a/src/libcamera/source_paths.cpp
++++ b/src/libcamera/source_paths.cpp
+@@ -39,14 +39,6 @@ namespace {
+  */
+ bool isLibcameraInstalled()
+ {
+-	/*
+-	 * DT_RUNPATH (DT_RPATH when the linker uses old dtags) is removed on
+-	 * install.
+-	 */
+-	for (const ElfW(Dyn) *dyn = _DYNAMIC; dyn->d_tag != DT_NULL; ++dyn) {
+-		if (dyn->d_tag == DT_RUNPATH || dyn->d_tag == DT_RPATH)
+-			return false;
+-	}
+ 
+ 	return true;
+ }
