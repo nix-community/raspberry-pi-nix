@@ -17,6 +17,7 @@ stable:
 
   sdImage = {
     populateFirmwareCommands = let
+      raspberrypifw = pkgs.raspberrypifw-5_15_56;
       configTxt = pkgs.writeText "config.txt" ''
         [pi02]
         kernel=u-boot-rpi_arm64.bin
@@ -48,7 +49,7 @@ stable:
         avoid_warnings=1
       '';
     in ''
-      (cd ${pkgs.raspberrypifw}/share/raspberrypi/boot && cp bootcode.bin fixup*.dat start*.elf $NIX_BUILD_TOP/firmware/)
+      (cd ${raspberrypifw}/share/raspberrypi/boot && cp bootcode.bin fixup*.dat start*.elf $NIX_BUILD_TOP/firmware/)
 
       # Add the config
       cp ${configTxt} firmware/config.txt
@@ -57,16 +58,16 @@ stable:
       cp ${pkgs.uboot_rpi_arm64}/u-boot.bin firmware/u-boot-rpi_arm64.bin
 
       # Add pi3 specific files
-      cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/bcm2710-rpi-3-b-plus.dtb firmware/
+      cp ${raspberrypifw}/share/raspberrypi/boot/bcm2710-rpi-3-b-plus.dtb firmware/
 
       # Add pi4 specific files
       cp ${pkgs.ubootRaspberryPi4_64bit}/u-boot.bin firmware/u-boot-rpi4.bin
       cp ${pkgs.raspberrypi-armstubs}/armstub8-gic.bin firmware/armstub8-gic.bin
-      cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/bcm2711-rpi-4-b.dtb firmware/
+      cp ${raspberrypifw}/share/raspberrypi/boot/bcm2711-rpi-4-b.dtb firmware/
 
       # Add pi-zero-2 specific files
-      cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/bcm2710-rpi-zero-2.dtb firmware/
-      cp ${pkgs.raspberrypifw}/share/raspberrypi/boot/bcm2710-rpi-zero-2-w.dtb firmware/
+      cp ${raspberrypifw}/share/raspberrypi/boot/bcm2710-rpi-zero-2.dtb firmware/
+      cp ${raspberrypifw}/share/raspberrypi/boot/bcm2710-rpi-zero-2-w.dtb firmware/
     '';
     populateRootCommands = ''
       mkdir -p ./files/boot
