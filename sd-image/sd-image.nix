@@ -1,4 +1,3 @@
-nixpkgs:
 # This module was lifted from nixpkgs installer code. It is modified
 # so as to not import all-hardware. The goal here is to write the
 # nixos image for a raspberry pi to an sd-card in a way so that we can
@@ -18,12 +17,12 @@ nixpkgs:
 # The derivation for the SD image will be placed in
 # config.system.build.sdImage
 
-{ config, lib, pkgs, ... }:
+{ modulesPath, config, lib, pkgs, ... }:
 
 with lib;
 
 let
-  rootfsImage = pkgs.callPackage "${nixpkgs}/nixos/lib/make-ext4-fs.nix" ({
+  rootfsImage = pkgs.callPackage "${modulesPath}/../lib/make-ext4-fs.nix" ({
     inherit (config.sdImage) storePaths;
     compressImage = true;
     populateImageCommands = config.sdImage.populateRootCommands;

@@ -1,9 +1,9 @@
-{ overlay, nixpkgs }:
+{ overlay }:
 { lib, pkgs, config, ... }:
 
 {
   imports = [
-    (import ../sd-image nixpkgs)
+    ../sd-image
     ./device-tree.nix
     ./audio.nix
     ./i2c.nix

@@ -32,7 +32,6 @@ mostly wrappers that set common device tree settings for you.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     raspberry-pi-nix = {
       url = "github:tstat/raspberry-pi-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 

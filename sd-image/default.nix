@@ -1,8 +1,7 @@
-stable:
 { config, lib, pkgs, ... }:
 
 {
-  imports = [ (import ./sd-image.nix stable) ];
+  imports = [ ./sd-image.nix ];
 
   boot.loader.grub.enable = false;
   boot.loader.generic-extlinux-compatible.enable = true;
