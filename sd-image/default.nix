@@ -16,7 +16,7 @@
 
   sdImage = {
     populateFirmwareCommands = let
-      raspberrypifw = pkgs.raspberrypifw-5_15_56;
+      raspberrypifw = pkgs.raspberrypifw-5_15_61;
       configTxt = pkgs.writeText "config.txt" ''
         [pi02]
         kernel=u-boot-rpi_arm64.bin

@@ -41,6 +41,7 @@ in {
       sha256 = "0png7p8k6rwbmmcyhc22xczcaz7kx0dafw5zmp0i9ni4kjs8xc4j";
     };
   };
+
 } // (rpi-kernels [
   {
     version = "5.15.36";
@@ -72,6 +73,22 @@ in {
       repo = "firmware";
       rev = "e1e3dc004ec45c0a6ab3f32eb02c1e0c8846796c";
       sha256 = "Smn3wQ81zzmj+Wpt2Xwby+0Zt7YGhmhlaEscbaZaMmI=";
+    };
+  }
+  {
+    version = "5.15.61";
+    kernel = prev.fetchFromGitHub {
+      owner = "raspberrypi";
+      repo = "linux";
+      rev = "004a1de4f5d866c7a62e6f96ac10bdd908c2d28c";
+      sha256 = "K4yjgova6COikjUgQpX13N5ygpGXDH9Uy54FAg+NKpc=";
+      fetchSubmodules = true;
+    };
+    fw = prev.fetchFromGitHub {
+      owner = "raspberrypi";
+      repo = "firmware";
+      rev = "8ca25048d08420eac28a97b00ab134ee3535e105";
+      sha256 = "9nM0GbKZHiGOM5C5g9WFnFC0ONQ+g+pbPBl5djOCiLE=";
     };
   }
 ])
