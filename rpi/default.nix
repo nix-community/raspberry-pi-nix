@@ -13,7 +13,7 @@
 
   nixpkgs = { overlays = [ overlay ]; };
   boot = {
-    kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_rpi-5_15_61);
+    kernelPackages = pkgs.linuxPackagesFor (pkgs.linux_rpi-5_15_87);
     initrd.availableKernelModules = [ "usbhid" "usb_storage" "vc4" ];
 
     loader = {

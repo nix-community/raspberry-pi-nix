@@ -18,7 +18,7 @@ in {
       type = with lib.types;
         listOf (submodule {
           options = {
-            overlay = lib.mkOption { type = str; };
+            overlay = lib.mkOption { type = oneOf [ str path ]; };
             args = lib.mkOption {
               type = listOf str;
               default = [ ];
@@ -61,6 +61,15 @@ in {
               make dtbs_install INSTALL_DTBS_PATH=$out/dtbs  ARCH="${pkgs.stdenv.hostPlatform.linuxArch}"
             '';
           };
+          compiled-overlays = map (x:
+            let
+              overlay-file = if builtins.isPath x.overlay then
+                pkgs.runCommand "overlay.dtbo" {
+                  buildInputs = with pkgs; [ dtc ];
+                } "dtc -I dts -O dtb -o $out ${x.overlay}"
+              else
+                "${config.boot.kernelPackages.kernel}/dtbs/overlays/${x.overlay}.dtbo";
+            in x // { overlay = overlay-file; }) cfg.dt-overlays;
         in lib.mkForce (pkgs.runCommand "device-tree-overlays" {
           buildInputs = with pkgs; [ findutils libraspberrypi ];
         } ''
@@ -82,11 +91,7 @@ in {
                   builtins.concatStringsSep " " x.args
                 }
                 mv $out/$dtb{-merged,}
-              '') (map (x:
-                x // {
-                  overlay =
-                    "${config.boot.kernelPackages.kernel}/dtbs/overlays/${x.overlay}.dtbo";
-                }) cfg.dt-overlays)
+              '') compiled-overlays
             }
           done
           ${cfg.postInstall}

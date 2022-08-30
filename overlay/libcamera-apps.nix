@@ -3,13 +3,13 @@
 
 stdenv.mkDerivation rec {
   pname = "libcamera-apps";
-  version = "unstable-2022-05-12";
+  version = "v1.1.0";
 
   src = fetchFromGitHub {
     owner = "raspberrypi";
     repo = "libcamera-apps";
-    rev = "f5a2f1d86b440ebc064d4369421348d858ef31f3";
-    sha256 = "Et8enICYct/AvWstY/id6BD/NB9+La9pNrtAsdwv+Tg=";
+    rev = "4fea2eed68300dcc88e89aa30da6079d10dce822";
+    sha256 = "T6BpC1lEZD00TBZ7SXChKh/m+vKYnVzSTLxBHIEJYn8=";
     fetchSubmodules = true;
   };
 
