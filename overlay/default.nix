@@ -22,6 +22,9 @@ let
   rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
 in {
 
+  # disable firmware compression so that brcm firmware can be found at
+  # the path expected by raspberry pi firmware/device tree
+  compressFirmwareXz = x: x;
   libcamera-apps = final.callPackage ./libcamera-apps.nix { };
 
   # provide generic rpi arm64 u-boot
@@ -35,6 +38,8 @@ in {
       sha256 = "0png7p8k6rwbmmcyhc22xczcaz7kx0dafw5zmp0i9ni4kjs8xc4j";
     };
   };
+  raspberrypiWirelessFirmware = final.rpi-kernels.v5_15_87.wireless-firmware;
+  raspberrypifw = final.rpi-kernels.v5_15_87.firmware;
 
   # raspberrypiWirelessFirmware = prev.raspberrypiWirelessFirmware.overrideAttrs
   #   (old: {

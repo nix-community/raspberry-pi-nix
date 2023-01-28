@@ -14,6 +14,7 @@
   nixpkgs = { overlays = [ overlay ]; };
   boot = {
     initrd.availableKernelModules = [ "usbhid" "usb_storage" "vc4" ];
+    kernelPackages = pkgs.linuxPackagesFor (pkgs.rpi-kernels.v5_15_87.kernel);
 
     loader = {
       grub.enable = lib.mkDefault false;
