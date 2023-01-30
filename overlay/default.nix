@@ -41,27 +41,6 @@ in {
   raspberrypiWirelessFirmware = final.rpi-kernels.v5_15_87.wireless-firmware;
   raspberrypifw = final.rpi-kernels.v5_15_87.firmware;
 
-  # raspberrypiWirelessFirmware = prev.raspberrypiWirelessFirmware.overrideAttrs
-  #   (old: {
-  #     version = "2023-01-19";
-  #     srcs = [
-  #       (prev.fetchFromGitHub {
-  #         name = "bluez-firmware";
-  #         owner = "RPi-Distro";
-  #         repo = "bluez-firmware";
-  #         rev = "9556b08ace2a1735127894642cc8ea6529c04c90";
-  #         sha256 = "gKGK0XzNrws5REkKg/JP6SZx3KsJduu53SfH3Dichkc=";
-  #       })
-  #       (prev.fetchFromGitHub {
-  #         name = "firmware-nonfree";
-  #         owner = "RPi-Distro";
-  #         repo = "firmware-nonfree";
-  #         rev = "8e349de20c8cb5d895b3568777ec53cbb333398f";
-  #         sha256 = "45/FnaaZTEG6jLmbaXohpNpS6BEZu3DBDHqquq8ukXc=";
-  #       })
-  #     ];
-  #   });
-
 } // {
   rpi-kernels = rpi-kernels [
     {
