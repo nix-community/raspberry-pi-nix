@@ -13,7 +13,13 @@
 
   nixpkgs = { overlays = [ overlay ]; };
   boot = {
-    initrd.availableKernelModules = [ "usbhid" "usb_storage" "vc4" ];
+    initrd.availableKernelModules = [
+      "usbhid"
+      "usb_storage"
+      "vc4"
+      "pcie_brcmstb" # required for the pcie bus to work
+      "reset-raspberrypi" # required for vl805 firmware to load
+    ];
     kernelPackages = pkgs.linuxPackagesFor (pkgs.rpi-kernels.v5_15_87.kernel);
 
     loader = {
