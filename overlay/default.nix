@@ -32,11 +32,23 @@ in {
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
-    version = "2022.07";
+    version = "2023.01";
     src = prev.fetchurl {
       url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${version}.tar.bz2";
-      sha256 = "0png7p8k6rwbmmcyhc22xczcaz7kx0dafw5zmp0i9ni4kjs8xc4j";
+      sha256 = "03wm651ix783s4idj223b0nm3r6jrdnrxs1ncs8s128g72nknhk9";
     };
+    # In raspberry pi products the firmware manipulates the device
+    # tree in a variety of ways before handing it off to the linux
+    # kernel. Since we have installed u-boot in place of a linux
+    # kernel we have the option of passing this device tree passed by
+    # the firmware to the kernel, or providing our own. This
+    # configuration uses the device tree provided by firmware so that
+    # we don't have to be aware of all manipulation done by the
+    # firmware and attempt to mimic it.
+    extraConfig = ''
+      CONFIG_OF_HAS_PRIOR_STAGE=y
+      CONFIG_OF_BOARD=y
+    '';
   };
   raspberrypiWirelessFirmware = final.rpi-kernels.v5_15_87.wireless-firmware;
   raspberrypifw = final.rpi-kernels.v5_15_87.firmware;
