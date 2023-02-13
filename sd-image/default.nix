@@ -34,6 +34,7 @@
         [all]
         # Boot in 64-bit mode.
         arm_64bit=1
+        dtparam=audio=on
         dtparam=krnbt=on
 
         # U-Boot needs this to work, regardless of whether UART is actually used or not.
