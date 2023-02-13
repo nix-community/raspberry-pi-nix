@@ -40,6 +40,11 @@ stdenvNoCC.mkDerivation {
     # CM4 symlink must be added since it's missing from upstream
     pushd $out/lib/firmware/brcm &>/dev/null
     ln -s "./brcmfmac43455-sdio.txt" "$out/lib/firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-compute-module.txt"
+
+    # There are two options for the brcmfmac43455 binary: minimal or
+    # standard. For more info see the readme at:
+    # https://github.com/RPi-Distro/firmware-nonfree/blob/bullseye/debian/config/brcm80211/cypress/README.txt
+
     ln -sf ../cypress/cyfmac43455-sdio-minimal.bin brcmfmac43455-sdio.bin
     popd &>/dev/null
 
