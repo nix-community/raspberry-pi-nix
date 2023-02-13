@@ -2,14 +2,7 @@
 { lib, pkgs, config, ... }:
 
 {
-  imports = [
-    ../sd-image
-    ./device-tree.nix
-    ./audio.nix
-    ./i2c.nix
-    ./i2s.nix
-    ./modesetting.nix
-  ];
+  imports = [ ../sd-image ];
 
   nixpkgs = { overlays = [ overlay ]; };
   boot = {
