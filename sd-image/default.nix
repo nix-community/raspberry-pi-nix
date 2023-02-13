@@ -22,7 +22,7 @@
         kernel=u-boot-rpi_arm64.bin
 
         [pi4]
-        kernel=u-boot-rpi4.bin
+        kernel=u-boot-rpi_arm64.bin
         enable_gic=1
         armstub=armstub8-gic.bin
         arm_boost=1
@@ -34,6 +34,7 @@
         [all]
         # Boot in 64-bit mode.
         arm_64bit=1
+        dtparam=krnbt=on
 
         # U-Boot needs this to work, regardless of whether UART is actually used or not.
         # Look in arch/arm/mach-bcm283x/Kconfig in the U-Boot tree to see if this is still
@@ -57,7 +58,6 @@
       cp ${raspberrypifw}/share/raspberrypi/boot/bcm2710-rpi-3-b-plus.dtb firmware/
 
       # Add pi4 specific files
-      cp ${pkgs.ubootRaspberryPi4_64bit}/u-boot.bin firmware/u-boot-rpi4.bin
       cp ${pkgs.raspberrypi-armstubs}/armstub8-gic.bin firmware/armstub8-gic.bin
       cp ${raspberrypifw}/share/raspberrypi/boot/bcm2711-rpi-4-b.dtb firmware/
 
