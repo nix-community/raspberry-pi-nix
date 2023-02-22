@@ -13,7 +13,7 @@
       "pcie_brcmstb" # required for the pcie bus to work
       "reset-raspberrypi" # required for vl805 firmware to load
     ];
-    kernelPackages = pkgs.linuxPackagesFor (pkgs.rpi-kernels.v5_15_87.kernel);
+    kernelPackages = pkgs.linuxPackagesFor (pkgs.rpi-kernels.latest.kernel);
 
     loader = {
       grub.enable = lib.mkDefault false;
@@ -26,5 +26,4 @@
     };
   };
   hardware.enableRedistributableFirmware = true;
-
 }

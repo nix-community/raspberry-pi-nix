@@ -26,6 +26,8 @@
         enable_gic=1
         armstub=armstub8-gic.bin
         arm_boost=1
+        dtoverlay=vc4-fkms-v3d-pi4
+        dtoverlay=
 
         # Otherwise the resolution will be weird in most cases, compared to
         # what the pi3 firmware does by default.
@@ -65,6 +67,9 @@
       # Add pi-zero-2 specific files
       cp ${raspberrypifw}/share/raspberrypi/boot/bcm2710-rpi-zero-2.dtb firmware/
       cp ${raspberrypifw}/share/raspberrypi/boot/bcm2710-rpi-zero-2-w.dtb firmware/
+
+      # Add overlays
+      cp -r ${raspberrypifw}/share/raspberrypi/boot/overlays firmware/
     '';
     populateRootCommands = ''
       mkdir -p ./files/boot

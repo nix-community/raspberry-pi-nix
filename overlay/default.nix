@@ -1,5 +1,9 @@
 final: prev:
 let
+  # The version to stick at `pkgs.rpi-kernels.latest'
+  latest = "v5_15_87";
+
+  # Helpers for building the `pkgs.rpi-kernels' map.
   rpi-kernel = { kernel, version, fw, wireless-fw, argsOverride ? null }:
     let
       new-kernel = prev.linux_rpi4.override {
@@ -54,8 +58,10 @@ in {
       CONFIG_OF_BOARD=y
     '';
   };
-  raspberrypiWirelessFirmware = final.rpi-kernels.v5_15_87.wireless-firmware;
-  raspberrypifw = final.rpi-kernels.v5_15_87.firmware;
+
+  # default to latest firmware
+  raspberrypiWirelessFirmware = final.rpi-kernels.latest.wireless-firmware;
+  raspberrypifw = final.rpi-kernels.latest.firmware;
 
 } // {
   # rpi kernels and firmware are available at
@@ -92,10 +98,12 @@ in {
       fw = prev.fetchFromGitHub {
         owner = "raspberrypi";
         repo = "firmware";
-        rev = "2e7137e0840f76f056589aba7f82d5b7236d8f1c";
-        sha256 = "jIKhQxp9D83OAZ8X2Vra9THHBE0j5Z2gRMDSVqIhopY=";
+        rev = "78852e166b4cf3ebb31d051e996d54792f0994b0";
+        sha256 = "tdaH+zZwmILNFBge2gMqtzj/1Hydj9cxhPvhw+7jTrU=";
       };
       wireless-fw = import ./raspberrypi-wireless-firmware/5.10.87.nix;
     }
-  ];
+  ] // {
+    latest = final.rpi-kernels."${latest}";
+  };
 }
