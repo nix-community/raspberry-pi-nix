@@ -1,24 +1,126 @@
 {
   "nodes": {
-    "nixpkgs": {
+    "libcamera-apps-src": {
+      "flake": false,
       "locked": {
-        "lastModified": 1652182392,
-        "narHash": "sha256-H9Bmor+kfogrE0X7Fi5sh0gCUWDG4pnmYxedJyIT41A=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "aa2f845096f72dde4ad0c168eeec387cbd2eae04",
+        "lastModified": 1674645888,
+        "narHash": "sha256-UBTDHN0lMj02enB8im4Q+f/MCm/G2mFPP3pLImrZc5A=",
+        "owner": "raspberrypi",
+        "repo": "libcamera-apps",
+        "rev": "9f08463997b82c4bf60e12c4ea43577959a8ae15",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixos-21.11",
-        "repo": "nixpkgs",
+        "owner": "raspberrypi",
+        "ref": "v1.1.1",
+        "repo": "libcamera-apps",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "libcamera-apps-src": "libcamera-apps-src",
+        "rpi-bluez-firmware-src": "rpi-bluez-firmware-src",
+        "rpi-firmware-nonfree-src": "rpi-firmware-nonfree-src",
+        "rpi-firmware-stable-src": "rpi-firmware-stable-src",
+        "rpi-linux-5_15-src": "rpi-linux-5_15-src",
+        "rpi-linux-5_15_87-src": "rpi-linux-5_15_87-src",
+        "u-boot-src": "u-boot-src"
+      }
+    },
+    "rpi-bluez-firmware-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1672928175,
+        "narHash": "sha256-gKGK0XzNrws5REkKg/JP6SZx3KsJduu53SfH3Dichkc=",
+        "owner": "RPi-Distro",
+        "repo": "bluez-firmware",
+        "rev": "9556b08ace2a1735127894642cc8ea6529c04c90",
+        "type": "github"
+      },
+      "original": {
+        "owner": "RPi-Distro",
+        "repo": "bluez-firmware",
+        "type": "github"
+      }
+    },
+    "rpi-firmware-nonfree-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1674638139,
+        "narHash": "sha256-54JKmwypD7PRQdd7k6IcF7wL8ifMavEM0UwZwmA24O4=",
+        "owner": "RPi-Distro",
+        "repo": "firmware-nonfree",
+        "rev": "7f29411baead874b859eda53efdc2472345ea454",
+        "type": "github"
+      },
+      "original": {
+        "owner": "RPi-Distro",
+        "repo": "firmware-nonfree",
+        "type": "github"
+      }
+    },
+    "rpi-firmware-stable-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1673003776,
+        "narHash": "sha256-tdaH+zZwmILNFBge2gMqtzj/1Hydj9cxhPvhw+7jTrU=",
+        "owner": "raspberrypi",
+        "repo": "firmware",
+        "rev": "78852e166b4cf3ebb31d051e996d54792f0994b0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "raspberrypi",
+        "ref": "stable",
+        "repo": "firmware",
+        "type": "github"
+      }
+    },
+    "rpi-linux-5_15-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1675874870,
+        "narHash": "sha256-oy+VgoB4IdFZjGwkx88dDSpwWZj2D5t3PyXPIwDsY1Q=",
+        "owner": "raspberrypi",
+        "repo": "linux",
+        "rev": "14b35093ca68bf2c81bbc90aace5007142b40b40",
+        "type": "github"
+      },
+      "original": {
+        "owner": "raspberrypi",
+        "ref": "rpi-5.15.y",
+        "repo": "linux",
+        "type": "github"
+      }
+    },
+    "rpi-linux-5_15_87-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1673628667,
+        "narHash": "sha256-hNLVfhalmRhhRfvu2mR/qDmmGl//Ic1eqR7N1HFj2CY=",
+        "owner": "raspberrypi",
+        "repo": "linux",
+        "rev": "da4c8e0ffe7a868b989211045657d600be3046a1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "raspberrypi",
+        "repo": "linux",
+        "rev": "da4c8e0ffe7a868b989211045657d600be3046a1",
+        "type": "github"
+      }
+    },
+    "u-boot-src": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-30fe8klLHRsEtEQ1VpYh4S+AflG5yCQYWlGmpWyFL8w=",
+        "type": "tarball",
+        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2023.01.tar.bz2"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2023.01.tar.bz2"
       }
     }
   },

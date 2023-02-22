@@ -1,7 +1,9 @@
+{ u-boot-src, rpi-linux-5_15-src, rpi-firmware-stable-src
+, rpi-firmware-nonfree-src, rpi-bluez-firmware-src, libcamera-apps-src }:
 final: prev:
 let
   # The version to stick at `pkgs.rpi-kernels.latest'
-  latest = "v5_15_87";
+  latest = "v5_15_92";
 
   # Helpers for building the `pkgs.rpi-kernels' map.
   rpi-kernel = { kernel, version, fw, wireless-fw, argsOverride ? null }:
@@ -31,7 +33,8 @@ in {
   compressFirmwareXz = x: x;
 
   # A recent known working version of libcamera-apps
-  libcamera-apps = final.callPackage ./libcamera-apps.nix { };
+  libcamera-apps =
+    final.callPackage ./libcamera-apps.nix { inherit libcamera-apps-src; };
 
   # provide generic rpi arm64 u-boot
   uboot_rpi_arm64 = prev.buildUBoot rec {
@@ -39,10 +42,7 @@ in {
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
     version = "2023.01";
-    src = prev.fetchurl {
-      url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${version}.tar.bz2";
-      sha256 = "03wm651ix783s4idj223b0nm3r6jrdnrxs1ncs8s128g72nknhk9";
-    };
+    src = u-boot-src;
     # In raspberry pi sbcs the firmware manipulates the device tree in
     # a variety of ways before handing it off to the linux kernel. [1]
     # Since we have installed u-boot in place of a linux kernel we may
@@ -68,42 +68,15 @@ in {
   # `pkgs.rpi-kernels.<VERSION>.{kernel,firmware,wireless-firmware}'. 
   #
   # For example: `pkgs.rpi-kernels.v5_15_87.kernel'
-  rpi-kernels = rpi-kernels [
-    {
-      version = "5.15.36";
-      kernel = prev.fetchFromGitHub {
-        owner = "raspberrypi";
-        repo = "linux";
-        rev = "9af1cc301e4dffb830025207a54d0bc63bec16c7";
-        sha256 = "fsMTUdz1XZhPaSXpU1uBV4V4VxoZKi6cwP0QJcrCy1o=";
-        fetchSubmodules = true;
-      };
-      fw = prev.fetchFromGitHub {
-        owner = "raspberrypi";
-        repo = "firmware";
-        rev = "2cf8a179b3f2e6e5e5ceba4e8e544def10a49020";
-        sha256 = "YG1bryflbV3W62MhZ/XMSgUJXMhCl/fe86x+CT7XZ4U=";
-      };
-      wireless-fw = import ./raspberrypi-wireless-firmware/5.10.36.nix;
-    }
-    {
-      version = "5.15.87";
-      kernel = prev.fetchFromGitHub {
-        owner = "raspberrypi";
-        repo = "linux";
-        rev = "da4c8e0ffe7a868b989211045657d600be3046a1";
-        sha256 = "hNLVfhalmRhhRfvu2mR/qDmmGl//Ic1eqR7N1HFj2CY=";
-        fetchSubmodules = true;
-      };
-      fw = prev.fetchFromGitHub {
-        owner = "raspberrypi";
-        repo = "firmware";
-        rev = "78852e166b4cf3ebb31d051e996d54792f0994b0";
-        sha256 = "tdaH+zZwmILNFBge2gMqtzj/1Hydj9cxhPvhw+7jTrU=";
-      };
-      wireless-fw = import ./raspberrypi-wireless-firmware/5.10.87.nix;
-    }
-  ] // {
+  rpi-kernels = rpi-kernels [{
+    version = "5.15.92";
+    kernel = rpi-linux-5_15-src;
+    fw = rpi-firmware-stable-src;
+    wireless-fw = import ./raspberrypi-wireless-firmware.nix {
+      bluez-firmware = rpi-bluez-firmware-src;
+      firmware-nonfree-src = rpi-firmware-nonfree-src;
+    };
+  }] // {
     latest = final.rpi-kernels."${latest}";
   };
 }
