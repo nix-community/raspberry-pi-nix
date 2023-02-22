@@ -2,6 +2,12 @@
 
 {
   imports = [ ./sd-image.nix ];
+  options.hardware.raspberry-pi = {
+    extra-config = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+    };
+  };
 
   boot.loader.grub.enable = false;
   boot.loader.generic-extlinux-compatible.enable = true;
@@ -47,7 +53,7 @@
         # Prevent the firmware from smashing the framebuffer setup done by the mainline kernel
         # when attempting to show low-voltage or overtemperature warnings.
         avoid_warnings=1
-      '';
+      '' ++ config.hardware.raspberry-pi.extra-config;
     in ''
       (cd ${raspberrypifw}/share/raspberrypi/boot && cp bootcode.bin fixup*.dat start*.elf $NIX_BUILD_TOP/firmware/)
 
