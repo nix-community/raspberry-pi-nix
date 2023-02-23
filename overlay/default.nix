@@ -74,7 +74,7 @@ in {
     fw = rpi-firmware-stable-src;
     wireless-fw = import ./raspberrypi-wireless-firmware.nix {
       bluez-firmware = rpi-bluez-firmware-src;
-      firmware-nonfree-src = rpi-firmware-nonfree-src;
+      firmware-nonfree = rpi-firmware-nonfree-src;
     };
   }] // {
     latest = final.rpi-kernels."${latest}";
