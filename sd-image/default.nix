@@ -16,7 +16,7 @@
       populateFirmwareCommands = ''
         cp ${pkgs.uboot_rpi_arm64}/u-boot.bin firmware/u-boot-rpi-arm64.bin
         cp -r ${pkgs.raspberrypifw}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} firmware
-        cp ${config.raspberrypi-config-output} firmware/config.txt
+        cp ${config.hardware.raspberry-pi.config-output} firmware/config.txt
       '';
       populateRootCommands = ''
         mkdir -p ./files/boot

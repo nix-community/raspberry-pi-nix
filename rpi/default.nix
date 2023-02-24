@@ -2,8 +2,10 @@
 { lib, pkgs, config, ... }:
 
 {
-  imports = [ ../sd-image ./config.nix ];
+  imports = [ ../sd-image ./config.nix ./i2c.nix ];
 
+  # On activation install u-boot, Raspberry Pi firmware, and our
+  # generated config.txt
   system.activationScripts.raspberrypi = {
     text = ''
       if ! grep -qs '/boot/firmware ' /proc/mounts; then
@@ -11,29 +13,28 @@
       fi
       cp ${pkgs.uboot_rpi_arm64}/u-boot.bin /boot/firmware/u-boot-rpi-arm64.bin
       cp -r ${pkgs.raspberrypifw}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} /boot/firmware
-      cp ${config.raspberrypi-config-output} /boot/firmware/config.txt
+      cp ${config.hardware.raspberry-pi.config-output} /boot/firmware/config.txt
     '';
   };
 
-  raspberrypi-config = {
-    pi4 = {
-      options = {
-        enable_gic = true;
-        armstub = "armstub8-gic.bin";
-        arm_boost = true;
-        disable_overscan = true;
-      };
-      dt-overlays = { vc4-kms-v3d-pi4 = { cma-512 = null; }; };
-    };
-    pi02 = { dt-overlays = { vc4-kms-v3d = { cma-256 = null; }; }; };
+  # Default config.txt on Raspberry Pi OS:
+  # https://github.com/RPi-Distro/pi-gen/blob/master/stage1/00-boot-files/files/config.txt
+  hardware.raspberry-pi.config = {
+    cm4 = { options = { otg_mode = true; }; };
+    pi4 = { options = { arm_boost = true; }; };
     all = {
       options = {
+        # The firmware will start our u-boot binary rather than a
+        # linux kernel.
         kernel = "u-boot-rpi-arm64.bin";
+        arm_64bit = true;
         enable_uart = true;
         avoid_warnings = true;
-        arm_64bit = true;
+        camera_auto_detect = true;
+        display_auto_detect = true;
+        disable_overscan = true;
       };
-      base-dtb-params = { krnbt = "on"; };
+      dt-overlays = { vc4-kms-v3d = { }; };
     };
   };
 
@@ -59,4 +60,12 @@
     };
   };
   hardware.enableRedistributableFirmware = true;
+
+  services = {
+    udev.extraRules = ''
+      SUBSYSTEM=="dma_heap", GROUP="video", MODE="0660"
+      KERNEL=="gpiomem", GROUP="gpio", MODE="0660"
+      KERNEL=="gpiochip*", GROUP="gpio", MODE="0660"
+    '';
+  };
 }
