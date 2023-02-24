@@ -4,6 +4,17 @@
 {
   imports = [ ../sd-image ./config.nix ];
 
+  system.activationScripts.raspberrypi = {
+    text = ''
+      if ! grep -qs '/boot/firmware ' /proc/mounts; then
+         mount /dev/disk/by-label/${config.sdImage.firmwarePartitionName} /boot/firmware
+      fi
+      cp ${pkgs.uboot_rpi_arm64}/u-boot.bin /boot/firmware/u-boot-rpi-arm64.bin
+      cp -r ${pkgs.raspberrypifw}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} /boot/firmware
+      cp ${config.raspberrypi-config-output} /boot/firmware/config.txt
+    '';
+  };
+
   raspberrypi-config = {
     pi4 = {
       options = {
@@ -17,16 +28,12 @@
     pi02 = { dt-overlays = { vc4-kms-v3d = { cma-256 = null; }; }; };
     all = {
       options = {
-        kernel = "u-boot-rpi_arm64.bin";
+        kernel = "u-boot-rpi-arm64.bin";
         enable_uart = true;
         avoid_warnings = true;
         arm_64bit = true;
       };
-      base-dtb-params = {
-        i2c = "on";
-        audio = "on";
-        krnbt = "on";
-      };
+      base-dtb-params = { krnbt = "on"; };
     };
   };
 

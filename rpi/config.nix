@@ -22,11 +22,16 @@ let
         args = render-dt-kvs v;
       }) overlays);
     render-config-section = k:
-      { options, base-dtb-params, dt-overlays }: ''
+      { options, base-dtb-params, dt-overlays }:
+      let
+        all-config = lib.concatStringsSep "\n" (lib.filter (x: x != "") [
+          (render-options options)
+          (render-base-dt-params base-dtb-params)
+          (render-dt-overlays dt-overlays)
+        ]);
+      in ''
         [${k}]
-        ${render-options options}
-        ${render-base-dt-params base-dtb-params}
-        ${render-dt-overlays dt-overlays}
+        ${all-config}
       '';
   in conf:
   lib.strings.concatStringsSep "\n"
