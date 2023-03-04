@@ -7,7 +7,12 @@ in {
   };
   config = lib.mkIf cfg.enable {
     hardware = {
-      raspberry-pi.config.all.base-dt-params = { i2c = "on"; };
+      raspberry-pi.config.all.base-dt-params = {
+        i2c = {
+          enable = true;
+          value = "on";
+        };
+      };
       i2c.enable = true;
     };
   };
