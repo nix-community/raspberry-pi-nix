@@ -162,7 +162,6 @@ in {
       "/boot/firmware" = {
         device = "/dev/disk/by-label/${config.sdImage.firmwarePartitionName}";
         fsType = "vfat";
-        options = [ "nofail" "noauto" ];
       };
       "/" = {
         device = "/dev/disk/by-label/NIXOS_SD";

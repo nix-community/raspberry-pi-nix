@@ -8,9 +8,6 @@
   # generated config.txt
   system.activationScripts.raspberrypi = {
     text = ''
-      if ! grep -qs '/boot/firmware ' /proc/mounts; then
-         mount /dev/disk/by-label/${config.sdImage.firmwarePartitionName} /boot/firmware
-      fi
       cp ${pkgs.uboot_rpi_arm64}/u-boot.bin /boot/firmware/u-boot-rpi-arm64.bin
       cp -r ${pkgs.raspberrypifw}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} /boot/firmware
       cp ${config.hardware.raspberry-pi.config-output} /boot/firmware/config.txt
@@ -23,16 +20,16 @@
     cm4 = {
       options = {
         otg_mode = {
-          enable = true;
-          value = true;
+          enable = lib.mkDefault true;
+          value = lib.mkDefault true;
         };
       };
     };
     pi4 = {
       options = {
         arm_boost = {
-          enable = true;
-          value = true;
+          enable = lib.mkDefault true;
+          value = lib.mkDefault true;
         };
       };
     };
@@ -53,26 +50,26 @@
           value = true;
         };
         avoid_warnings = {
-          enable = true;
-          value = true;
+          enable = lib.mkDefault true;
+          value = lib.mkDefault true;
         };
         camera_auto_detect = {
-          enable = true;
-          value = true;
+          enable = lib.mkDefault true;
+          value = lib.mkDefault true;
         };
         display_auto_detect = {
-          enable = true;
-          value = true;
+          enable = lib.mkDefault true;
+          value = lib.mkDefault true;
         };
         disable_overscan = {
-          enable = true;
-          value = true;
+          enable = lib.mkDefault true;
+          value = lib.mkDefault true;
         };
       };
       dt-overlays = {
         vc4-kms-v3d = {
-          enable = true;
-          params = { cma-256 = { enable = true; }; };
+          enable = lib.mkDefault true;
+          params = { };
         };
       };
     };
