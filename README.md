@@ -1,6 +1,6 @@
 # raspberry-pi-nix
 
-The primary goal of this software is to make it easy to create
+The primary goal of this flake is to make it easy to create
 working NixOS configurations for Raspberry Pi products. Specifically,
 this repository aims to deliver the following benefits:
 
@@ -11,12 +11,11 @@ this repository aims to deliver the following benefits:
    [config.txt based
    configuration](https://www.raspberrypi.com/documentation/computers/config_txt.html).
 3. Make it easy to build an image suitable for flashing to an sd-card,
-   without a need to first go through an installation media.
+   without the need to first go through an installation media.
 
 The important modules are `overlay/default.nix`, `rpi/default.nix`,
-and `rpi/config.nix`. The other modules for i2c, i2s, etc are mostly
-wrappers that set `config.txt` settings and enable required kernel
-modules.
+and `rpi/config.nix`. The other modules are mostly wrappers that set
+`config.txt` settings and enable required kernel modules.
 
 ## Example
 
@@ -93,16 +92,17 @@ list](https://forums.raspberrypi.com/viewtopic.php?t=329799#p1974233)
 ). 
 
 This manipulation makes it difficult to use the device tree configured
-directly by NixOS as you must know and reproduce the manipulation
-performed by the proprietary firmware.
+directly by NixOS as the proprietary firmware's manipulation must be
+known and reproduced.
 
-Even if the manipulation was reproduced, some convenience would be
-missed out. For example, the firmware can detect hardware during boot
-and automatically configure the device tree accordingly, rather than
-requiring a NixOS system rebuild with a different device tree for
-different hardware. Examples of what I mean by hardware include: the
-specific Raspberry Pi device booting the image, connected cameras, and
-connected displays.
+Even if the manipulation were successfully reproduced, some benefits
+would be lost. For example, the firmware can detect connected hardware
+during boot and automatically configure the device tree accordingly
+before passing it onto the kernel. If this firmware device tree is
+ignored then a NixOS system rebuild with a different device tree would
+be required when swapping connected hardware. Examples of what I mean
+by hardware include: the specific Raspberry Pi device booting the
+image, connected cameras, and connected displays.
 
 So, in order to avoid the headaches associated with failing to
 reproduce some firmware device tree manipulation, and to reap the
@@ -113,7 +113,7 @@ device tree configuration is controlled via the [config.txt
 file](https://www.raspberrypi.com/documentation/computers/config_txt.html).
 
 Additionally, the firmware, device trees, and overlays from the
-`raspberrypifw` package populates the firmware partition on system
+`raspberrypifw` package populate the firmware partition on system
 activation. This package is kept up to date by the overlay applied by
 this package, so you don't need configure this. However, if you want
 to use different firmware you can override that package to do so.
