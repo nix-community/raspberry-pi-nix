@@ -24,7 +24,7 @@ and `rpi/config.nix`. The other modules are mostly wrappers that set
   description = "raspberry-pi-nix example";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
-    raspberry-pi-nix = "github:tstat/raspberry-pi-nix";
+    raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix";
   };
 
   outputs = { self, nixpkgs, raspberry-pi-nix }:
