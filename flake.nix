@@ -30,6 +30,6 @@
 
   outputs = srcs@{ self, ... }: {
     overlay = import ./overlay (builtins.removeAttrs srcs [ "self" ]);
-    rpi = import ./rpi { overlay = self.overlay; };
+    nixosModules.raspberry-pi = import ./rpi { overlay = self.overlay; };
   };
 }
