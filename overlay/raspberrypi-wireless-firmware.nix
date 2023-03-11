@@ -17,6 +17,7 @@ stdenvNoCC.mkDerivation {
   installPhase = ''
     runHook preInstall
     mkdir -p "$out/lib/firmware/brcm"
+    mkdir -p "$out/lib/firmware/cypress"
 
     # Wifi firmware
     cp -rv "${firmware-nonfree}/debian/config/brcm80211/." "$out/lib/firmware/"
@@ -24,15 +25,9 @@ stdenvNoCC.mkDerivation {
     # Bluetooth firmware
     cp -rv "${bluez-firmware}/broadcom/." "$out/lib/firmware/brcm"
 
-    # CM4 symlink must be added since it's missing from upstream
-    pushd $out/lib/firmware/brcm &>/dev/null
-
-    # There are two options for the brcmfmac43455 binary: minimal or
-    # standard. For more info see the readme at:
-    # https://github.com/RPi-Distro/firmware-nonfree/blob/bullseye/debian/config/brcm80211/cypress/README.txt
-
-    ln -sf ../cypress/cyfmac43455-sdio-minimal.bin brcmfmac43455-sdio.bin
-    popd &>/dev/null
+    # brcmfmac43455-stdio.bin is a symlink to ../cypress/cyfmac43455-stdio.bin that doesn't exist
+    # See https://github.com/RPi-Distro/firmware-nonfree/issues/26
+    ln -s "./cyfmac43455-sdio-standard.bin" "$out/lib/firmware/cypress/cyfmac43455-sdio.bin"
 
     runHook postInstall
   '';
