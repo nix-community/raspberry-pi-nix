@@ -8,9 +8,38 @@
   # generated config.txt
   system.activationScripts.raspberrypi = {
     text = ''
-      cp ${pkgs.uboot_rpi_arm64}/u-boot.bin /boot/firmware/u-boot-rpi-arm64.bin
-      cp -r ${pkgs.raspberrypifw}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} /boot/firmware
-      cp ${config.hardware.raspberry-pi.config-output} /boot/firmware/config.txt
+      shopt -s nullglob
+
+      TARGET_FIRMWARE_DIR="/boot/firmware"
+      TARGET_OVERLAYS_DIR="$TARGET_FIRMWARE_DIR/overlays"
+      TMPFILE="$TARGET_FIRMWARE_DIR/tmp"
+      UBOOT="${pkgs.uboot_rpi_arm64}/u-boot.bin"
+      SRC_FIRMWARE_DIR="${pkgs.raspberrypifw}/share/raspberrypi/boot"
+      STARTFILES=("$SRC_FIRMWARE_DIR"/start*.elf)
+      DTBS=("$SRC_FIRMWARE_DIR"/*.dtb)
+      BOOTCODE="$SRC_FIRMWARE_DIR/bootcode.bin"
+      FIXUPS=("$SRC_FIRMWARE_DIR"/fixup*.dat)
+      SRC_OVERLAYS_DIR="$SRC_FIRMWARE_DIR/overlays"
+      SRC_OVERLAYS=("$SRC_OVERLAYS_DIR"/*)
+      CONFIG="${config.hardware.raspberry-pi.config-output}"
+
+      cp "$UBOOT" "$TMPFILE"
+      mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/u-boot-rpi-arm64.bin"
+
+      cp "$CONFIG" "$TMPFILE"
+      mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/config.txt"
+
+      for SRC in "''${STARTFILES[@]}" "''${DTBS[@]}" "$BOOTCODE" "''${FIXUPS[@]}"
+      do
+        cp "$SRC" "$TMPFILE"
+        mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/$(basename "$SRC")"
+      done
+
+      for SRC in "''${SRC_OVERLAYS[@]}"
+      do
+        cp "$SRC" "$TMPFILE"
+        mv -T "$TMPFILE" "$TARGET_OVERLAYS_DIR/$(basename "$SRC")"
+      done
     '';
   };
 
