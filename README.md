@@ -19,6 +19,10 @@ and `rpi/config.nix`. The other modules are mostly wrappers that set
 
 ## Example
 
+See [the example
+repo](https://github.com/tstat/raspberry-pi-nix-example) for a
+complete example.
+
 ```nix
 {
   description = "raspberry-pi-nix example";
