@@ -1,9 +1,14 @@
-{ u-boot-src, rpi-linux-5_15-src, rpi-firmware-stable-src
-, rpi-firmware-nonfree-src, rpi-bluez-firmware-src, libcamera-apps-src }:
+{ u-boot-src
+, rpi-linux-6_1-src
+, rpi-firmware-src
+, rpi-firmware-nonfree-src
+, rpi-bluez-firmware-src
+, libcamera-apps-src
+}:
 final: prev:
 let
   # The version to stick at `pkgs.rpi-kernels.latest'
-  latest = "v5_15_92";
+  latest = "v6_1_32";
 
   # Helpers for building the `pkgs.rpi-kernels' map.
   rpi-kernel = { kernel, version, fw, wireless-fw, argsOverride ? null }:
@@ -18,7 +23,8 @@ let
       new-fw = prev.raspberrypifw.overrideAttrs (oldfw: { src = fw; });
       new-wireless-fw = final.callPackage wireless-fw { };
       version-slug = builtins.replaceStrings [ "." ] [ "_" ] version;
-    in {
+    in
+    {
       "v${version-slug}" = {
         kernel = new-kernel;
         firmware = new-fw;
@@ -26,7 +32,8 @@ let
       };
     };
   rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
-in {
+in
+{
 
   # disable firmware compression so that brcm firmware can be found at
   # the path expected by raspberry pi firmware/device tree
@@ -69,9 +76,9 @@ in {
   #
   # For example: `pkgs.rpi-kernels.v5_15_87.kernel'
   rpi-kernels = rpi-kernels [{
-    version = "5.15.92";
-    kernel = rpi-linux-5_15-src;
-    fw = rpi-firmware-stable-src;
+    version = "6.1.32";
+    kernel = rpi-linux-6_1-src;
+    fw = rpi-firmware-src;
     wireless-fw = import ./raspberrypi-wireless-firmware.nix {
       bluez-firmware = rpi-bluez-firmware-src;
       firmware-nonfree = rpi-firmware-nonfree-src;

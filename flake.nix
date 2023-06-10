@@ -6,13 +6,13 @@
       flake = false;
       url = "https://ftp.denx.de/pub/u-boot/u-boot-2023.01.tar.bz2";
     };
-    rpi-linux-5_15-src = {
+    rpi-linux-6_1-src = {
       flake = false;
-      url = "github:raspberrypi/linux/rpi-5.15.y";
+      url = "github:raspberrypi/linux/rpi-6.1.y";
     };
-    rpi-firmware-stable-src = {
+    rpi-firmware-src = {
       flake = false;
-      url = "github:raspberrypi/firmware/stable";
+      url = "github:raspberrypi/firmware";
     };
     rpi-firmware-nonfree-src = {
       flake = false;
@@ -24,7 +24,7 @@
     };
     libcamera-apps-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera-apps/v1.1.1";
+      url = "github:raspberrypi/libcamera-apps/v1.1.2";
     };
   };
 
