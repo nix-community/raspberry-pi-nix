@@ -1,9 +1,14 @@
-{ u-boot-src, rpi-linux-5_15-src, rpi-firmware-stable-src
-, rpi-firmware-nonfree-src, rpi-bluez-firmware-src, libcamera-apps-src }:
+{ u-boot-src
+, rpi-linux-6_1-src
+, rpi-firmware-src
+, rpi-firmware-nonfree-src
+, rpi-bluez-firmware-src
+, libcamera-apps-src
+}:
 final: prev:
 let
   # The version to stick at `pkgs.rpi-kernels.latest'
-  latest = "v5_15_92";
+  latest = "v6_1_21";
 
   # Helpers for building the `pkgs.rpi-kernels' map.
   rpi-kernel = { kernel, version, fw, wireless-fw, argsOverride ? null }:
@@ -18,7 +23,8 @@ let
       new-fw = prev.raspberrypifw.overrideAttrs (oldfw: { src = fw; });
       new-wireless-fw = final.callPackage wireless-fw { };
       version-slug = builtins.replaceStrings [ "." ] [ "_" ] version;
-    in {
+    in
+    {
       "v${version-slug}" = {
         kernel = new-kernel;
         firmware = new-fw;
@@ -26,11 +32,8 @@ let
       };
     };
   rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
-in {
-
-  # disable firmware compression so that brcm firmware can be found at
-  # the path expected by raspberry pi firmware/device tree
-  compressFirmwareXz = x: x;
+in
+{
 
   # A recent known working version of libcamera-apps
   libcamera-apps =
@@ -69,12 +72,34 @@ in {
   #
   # For example: `pkgs.rpi-kernels.v5_15_87.kernel'
   rpi-kernels = rpi-kernels [{
-    version = "5.15.92";
-    kernel = rpi-linux-5_15-src;
-    fw = rpi-firmware-stable-src;
+    version = "6.1.21";
+    kernel = rpi-linux-6_1-src;
+    fw = rpi-firmware-src;
     wireless-fw = import ./raspberrypi-wireless-firmware.nix {
       bluez-firmware = rpi-bluez-firmware-src;
       firmware-nonfree = rpi-firmware-nonfree-src;
+    };
+    argsOverride = {
+      structuredExtraConfig = with prev.lib.kernel; {
+        # The perl script to generate kernel options sets unspecified
+        # parameters to `m` if possible [1]. This results in the
+        # unspecified config option KUNIT [2] getting set to `m` which
+        # causes DRM_VC4_KUNIT_TEST [3] to get set to `y`.
+        #
+        # This vc4 unit test fails on boot due to a null pointer
+        # exception with the existing config. I'm not sure why, but in
+        # any case, the DRM_VC4_KUNIT_TEST config option itself states
+        # that it is only useful for kernel developers working on the
+        # vc4 driver. So, I feel no need to deviate from the standard
+        # rpi kernel and attempt to successfully enable this test and
+        # other unit tests because the nixos perl script has this
+        # sloppy "default to m" behavior. So, I set KUNIT to `n`.
+        #
+        # [1] https://github.com/NixOS/nixpkgs/blob/85bcb95aa83be667e562e781e9d186c57a07d757/pkgs/os-specific/linux/kernel/generate-config.pl#L1-L10
+        # [2] https://github.com/raspberrypi/linux/blob/1.20230405/lib/kunit/Kconfig#L5-L14
+        # [3] https://github.com/raspberrypi/linux/blob/bb63dc31e48948bc2649357758c7a152210109c4/drivers/gpu/drm/vc4/Kconfig#L38-L52
+        KUNIT = no;
+      };
     };
   }] // {
     latest = final.rpi-kernels."${latest}";

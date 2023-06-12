@@ -3,7 +3,7 @@
 
 stdenv.mkDerivation rec {
   pname = "libcamera-apps";
-  version = "v1.1.0";
+  version = "v1.1.2";
 
   src = libcamera-apps-src;
 
