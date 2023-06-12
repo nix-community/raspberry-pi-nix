@@ -8,7 +8,7 @@
 final: prev:
 let
   # The version to stick at `pkgs.rpi-kernels.latest'
-  latest = "v6_1_32";
+  latest = "v6_1_21";
 
   # Helpers for building the `pkgs.rpi-kernels' map.
   rpi-kernel = { kernel, version, fw, wireless-fw, argsOverride ? null }:
@@ -34,10 +34,6 @@ let
   rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
 in
 {
-
-  # disable firmware compression so that brcm firmware can be found at
-  # the path expected by raspberry pi firmware/device tree
-  compressFirmwareXz = x: x;
 
   # A recent known working version of libcamera-apps
   libcamera-apps =
@@ -76,12 +72,17 @@ in
   #
   # For example: `pkgs.rpi-kernels.v5_15_87.kernel'
   rpi-kernels = rpi-kernels [{
-    version = "6.1.32";
+    version = "6.1.21";
     kernel = rpi-linux-6_1-src;
     fw = rpi-firmware-src;
     wireless-fw = import ./raspberrypi-wireless-firmware.nix {
       bluez-firmware = rpi-bluez-firmware-src;
       firmware-nonfree = rpi-firmware-nonfree-src;
+    };
+    argsOverride = {
+      structuredExtraConfig = with prev.lib.kernel; {
+        KUNIT = no;
+      };
     };
   }] // {
     latest = final.rpi-kernels."${latest}";

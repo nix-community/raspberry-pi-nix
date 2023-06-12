@@ -62,15 +62,16 @@
     "rpi-firmware-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1686136390,
-        "narHash": "sha256-Uq1yIp8zgexz2hwgAxEtmo9paytel4VPof5VMys01UM=",
+        "lastModified": 1680694337,
+        "narHash": "sha256-UtUd1MbsrDFxd/1C3eOAMDKPZMx+kSMFYOJP+Kc6IU8=",
         "owner": "raspberrypi",
         "repo": "firmware",
-        "rev": "13fbbc4f5ea698353486915986de8b48f18018f6",
+        "rev": "055e044d5359ded1aacc5a17a8e35365373d0b8b",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
+        "ref": "stable",
         "repo": "firmware",
         "type": "github"
       }
@@ -78,16 +79,16 @@
     "rpi-linux-6_1-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1686133523,
-        "narHash": "sha256-r5L3hqk0wlefqkgO8jH4mupeUkbx9cSjHskLOxQQdZw=",
+        "lastModified": 1680464256,
+        "narHash": "sha256-ILwecHZ1BN6GhZAUB6/UwiN/rZ8gHndKON6DUhidtxI=",
         "owner": "raspberrypi",
         "repo": "linux",
-        "rev": "bb63dc31e48948bc2649357758c7a152210109c4",
+        "rev": "0afb5e98488aed7017b9bf321b575d0177feb7ed",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
-        "ref": "rpi-6.1.y",
+        "ref": "1.20230405",
         "repo": "linux",
         "type": "github"
       }

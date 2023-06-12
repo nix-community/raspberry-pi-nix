@@ -8,11 +8,11 @@
     };
     rpi-linux-6_1-src = {
       flake = false;
-      url = "github:raspberrypi/linux/rpi-6.1.y";
+      url = "github:raspberrypi/linux/1.20230405";
     };
     rpi-firmware-src = {
       flake = false;
-      url = "github:raspberrypi/firmware";
+      url = "github:raspberrypi/firmware/1.20230405";
     };
     rpi-firmware-nonfree-src = {
       flake = false;
