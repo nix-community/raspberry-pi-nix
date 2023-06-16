@@ -34,6 +34,9 @@ let
   rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
 in
 {
+  # disable firmware compression so that brcm firmware can be found at
+  # the path expected by raspberry pi firmware/device tree
+  compressFirmwareXz = x: x;
 
   # A recent known working version of libcamera-apps
   libcamera-apps =
