@@ -71,7 +71,7 @@
       },
       "original": {
         "owner": "raspberrypi",
-        "ref": "1.20230405",
+        "ref": "stable",
         "repo": "firmware",
         "type": "github"
       }
@@ -96,13 +96,13 @@
     "u-boot-src": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-k4CgiG6rOdgex+YxMRXqyJF7NFqAN9R+UKc3Y/+7jV0=",
+        "narHash": "sha256-30fe8klLHRsEtEQ1VpYh4S+AflG5yCQYWlGmpWyFL8w=",
         "type": "tarball",
-        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2023.04.tar.bz2"
+        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2023.01.tar.bz2"
       },
       "original": {
         "type": "tarball",
-        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2023.04.tar.bz2"
+        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2023.01.tar.bz2"
       }
     }
   },
