@@ -4,7 +4,7 @@
   inputs = {
     u-boot-src = {
       flake = false;
-      url = "https://ftp.denx.de/pub/u-boot/u-boot-2023.01.tar.bz2";
+      url = "https://ftp.denx.de/pub/u-boot/u-boot-2023.04.tar.bz2";
     };
     rpi-linux-6_1-src = {
       flake = false;
