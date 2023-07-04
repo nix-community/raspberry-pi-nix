@@ -10,7 +10,7 @@
     boot.consoleLogLevel = lib.mkDefault 7;
 
     # https://github.com/raspberrypi/firmware/issues/1539#issuecomment-784498108
-    boot.kernelParams = [ "console=ttyAMA0,115200n8" "console=tty1" ];
+    boot.kernelParams = [ "console=serial0,115200n8" "console=tty1" ];
 
     sdImage = {
       populateFirmwareCommands = ''
