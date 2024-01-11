@@ -3,7 +3,7 @@
 
 stdenvNoCC.mkDerivation {
   pname = "raspberrypi-wireless-firmware";
-  version = "2023-01-19";
+  version = "2023-11-15";
 
   srcs = [ ];
 

@@ -1,22 +1,38 @@
-{ libcamera-apps-src, lib, stdenv, fetchFromGitHub, fetchpatch, cmake
-, pkg-config, libjpeg, libtiff, libpng, libcamera, libepoxy, boost, libexif }:
+{ libcamera-apps-src
+, lib
+, stdenv
+, fetchFromGitHub
+, fetchpatch
+, meson
+, pkg-config
+, libjpeg
+, libtiff
+, libpng
+, libcamera
+, libepoxy
+, boost
+, libexif
+, ninja
+}:
 
 stdenv.mkDerivation rec {
   pname = "libcamera-apps";
-  version = "v1.1.2";
+  version = "v1.4.1";
 
   src = libcamera-apps-src;
 
-  nativeBuildInputs = [ cmake pkg-config ];
-  buildInputs = [ libjpeg libtiff libcamera libepoxy boost libexif libpng ];
-  cmakeFlags = [
-    "-DENABLE_QT=0"
-    "-DENABLE_OPENCV=0"
-    "-DENABLE_TFLITE=0"
-    "-DENABLE_X11=1"
-    "-DENABLE_DRM=1"
-    (if (stdenv.hostPlatform.isAarch64) then "-DARM64=ON" else "-DARM64=OFF")
+  nativeBuildInputs = [ meson pkg-config ];
+  buildInputs = [ libjpeg libtiff libcamera libepoxy boost libexif libpng ninja ];
+  mesonFlags = [
+    "-Denable_qt=false"
+    "-Denable_opencv=false"
+    "-Denable_tflite=false"
+    "-Denable_drm=true"
   ];
+  # Meson is no longer able to pick up Boost automatically.
+  # https://github.com/NixOS/nixpkgs/issues/86131
+  BOOST_INCLUDEDIR = "${lib.getDev boost}/include";
+  BOOST_LIBRARYDIR = "${lib.getLib boost}/lib";
 
   meta = with lib; {
     description = "Userland tools interfacing with Raspberry Pi cameras";

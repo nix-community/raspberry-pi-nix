@@ -4,11 +4,13 @@
 , rpi-firmware-nonfree-src
 , rpi-bluez-firmware-src
 , libcamera-apps-src
+, libcamera-src
+, libpisp-src
 }:
 final: prev:
 let
   # The version to stick at `pkgs.rpi-kernels.latest'
-  latest = "v6_1_21";
+  latest = "v6_1_63";
 
   # Helpers for building the `pkgs.rpi-kernels' map.
   rpi-kernel = { kernel, version, fw, wireless-fw, argsOverride ? null }:
@@ -41,6 +43,24 @@ in
   # A recent known working version of libcamera-apps
   libcamera-apps =
     final.callPackage ./libcamera-apps.nix { inherit libcamera-apps-src; };
+
+  libpisp = final.stdenv.mkDerivation {
+    name = "libpisp";
+    version = "1.0.3";
+    src = libpisp-src;
+    nativeBuildInputs = with final; [ pkg-config meson ninja ];
+    buildInputs = with final; [ nlohmann_json boost ];
+    # Meson is no longer able to pick up Boost automatically.
+    # https://github.com/NixOS/nixpkgs/issues/86131
+    BOOST_INCLUDEDIR = "${prev.lib.getDev final.boost}/include";
+    BOOST_LIBRARYDIR = "${prev.lib.getLib final.boost}/lib";
+  };
+
+  libcamera = prev.libcamera.overrideAttrs (old: {
+    version = "0.1.0";
+    src = libcamera-src;
+    buildInputs = old.buildInputs ++ (with final; [ libpisp ]);
+  });
 
   # provide generic rpi arm64 u-boot
   uboot_rpi_arm64 = prev.buildUBoot rec {
@@ -75,7 +95,7 @@ in
   #
   # For example: `pkgs.rpi-kernels.v5_15_87.kernel'
   rpi-kernels = rpi-kernels [{
-    version = "6.1.21";
+    version = "6.1.63";
     kernel = rpi-linux-6_1-src;
     fw = rpi-firmware-src;
     wireless-fw = import ./raspberrypi-wireless-firmware.nix {
