@@ -67,7 +67,9 @@ in
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
-    version = "2023.01";
+    version = "2024.01";
+    patches = [ ];
+    makeFlags = [ ];
     src = u-boot-src;
     # In raspberry pi sbcs the firmware manipulates the device tree in
     # a variety of ways before handing it off to the linux kernel. [1]
@@ -79,10 +81,10 @@ in
     # firmware and attempt to mimic it.
     #
     # 1. https://forums.raspberrypi.com/viewtopic.php?t=329799#p1974233
-    extraConfig = ''
-      CONFIG_OF_HAS_PRIOR_STAGE=y
-      CONFIG_OF_BOARD=y
-    '';
+    # extraConfig = ''
+    #   CONFIG_OF_HAS_PRIOR_STAGE=y
+    #   CONFIG_OF_BOARD=y
+    # '';
   };
 
   # default to latest firmware
