@@ -23,7 +23,7 @@ stdenvNoCC.mkDerivation {
     cp -rv "${firmware-nonfree}/debian/config/brcm80211/." "$out/lib/firmware/"
 
     # Bluetooth firmware
-    cp -rv "${bluez-firmware}/broadcom/." "$out/lib/firmware/brcm"
+    cp -rv "${bluez-firmware}/debian/firmware/broadcom/." "$out/lib/firmware/brcm"
 
     # brcmfmac43455-stdio.bin is a symlink to ../cypress/cyfmac43455-stdio.bin that doesn't exist
     # See https://github.com/RPi-Distro/firmware-nonfree/issues/26
