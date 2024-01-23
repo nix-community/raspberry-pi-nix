@@ -60,6 +60,7 @@ in
     version = "0.1.0";
     src = libcamera-src;
     buildInputs = old.buildInputs ++ (with final; [ libpisp ]);
+    patches = [ ];
   });
 
   # provide generic rpi arm64 u-boot
@@ -81,10 +82,6 @@ in
     # firmware and attempt to mimic it.
     #
     # 1. https://forums.raspberrypi.com/viewtopic.php?t=329799#p1974233
-    # extraConfig = ''
-    #   CONFIG_OF_HAS_PRIOR_STAGE=y
-    #   CONFIG_OF_BOARD=y
-    # '';
   };
 
   # default to latest firmware
