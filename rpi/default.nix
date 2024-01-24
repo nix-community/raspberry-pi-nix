@@ -1,4 +1,4 @@
-{ overlay }:
+{ core-overlay, libcamera-overlay }:
 { lib, pkgs, config, ... }:
 
 {
@@ -7,6 +7,12 @@
   options = with lib; {
     raspberry-pi-nix = {
       firmware-migration-service = {
+        enable = mkOption {
+          default = true;
+          type = types.bool;
+        };
+      };
+      libcamera-overlay = {
         enable = mkOption {
           default = true;
           type = types.bool;
@@ -171,7 +177,11 @@
       };
     };
 
-    nixpkgs = { overlays = [ overlay ]; };
+    nixpkgs = {
+      overlays = [ core-overlay ]
+        ++ (if config.raspberry-pi-nix.libcamera-overlay.enable
+      then [ libcamera-overlay ] else [ ]);
+    };
     boot = {
       initrd.availableKernelModules = [
         "usbhid"

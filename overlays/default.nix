@@ -3,9 +3,7 @@
 , rpi-firmware-src
 , rpi-firmware-nonfree-src
 , rpi-bluez-firmware-src
-, libcamera-apps-src
-, libcamera-src
-, libpisp-src
+, ...
 }:
 final: prev:
 let
@@ -39,29 +37,6 @@ in
   # disable firmware compression so that brcm firmware can be found at
   # the path expected by raspberry pi firmware/device tree
   compressFirmwareXz = x: x;
-
-  # A recent known working version of libcamera-apps
-  libcamera-apps =
-    final.callPackage ./libcamera-apps.nix { inherit libcamera-apps-src; };
-
-  libpisp = final.stdenv.mkDerivation {
-    name = "libpisp";
-    version = "1.0.3";
-    src = libpisp-src;
-    nativeBuildInputs = with final; [ pkg-config meson ninja ];
-    buildInputs = with final; [ nlohmann_json boost ];
-    # Meson is no longer able to pick up Boost automatically.
-    # https://github.com/NixOS/nixpkgs/issues/86131
-    BOOST_INCLUDEDIR = "${prev.lib.getDev final.boost}/include";
-    BOOST_LIBRARYDIR = "${prev.lib.getLib final.boost}/lib";
-  };
-
-  libcamera = prev.libcamera.overrideAttrs (old: {
-    version = "0.1.0";
-    src = libcamera-src;
-    buildInputs = old.buildInputs ++ (with final; [ libpisp ]);
-    patches = [ ];
-  });
 
   # provide generic rpi arm64 u-boot
   uboot_rpi_arm64 = prev.buildUBoot rec {

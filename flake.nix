@@ -37,7 +37,13 @@
   };
 
   outputs = srcs@{ self, ... }: {
-    overlay = import ./overlay (builtins.removeAttrs srcs [ "self" ]);
-    nixosModules.raspberry-pi = import ./rpi { overlay = self.overlay; };
+    overlays = {
+      core = import ./overlays (builtins.removeAttrs srcs [ "self" ]);
+      libcamera = import ./overlays/libcamera.nix (builtins.removeAttrs srcs [ "self" ]);
+    };
+    nixosModules.raspberry-pi = import ./rpi {
+      core-overlay = self.overlays.core;
+      libcamera-overlay = self.overlays.libcamera;
+    };
   };
 }
