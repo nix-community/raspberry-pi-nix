@@ -5,23 +5,51 @@
 
   config = {
     boot.loader.grub.enable = false;
-    boot.loader.generic-extlinux-compatible.enable = true;
 
     boot.consoleLogLevel = lib.mkDefault 7;
 
     # https://github.com/raspberrypi/firmware/issues/1539#issuecomment-784498108
     boot.kernelParams = [ "console=serial0,115200n8" "console=tty1" ];
 
-    sdImage = {
-      populateFirmwareCommands = ''
-        cp ${pkgs.uboot_rpi_arm64}/u-boot.bin firmware/u-boot-rpi-arm64.bin
-        cp -r ${pkgs.raspberrypifw}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} firmware
-        cp ${config.hardware.raspberry-pi.config-output} firmware/config.txt
-      '';
-      populateRootCommands = ''
-        mkdir -p ./files/boot
-        ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d ./files/boot
-      '';
-    };
+    sdImage =
+      let
+        kernel-params = pkgs.writeTextFile {
+          name = "cmdline.txt";
+          text = ''
+            ${lib.strings.concatStringsSep " " config.boot.kernelParams}
+          '';
+        };
+        populate-kernel =
+          if config.raspberry-pi-nix.uboot.enable
+          then ''
+            cp ${pkgs.uboot_rpi_arm64}/u-boot.bin firmware/u-boot-rpi-arm64.bin
+          ''
+          else ''
+            cp "${pkgs.rpi-kernels.latest.kernel}/Image" firmware/kernel.img
+            cp "${kernel-params}" firmware/cmdline.txt
+          '';
+      in
+      {
+        populateFirmwareCommands = ''
+          ${populate-kernel}
+          cp -r ${pkgs.raspberrypifw}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} firmware
+          cp ${config.hardware.raspberry-pi.config-output} firmware/config.txt
+        '';
+        populateRootCommands =
+          if config.raspberry-pi-nix.uboot.enable
+          then ''
+            mkdir -p ./files/boot
+            ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d ./files/boot
+          ''
+          else ''
+            mkdir -p ./files/sbin
+            content="$(
+              echo "#!${config.system.build.toplevel.pkgs.bashInteractive}/bin/bash"
+              echo "exec ${config.system.build.toplevel}/init"
+            )"
+            echo "$content" > ./files/sbin/init
+            chmod 744 ./files/sbin/init
+          '';
+      };
   };
 }
