@@ -78,6 +78,12 @@ complete example.
     };
 }
 ```
+## cachix usage and your `nix.conf`
+As seen above, cachix is being used to store a linux kernel build. To use this, be sure to add your user and `root` to the trusted-users list in your `nix.conf` file (when using the nix package manager on a non-nixos distro) to be able to pull from this project's cachix. The `root` user must also be still in this list as well importantly.
+
+```
+trusted-users = root <your-user-here>
+```
 
 ## Building an sd-card image
 
