@@ -78,8 +78,27 @@ complete example.
     };
 }
 ```
-## cachix usage and your `nix.conf`
-As seen above, cachix is being used to store a linux kernel build. To use this, be sure to add your user and `root` to the trusted-users list in your `nix.conf` file (when using the nix package manager on a non-nixos distro) to be able to pull from this project's cachix. The `root` user must also be still in this list as well importantly.
+
+## Using the provided cache to avoid compiling linux
+This repo uses the raspberry pi linux kernel fork, and compiling linux
+takes a while. I do push my kernel builds to a cachix cache that you
+may use to avoid compiling linux yourself. The cache can be found
+at https://raspberry-pi-nix.cachix.org, and you can follow the
+instructions there to use this cache.
+
+You don't need the cachix binary to use the cachix cache though, you
+just need to add the relevant
+[`substituters`](https://nixos.org/manual/nix/stable/command-ref/conf-file.html?highlight=nix.conf#conf-substituters)
+and
+[`trusted-public-keys`](https://nixos.org/manual/nix/stable/command-ref/conf-file.html?highlight=nix.conf#conf-trusted-public-keys)
+settings settings to your `nix.conf`. You can do this directly by
+modifying your `/etc/nix/nix.conf`, or in the flake definition. In the
+above example flake these `nix.conf` settings are added by the
+`nixConfig` attribute ([doc
+link](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html?highlight=flake#flake-format)),
+note that this will only work if the user running `nix build` is in
+[`trusted-users`](https://nixos.org/manual/nix/stable/command-ref/conf-file.html?highlight=nix.conf#conf-trusted-users)
+or the substituter is in [`trusted-substituters`](https://nixos.org/manual/nix/stable/command-ref/conf-file.html?highlight=nix.conf#conf-trusted-substituters).
 
 ```
 trusted-users = root <your-user-here>
