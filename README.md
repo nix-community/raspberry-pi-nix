@@ -95,14 +95,11 @@ settings settings to your `nix.conf`. You can do this directly by
 modifying your `/etc/nix/nix.conf`, or in the flake definition. In the
 above example flake these `nix.conf` settings are added by the
 `nixConfig` attribute ([doc
-link](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html?highlight=flake#flake-format)),
-note that this will only work if the user running `nix build` is in
+link](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html?highlight=flake#flake-format)).
+Note that this will only work if the user running `nix build` is in
 [`trusted-users`](https://nixos.org/manual/nix/stable/command-ref/conf-file.html?highlight=nix.conf#conf-trusted-users)
-or the substituter is in [`trusted-substituters`](https://nixos.org/manual/nix/stable/command-ref/conf-file.html?highlight=nix.conf#conf-trusted-substituters).
-
-```
-trusted-users = root <your-user-here>
-```
+or the substituter is in
+[`trusted-substituters`](https://nixos.org/manual/nix/stable/command-ref/conf-file.html?highlight=nix.conf#conf-trusted-substituters).
 
 ## Building an sd-card image
 
