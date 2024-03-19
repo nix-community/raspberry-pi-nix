@@ -33,7 +33,11 @@ in
     boot.kernelParams =
       if cfg.uboot.enable then [ ]
       else [
-        "root=PARTUUID=2178694e-02" # todo: use option
+        # This is ugly and fragile, but the sdImage image has an msdos
+        # table, so the partition table id is a 1-indexed hex
+        # number. So, we drop the hex prefix and stick on a "02" to
+        # refer to the root partition.
+        "root=PARTUUID=${lib.strings.removePrefix "0x" config.sdImage.firmwarePartitionID}-02"
         "rootfstype=ext4"
         "fsck.repair=yes"
         "rootwait"
