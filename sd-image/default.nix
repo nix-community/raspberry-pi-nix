@@ -44,7 +44,7 @@
           else ''
             mkdir -p ./files/sbin
             content="$(
-              echo "#!${config.system.build.toplevel.pkgs.bashInteractive}/bin/bash"
+              echo "#!${pkgs.bash}/bin/bash"
               echo "exec ${config.system.build.toplevel}/init"
             )"
             echo "$content" > ./files/sbin/init
