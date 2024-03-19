@@ -12,18 +12,35 @@ in
         enable = mkOption {
           default = true;
           type = types.bool;
+          description = ''
+            Whether to run the migration service automatically or not.
+          '';
         };
       };
       libcamera-overlay = {
         enable = mkOption {
           default = true;
           type = types.bool;
+          description = ''
+            If enabled then the libcamera overlay is applied which
+            overrides libcamera with the rpi fork.
+          '';
         };
       };
       uboot = {
         enable = mkOption {
           default = true;
           type = types.bool;
+          description = ''
+            If enabled then uboot is used as the bootloader. If disabled
+            then the linux kernel is installed directly into the
+            firmware directory as expected by the raspberry pi boot
+            process.
+
+            This can be useful for newer hardware that doesn't yet have
+            uboot compatibility or less common setups, like booting a
+            cm4 with an nvme drive.
+          '';
         };
       };
     };
