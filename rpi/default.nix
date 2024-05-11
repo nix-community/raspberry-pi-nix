@@ -1,4 +1,4 @@
-{ core-overlay, libcamera-overlay }:
+{ pinned, core-overlay, libcamera-overlay }:
 { lib, pkgs, config, ... }:
 
 let cfg = config.raspberry-pi-nix;
@@ -272,7 +272,10 @@ in
         "pcie_brcmstb" # required for the pcie bus to work
         "reset-raspberrypi" # required for vl805 firmware to load
       ];
-      kernelPackages = pkgs.linuxPackagesFor (pkgs.rpi-kernels.latest.kernel);
+      # This pin is not necessary, it would be fine to replace it with
+      # `pkgs.rpi-kernels.latest.kernel`. It is helpful to ensure
+      # cache hits for kernel builds though.
+      kernelPackages = pinned.linuxPackagesFor (pinned.rpi-kernels.latest.kernel);
 
       loader = {
         grub.enable = lib.mkDefault false;

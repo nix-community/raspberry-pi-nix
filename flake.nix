@@ -2,6 +2,7 @@
   description = "raspberry-pi nixos configuration";
 
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/9a9960b98418f8c385f52de3b09a63f9c561427a";
     u-boot-src = {
       flake = false;
       url = "https://ftp.denx.de/pub/u-boot/u-boot-2024.01.tar.bz2";
@@ -36,14 +37,25 @@
     };
   };
 
-  outputs = srcs@{ self, ... }: {
-    overlays = {
-      core = import ./overlays (builtins.removeAttrs srcs [ "self" ]);
-      libcamera = import ./overlays/libcamera.nix (builtins.removeAttrs srcs [ "self" ]);
+  outputs = srcs@{ self, ... }:
+    let
+      pinned = import nixpkgs {
+        system = "aarch64-linux";
+        overlays = with self.overlays; [ core libcamera ];
+      };
+    in
+    {
+      overlays = {
+        core = import ./overlays (builtins.removeAttrs srcs [ "self" ]);
+        libcamera = import ./overlays/libcamera.nix (builtins.removeAttrs srcs [ "self" ]);
+      };
+      nixosModules.raspberry-pi = import ./rpi {
+        inherit pinned;
+        core-overlay = self.overlays.core;
+        libcamera-overlay = self.overlays.libcamera;
+      };
+      packages.aarch64-linux = {
+        linux = pinned.rpi-kernels.latest.kernel;
+      };
     };
-    nixosModules.raspberry-pi = import ./rpi {
-      core-overlay = self.overlays.core;
-      libcamera-overlay = self.overlays.libcamera;
-    };
-  };
 }
