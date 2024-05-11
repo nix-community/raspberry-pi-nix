@@ -1,5 +1,5 @@
 { u-boot-src
-, rpi-linux-6_1-src
+, rpi-linux-6_6-src
 , rpi-firmware-src
 , rpi-firmware-nonfree-src
 , rpi-bluez-firmware-src
@@ -8,7 +8,7 @@
 final: prev:
 let
   # The version to stick at `pkgs.rpi-kernels.latest'
-  latest = "v6_1_63";
+  latest = "v6_6_28";
 
   # Helpers for building the `pkgs.rpi-kernels' map.
   rpi-kernel = { kernel, version, fw, wireless-fw, argsOverride ? null }:
@@ -43,7 +43,7 @@ in
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
-    version = "2024.01";
+    version = "2024.04";
     patches = [ ];
     makeFlags = [ ];
     src = u-boot-src;
@@ -69,8 +69,8 @@ in
   #
   # For example: `pkgs.rpi-kernels.v5_15_87.kernel'
   rpi-kernels = rpi-kernels [{
-    version = "6.1.63";
-    kernel = rpi-linux-6_1-src;
+    version = "6.6.28";
+    kernel = rpi-linux-6_6-src;
     fw = rpi-firmware-src;
     wireless-fw = import ./raspberrypi-wireless-firmware.nix {
       bluez-firmware = rpi-bluez-firmware-src;
@@ -96,6 +96,7 @@ in
         # [2] https://github.com/raspberrypi/linux/blob/1.20230405/lib/kunit/Kconfig#L5-L14
         # [3] https://github.com/raspberrypi/linux/blob/bb63dc31e48948bc2649357758c7a152210109c4/drivers/gpu/drm/vc4/Kconfig#L38-L52
         KUNIT = no;
+        GPIO_PWM = no;
       };
     };
   }] // {
