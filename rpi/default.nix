@@ -1,7 +1,9 @@
 { pinned, core-overlay, libcamera-overlay }:
 { lib, pkgs, config, ... }:
 
-let cfg = config.raspberry-pi-nix;
+let
+  cfg = config.raspberry-pi-nix;
+  kernel-pkgs = if cfg.pin-kernel.enable then pinned else pkgs;
 in
 {
   imports = [ ../sd-image ./config.nix ./i2c.nix ];
@@ -96,7 +98,7 @@ in
                 TARGET_OVERLAYS_DIR="$TARGET_FIRMWARE_DIR/overlays"
                 TMPFILE="$TARGET_FIRMWARE_DIR/tmp"
                 UBOOT="${pkgs.uboot_rpi_arm64}/u-boot.bin"
-                KERNEL="${pkgs.rpi-kernels.latest.kernel}/Image"
+                KERNEL="${kernel-pkgs.rpi-kernels.latest.kernel}/Image"
                 SHOULD_UBOOT=${if cfg.uboot.enable then "1" else "0"}
                 SRC_FIRMWARE_DIR="${pkgs.raspberrypifw}/share/raspberrypi/boot"
                 STARTFILES=("$SRC_FIRMWARE_DIR"/start*.elf)
@@ -124,7 +126,7 @@ in
                   cp "$KERNEL" "$TMPFILE"
                   mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/kernel.img"
                   echo "${
-                    builtins.toString pkgs.rpi-kernels.latest.kernel
+                    builtins.toString kernel-pkgs.rpi-kernels.latest.kernel
                   }" > "$STATE_DIRECTORY/kernel-version"
                   rm "$STATE_DIRECTORY/kernel-migration-in-progress"
                 }
@@ -180,7 +182,7 @@ in
                 fi
 
                 if [[ "$SHOULD_UBOOT" -ne 1 ]] && [[ ! -f "$STATE_DIRECTORY/kernel-version" || $(< "$STATE_DIRECTORY/kernel-version") != ${
-                  builtins.toString pkgs.rpi-kernels.latest.kernel
+                  builtins.toString kernel-pkgs.rpi-kernels.latest.kernel
                 } ]]; then
                   migrate_kernel
                 fi
@@ -284,10 +286,7 @@ in
       # This pin is not necessary, it would be fine to replace it with
       # `pkgs.rpi-kernels.latest.kernel`. It is helpful to ensure
       # cache hits for kernel builds though.
-      kernelPackages =
-        if cfg.pin-kernel.enable
-        then pinned.linuxPackagesFor (pinned.rpi-kernels.latest.kernel)
-        else pkgs.linuxPackagesFor (pkgs.rpi-kernels.latest.kernel);
+      kernelPackages = kernel-pkgs.linuxPackagesFor kernel-pkgs.rpi-kernels.latest.kernel;
 
       loader = {
         grub.enable = lib.mkDefault false;
