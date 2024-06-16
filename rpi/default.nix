@@ -3,14 +3,13 @@
 
 let
   cfg = config.raspberry-pi-nix;
-  kernel-pkgs = if cfg.pin-kernel.enable then pinned else pkgs;
 in
 {
   imports = [ ../sd-image ./config.nix ./i2c.nix ];
 
   options = with lib; {
     raspberry-pi-nix = {
-      pin-kernel = {
+      pin-inputs = {
         enable = mkOption {
           default = true;
           type = types.bool;
@@ -98,7 +97,7 @@ in
                 TARGET_OVERLAYS_DIR="$TARGET_FIRMWARE_DIR/overlays"
                 TMPFILE="$TARGET_FIRMWARE_DIR/tmp"
                 UBOOT="${pkgs.uboot_rpi_arm64}/u-boot.bin"
-                KERNEL="${kernel-pkgs.rpi-kernels.latest.kernel}/Image"
+                KERNEL="${pkgs.rpi-kernels.latest.kernel}/Image"
                 SHOULD_UBOOT=${if cfg.uboot.enable then "1" else "0"}
                 SRC_FIRMWARE_DIR="${pkgs.raspberrypifw}/share/raspberrypi/boot"
                 STARTFILES=("$SRC_FIRMWARE_DIR"/start*.elf)
@@ -126,7 +125,7 @@ in
                   cp "$KERNEL" "$TMPFILE"
                   mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/kernel.img"
                   echo "${
-                    builtins.toString kernel-pkgs.rpi-kernels.latest.kernel
+                    builtins.toString pkgs.rpi-kernels.latest.kernel
                   }" > "$STATE_DIRECTORY/kernel-version"
                   rm "$STATE_DIRECTORY/kernel-migration-in-progress"
                 }
@@ -182,7 +181,7 @@ in
                 fi
 
                 if [[ "$SHOULD_UBOOT" -ne 1 ]] && [[ ! -f "$STATE_DIRECTORY/kernel-version" || $(< "$STATE_DIRECTORY/kernel-version") != ${
-                  builtins.toString kernel-pkgs.rpi-kernels.latest.kernel
+                  builtins.toString pkgs.rpi-kernels.latest.kernel
                 } ]]; then
                   migrate_kernel
                 fi
@@ -271,9 +270,27 @@ in
     };
 
     nixpkgs = {
-      overlays = [ core-overlay ]
-        ++ (if config.raspberry-pi-nix.libcamera-overlay.enable
-      then [ libcamera-overlay ] else [ ]);
+      overlays =
+        let
+          rpi-overlays = [ core-overlay ]
+            ++ (if config.raspberry-pi-nix.libcamera-overlay.enable
+          then [ libcamera-overlay ] else [ ]);
+          rpi-overlay = lib.composeManyExtensions rpi-overlays;
+          pin-prev-overlay = overlay: pinned-prev: final: prev:
+            let
+              # apply the overlay to pinned-prev and fix that so no references to the actual final
+              # and prev appear in applied-overlay
+              applied-overlay =
+                lib.fix (final: pinned-prev // overlay final pinned-prev);
+              # We only want to set keys that appear in the overlay, so restrict applied-overlay to
+              # these keys
+              restricted-overlay = lib.getAttrs (builtins.attrNames (overlay { } { })) applied-overlay;
+            in
+            prev // restricted-overlay;
+        in
+        if cfg.pin-inputs.enable
+        then [ (pin-prev-overlay rpi-overlay pinned) ]
+        else [ rpi-overlay ];
     };
     boot = {
       initrd.availableKernelModules = [
@@ -286,7 +303,7 @@ in
       # This pin is not necessary, it would be fine to replace it with
       # `pkgs.rpi-kernels.latest.kernel`. It is helpful to ensure
       # cache hits for kernel builds though.
-      kernelPackages = kernel-pkgs.linuxPackagesFor kernel-pkgs.rpi-kernels.latest.kernel;
+      kernelPackages = pkgs.linuxPackagesFor pkgs.rpi-kernels.latest.kernel;
 
       loader = {
         grub.enable = lib.mkDefault false;
