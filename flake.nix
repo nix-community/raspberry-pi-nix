@@ -56,6 +56,9 @@
       };
       packages.aarch64-linux = {
         linux = pinned.rpi-kernels.latest.kernel;
+        firmware = pinned.rpi-kernels.latest.firmware;
+        wireless-firmware = pinned.rpi-kernels.latest.wireless-firmware;
+        uboot-rpi-arm64 = pinned.uboot-rpi-arm64;
       };
     };
 }
