@@ -27,9 +27,10 @@ complete example.
 {
   description = "raspberry-pi-nix example";
   nixConfig = {
-    extra-substituters = [ "https://raspberry-pi-nix.cachix.org" ];
+    extra-substituters = [ "https://raspberry-pi-nix.cachix.org" https://adminy.cachix.org ];
     extra-trusted-public-keys = [
       "raspberry-pi-nix.cachix.org-1:WmV2rdSangxW0rZjY/tBvBDSaNFQ3DyEQsVw8EvHn9o="
+      "adminy.cachix.org-1:xgrsLa9L9VCdTbY5dMDqtcl6qBFHA9U56SgEJosNbFc=""
     ];
   };
   inputs = {
