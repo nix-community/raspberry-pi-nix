@@ -3,12 +3,23 @@
 
 let
   cfg = config.raspberry-pi-nix;
+  board = cfg.board;
+  kernel = pkgs.rpi-kernels."latest_${board}".kernel;
 in
 {
   imports = [ ../sd-image ./config.nix ./i2c.nix ];
 
   options = with lib; {
     raspberry-pi-nix = {
+      board = mkOption {
+        default = "bcm2712";
+        type = types.str;
+        description = ''
+          The kernel board version to build.
+          Examples at: https://github.com/NixOS/nixpkgs/blob/5c8e2fb3c690e8be1d92cda8d2bf0562cd67ce47/pkgs/os-specific/linux/kernel/linux-rpi.nix#L20-L25
+          without the _defconfig part.
+        '';
+      };
       pin-inputs = {
         enable = mkOption {
           default = true;
@@ -97,7 +108,7 @@ in
                 TARGET_OVERLAYS_DIR="$TARGET_FIRMWARE_DIR/overlays"
                 TMPFILE="$TARGET_FIRMWARE_DIR/tmp"
                 UBOOT="${pkgs.uboot_rpi_arm64}/u-boot.bin"
-                KERNEL="${pkgs.rpi-kernels.latest.kernel}/Image"
+                KERNEL="${kernel}/Image"
                 SHOULD_UBOOT=${if cfg.uboot.enable then "1" else "0"}
                 SRC_FIRMWARE_DIR="${pkgs.raspberrypifw}/share/raspberrypi/boot"
                 STARTFILES=("$SRC_FIRMWARE_DIR"/start*.elf)
@@ -125,7 +136,7 @@ in
                   cp "$KERNEL" "$TMPFILE"
                   mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/kernel.img"
                   echo "${
-                    builtins.toString pkgs.rpi-kernels.latest.kernel
+                    builtins.toString kernel
                   }" > "$STATE_DIRECTORY/kernel-version"
                   rm "$STATE_DIRECTORY/kernel-migration-in-progress"
                 }
@@ -181,7 +192,7 @@ in
                 fi
 
                 if [[ "$SHOULD_UBOOT" -ne 1 ]] && [[ ! -f "$STATE_DIRECTORY/kernel-version" || $(< "$STATE_DIRECTORY/kernel-version") != ${
-                  builtins.toString pkgs.rpi-kernels.latest.kernel
+                  builtins.toString kernel
                 } ]]; then
                   migrate_kernel
                 fi
@@ -301,9 +312,12 @@ in
         "reset-raspberrypi" # required for vl805 firmware to load
       ];
       # This pin is not necessary, it would be fine to replace it with
-      # `pkgs.rpi-kernels.latest.kernel`. It is helpful to ensure
+      # `kernel`. It is helpful to ensure
       # cache hits for kernel builds though.
-      kernelPackages = pkgs.linuxPackagesFor pkgs.rpi-kernels.latest.kernel;
+      kernelPackages = pkgs.linuxPackagesFor (kernel.override {
+        # Some patches cannot be applied because they are already upstream.
+        ignoreConfigErrors = true;
+      });
 
       loader = {
         grub.enable = lib.mkDefault false;

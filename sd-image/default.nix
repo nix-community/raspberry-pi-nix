@@ -19,13 +19,15 @@
             ${lib.strings.concatStringsSep " " config.boot.kernelParams}
           '';
         };
+        board = config.raspberry-pi-nix.board;
+        kernel = pkgs.rpi-kernels."latest_${board}".kernel;
         populate-kernel =
           if config.raspberry-pi-nix.uboot.enable
           then ''
             cp ${pkgs.uboot_rpi_arm64}/u-boot.bin firmware/u-boot-rpi-arm64.bin
           ''
           else ''
-            cp "${pkgs.rpi-kernels.latest.kernel}/Image" firmware/kernel.img
+            cp "${kernel}/Image" firmware/kernel.img
             cp "${kernel-params}" firmware/cmdline.txt
           '';
       in

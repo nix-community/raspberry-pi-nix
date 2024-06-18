@@ -1,28 +1,12 @@
-{ libcamera-apps-src
-, lib
-, stdenv
-, fetchFromGitHub
-, fetchpatch
-, meson
-, pkg-config
-, libjpeg
-, libtiff
-, libpng
-, libcamera
-, libepoxy
-, boost
-, libexif
-, ninja
-}:
-
+{ libcamera-apps-src, lib, pkgs, stdenv }:
 stdenv.mkDerivation rec {
   pname = "libcamera-apps";
-  version = "v1.4.1";
+  version = "v1.5.0";
 
   src = libcamera-apps-src;
 
-  nativeBuildInputs = [ meson pkg-config ];
-  buildInputs = [ libjpeg libtiff libcamera libepoxy boost libexif libpng ninja ];
+  nativeBuildInputs = with pkgs; [ meson pkg-config ];
+  buildInputs = with pkgs; [ libjpeg libtiff libcamera libepoxy boost libexif libpng ninja ];
   mesonFlags = [
     "-Denable_qt=false"
     "-Denable_opencv=false"
