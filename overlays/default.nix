@@ -59,7 +59,6 @@ let
       };
       new-fw = prev.raspberrypifw.overrideAttrs (oldfw: { src = fw; });
       new-wireless-fw = final.callPackage wireless-fw { };
-      version-slug = builtins.replaceStrings [ "." ] [ "_" ] version;
     in
     {
       "latest_${board}" = {
