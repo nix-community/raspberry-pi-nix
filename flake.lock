@@ -151,14 +151,14 @@
     "u-boot-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1717461299,
-        "narHash": "sha256-vcq+lR3Bw/Nreu8Muywvec4jUvZvodjk/E+8XkkKvZg=",
+        "lastModified": 1712055538,
+        "narHash": "sha256-IlaDdjKq/Pq2orzcU959h93WXRZfvKBGDO/MFw9mZMg=",
         "type": "tarball",
-        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2024.07-rc4.tar.bz2"
+        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2024.04.tar.bz2"
       },
       "original": {
         "type": "tarball",
-        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2024.07-rc4.tar.bz2"
+        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2024.04.tar.bz2"
       }
     }
   },
