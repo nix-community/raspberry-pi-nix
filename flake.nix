@@ -2,14 +2,14 @@
   description = "raspberry-pi nixos configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/9be7393d7204ba14ead6ec4f0381cc91bfb2aa24"; # 2024-06-18
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     u-boot-src = {
       flake = false;
       url = "https://ftp.denx.de/pub/u-boot/u-boot-2024.07-rc4.tar.bz2";
     };
     rpi-linux-6_6-src = {
       flake = false;
-      url = "github:raspberrypi/linux/da87f91ad8450ccc5274cd7b6ba8d823b396c96f"; # 2024-06-17
+      url = "github:raspberrypi/linux/stable_20240529";
     };
     rpi-firmware-src = {
       flake = false;
@@ -17,15 +17,15 @@
     };
     rpi-firmware-nonfree-src = {
       flake = false;
-      url = "github:RPi-Distro/firmware-nonfree/223ccf3a3ddb11b3ea829749fbbba4d65b380897"; # 1:20230625-2+rpt2
+      url = "github:RPi-Distro/firmware-nonfree/bookworm";
     };
     rpi-bluez-firmware-src = {
       flake = false;
-      url = "github:RPi-Distro/bluez-firmware/78d6a07730e2d20c035899521ab67726dc028e1c"; # 1.2-9+rpt3
+      url = "github:RPi-Distro/bluez-firmware/bookworm";
     };
     libcamera-apps-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera-apps/v1.5.0";
+      url = "github:raspberrypi/rpicam-apps/v1.5.0";
     };
     libcamera-src = {
       flake = false;

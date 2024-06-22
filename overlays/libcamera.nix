@@ -11,7 +11,7 @@ final: prev:
 
   libpisp = final.stdenv.mkDerivation {
     name = "libpisp";
-    version = "1.0.5";
+    version = "1.0.6";
     src = libpisp-src;
     nativeBuildInputs = with final; [ pkg-config meson ninja ];
     buildInputs = with final; [ nlohmann_json boost ];

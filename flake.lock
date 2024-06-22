@@ -6,14 +6,14 @@
         "lastModified": 1717081637,
         "narHash": "sha256-s4zJh6r3VhiquO54KWZ78dVCH1BmlphY9zEB9BidNyo=",
         "owner": "raspberrypi",
-        "repo": "libcamera-apps",
+        "repo": "rpicam-apps",
         "rev": "49344f2a8d1817558d4e6463032fcf11be618b38",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
         "ref": "v1.5.0",
-        "repo": "libcamera-apps",
+        "repo": "rpicam-apps",
         "type": "github"
       }
     },
@@ -53,17 +53,17 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1718732645,
-        "narHash": "sha256-Zv8FapPPVVP5sqty4DWxSaL4p8sFuoAEglelBtSIhm0=",
+        "lastModified": 1718835956,
+        "narHash": "sha256-wM9v2yIxClRYsGHut5vHICZTK7xdrUGfrLkXvSuv6s4=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9be7393d7204ba14ead6ec4f0381cc91bfb2aa24",
+        "rev": "dd457de7e08c6d06789b1f5b88fc9327f4d96309",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
+        "ref": "nixos-24.05",
         "repo": "nixpkgs",
-        "rev": "9be7393d7204ba14ead6ec4f0381cc91bfb2aa24",
         "type": "github"
       }
     },
@@ -92,8 +92,8 @@
       },
       "original": {
         "owner": "RPi-Distro",
+        "ref": "bookworm",
         "repo": "bluez-firmware",
-        "rev": "78d6a07730e2d20c035899521ab67726dc028e1c",
         "type": "github"
       }
     },
@@ -109,8 +109,8 @@
       },
       "original": {
         "owner": "RPi-Distro",
+        "ref": "bookworm",
         "repo": "firmware-nonfree",
-        "rev": "223ccf3a3ddb11b3ea829749fbbba4d65b380897",
         "type": "github"
       }
     },
@@ -134,17 +134,17 @@
     "rpi-linux-6_6-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1718722155,
-        "narHash": "sha256-WKlxHAAvDRN10M9pBmF3rNmXKd3uT2hv2/uxASa1LnQ=",
+        "lastModified": 1716545726,
+        "narHash": "sha256-UWUTeCpEN7dlFSQjog6S3HyEWCCnaqiUqV5KxCjYink=",
         "owner": "raspberrypi",
         "repo": "linux",
-        "rev": "da87f91ad8450ccc5274cd7b6ba8d823b396c96f",
+        "rev": "c1432b4bae5b6582f4d32ba381459f33c34d1424",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
+        "ref": "stable_20240529",
         "repo": "linux",
-        "rev": "da87f91ad8450ccc5274cd7b6ba8d823b396c96f",
         "type": "github"
       }
     },
