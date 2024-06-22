@@ -70,11 +70,6 @@ let
   rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
 in
 {
-  # disable firmware compression so that brcm firmware can be found at
-  # the path expected by raspberry pi firmware/device tree
-  compressFirmwareXz = x: x;
-  compressFirmwareZstd = x: x;
-
   # provide generic rpi arm64 u-boot
   uboot_rpi_arm64 = prev.buildUBoot rec {
     defconfig = "rpi_arm64_defconfig";

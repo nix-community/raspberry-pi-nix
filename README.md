@@ -27,10 +27,9 @@ complete example.
 {
   description = "raspberry-pi-nix example";
   nixConfig = {
-    extra-substituters = [ "https://raspberry-pi-nix.cachix.org" https://adminy.cachix.org ];
+    extra-substituters = [ "https://raspberry-pi-nix.cachix.org" ];
     extra-trusted-public-keys = [
       "raspberry-pi-nix.cachix.org-1:WmV2rdSangxW0rZjY/tBvBDSaNFQ3DyEQsVw8EvHn9o="
-      "adminy.cachix.org-1:xgrsLa9L9VCdTbY5dMDqtcl6qBFHA9U56SgEJosNbFc=""
     ];
   };
   inputs = {
@@ -293,3 +292,5 @@ is kept up to date by the overlay applied by this package, so you
 don't need configure this. However, if you want to use different
 firmware you can override that package to do so.
 
+## What's not working?
+- [ ] Pi 5 u-boot devices other than sd-cards (i.e. usb, nvme).

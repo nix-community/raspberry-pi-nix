@@ -16,8 +16,7 @@ let
           (lib.filterAttrs (k: v: v.enable) x);
       render-dt-overlay = { overlay, args }:
         "dtoverlay=" + overlay + "\n"
-        + lib.strings.concatMapStringsSep "\n" render-dt-param args + "\n"
-        + "dtoverlay=";
+        + lib.strings.concatMapStringsSep "\n" render-dt-param args + "\n";
       render-base-dt-params = params:
         lib.strings.concatMapStringsSep "\n" render-dt-param
           (render-dt-kvs params);
