@@ -20,7 +20,8 @@
           '';
         };
         board = config.raspberry-pi-nix.board;
-        kernel = pkgs.rpi-kernels."latest_${board}".kernel;
+        version = config.raspberry-pi-nix.kernel_version;
+        kernel = pkgs.rpi-kernels."${version}"."${board}";
         populate-kernel =
           if config.raspberry-pi-nix.uboot.enable
           then ''

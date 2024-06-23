@@ -4,13 +4,21 @@
 let
   cfg = config.raspberry-pi-nix;
   board = cfg.board;
-  kernel = pkgs.rpi-kernels."latest_${board}".kernel;
+  version = cfg.kernel_version;
+  kernel = pkgs.rpi-kernels."${version}"."${board}";
 in
 {
   imports = [ ../sd-image ./config.nix ./i2c.nix ];
 
   options = with lib; {
     raspberry-pi-nix = {
+      kernel_version = mkOption {
+        default = "v6_6_31";
+        type = types.str;
+        description = ''
+          Kernel version to build.
+        '';
+      };
       board = mkOption {
         default = "bcm2712";
         type = types.str;

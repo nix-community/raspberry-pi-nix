@@ -55,10 +55,10 @@
         libcamera-overlay = self.overlays.libcamera;
       };
       packages.aarch64-linux = {
-        linux_2711 = pinned.rpi-kernels.latest_bcm2711.kernel;
-        linux_2712 = pinned.rpi-kernels.latest_bcm2712.kernel;
-        firmware = pinned.rpi-kernels.latest.firmware;
-        wireless-firmware = pinned.rpi-kernels.latest.wireless-firmware;
+        linux_2711 = pinned.rpi-kernels.v6_6_31.bcm2711;
+        linux_2712 = pinned.rpi-kernels.v6_6_31.bcm2712;
+        firmware = pinned.raspberrypifw;
+        wireless-firmware = pinned.raspberrypiWirelessFirmware;
         uboot-rpi-arm64 = pinned.uboot-rpi-arm64;
       };
     };

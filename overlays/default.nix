@@ -7,66 +7,70 @@
 }:
 final: prev:
 let
-  # The version to stick at `pkgs.rpi-kernels.latest_bcm271x'
-  latest = "v6_6_34";
-
-  kernel-config = board: {
-    inherit board;
-    version = builtins.replaceStrings ["v" "_"] ["" "."] latest;
-    kernel = rpi-linux-6_6-src;
-    fw = rpi-firmware-src;
-    wireless-fw = import ./raspberrypi-wireless-firmware.nix {
-      bluez-firmware = rpi-bluez-firmware-src;
-      firmware-nonfree = rpi-firmware-nonfree-src;
-    };
-    argsOverride = {
-      structuredExtraConfig = with prev.lib.kernel; {
-        # The perl script to generate kernel options sets unspecified
-        # parameters to `m` if possible [1]. This results in the
-        # unspecified config option KUNIT [2] getting set to `m` which
-        # causes DRM_VC4_KUNIT_TEST [3] to get set to `y`.
-        #
-        # This vc4 unit test fails on boot due to a null pointer
-        # exception with the existing config. I'm not sure why, but in
-        # any case, the DRM_VC4_KUNIT_TEST config option itself states
-        # that it is only useful for kernel developers working on the
-        # vc4 driver. So, I feel no need to deviate from the standard
-        # rpi kernel and attempt to successfully enable this test and
-        # other unit tests because the nixos perl script has this
-        # sloppy "default to m" behavior. So, I set KUNIT to `n`.
-        #
-        # [1] https://github.com/NixOS/nixpkgs/blob/85bcb95aa83be667e562e781e9d186c57a07d757/pkgs/os-specific/linux/kernel/generate-config.pl#L1-L10
-        # [2] https://github.com/raspberrypi/linux/blob/1.20230405/lib/kunit/Kconfig#L5-L14
-        # [3] https://github.com/raspberrypi/linux/blob/bb63dc31e48948bc2649357758c7a152210109c4/drivers/gpu/drm/vc4/Kconfig#L38-L52
-        KUNIT = no;
-        GPIO_PWM = no;
-      };
-    };
+  versions = {
+    v6_6_31 = rpi-linux-6_6-src;
   };
+  boards = [ "bcmrpi" "bcm2709" "bcmrpi3" "bcm2711" "bcm2712" ];
 
   # Helpers for building the `pkgs.rpi-kernels' map.
-  rpi-kernel = { kernel, version, fw, wireless-fw, argsOverride ? null, board }:
-    let
-      new-kernel = prev.linux_rpi4.override {
-        argsOverride = {
-          src = kernel;
-          inherit version;
-          modDirVersion = version;
-          kernelPatches = [];
-          defconfig = "${board}_defconfig";
-          postFixup = "";
-        } // (if builtins.isNull argsOverride then { } else argsOverride);
-      };
-      new-fw = prev.raspberrypifw.overrideAttrs (oldfw: { src = fw; });
-      new-wireless-fw = final.callPackage wireless-fw { };
-    in
-    {
-      "latest_${board}" = {
-        kernel = new-kernel;
-        firmware = new-fw;
-        wireless-firmware = new-wireless-fw;
-      };
-    };
+  rpi-kernel = { version, board }: {
+    "${version}"."${board}" = prev.lib.overrideDerivation (prev.buildLinux {
+        modDirVersion = version;
+        inherit version;
+        pname = "linux-rpi";
+        src = versions[version];
+        defconfig = "${board}_defconfig";
+        structuredExtraConfig = with lib.kernel; {
+          # Workaround https://github.com/raspberrypi/linux/issues/6198
+          # Needed because NixOS 24.05+ sets DRM_SIMPLEDRM=y which pulls in
+          # DRM_KMS_HELPER=y.
+          BACKLIGHT_CLASS_DEVICE = yes;
+          # The perl script to generate kernel options sets unspecified
+          # parameters to `m` if possible [1]. This results in the
+          # unspecified config option KUNIT [2] getting set to `m` which
+          # causes DRM_VC4_KUNIT_TEST [3] to get set to `y`.
+          #
+          # This vc4 unit test fails on boot due to a null pointer
+          # exception with the existing config. I'm not sure why, but in
+          # any case, the DRM_VC4_KUNIT_TEST config option itself states
+          # that it is only useful for kernel developers working on the
+          # vc4 driver. So, I feel no need to deviate from the standard
+          # rpi kernel and attempt to successfully enable this test and
+          # other unit tests because the nixos perl script has this
+          # sloppy "default to m" behavior. So, I set KUNIT to `n`.
+          #
+          # [1] https://github.com/NixOS/nixpkgs/blob/85bcb95aa83be667e562e781e9d186c57a07d757/pkgs/os-specific/linux/kernel/generate-config.pl#L1-L10
+          # [2] https://github.com/raspberrypi/linux/blob/1.20230405/lib/kunit/Kconfig#L5-L14
+          # [3] https://github.com/raspberrypi/linux/blob/bb63dc31e48948bc2649357758c7a152210109c4/drivers/gpu/drm/vc4/Kconfig#L38-L52
+          KUNIT = no;
+        };
+        features.efiBootStub = false;
+        postConfigure = ''
+          # The v7 defconfig has this set to '-v7' which screws up our modDirVersion.
+          sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+          sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+        '';
+        postFixup = "";
+        kernelPatches = [
+          # Fix compilation errors due to incomplete patch backport.
+          # https://github.com/raspberrypi/linux/pull/6223
+          {
+            name = "gpio-pwm_-_pwm_apply_might_sleep.patch";
+            patch = fetchpatch {
+              url = "https://github.com/peat-psuwit/rpi-linux/commit/879f34b88c60dd59765caa30576cb5bfb8e73c56.patch";
+              hash = "sha256-HlOkM9EFmlzOebCGoj7lNV5hc0wMjhaBFFZvaRCI0lI=";
+            };
+          }
+          {
+            name = "ir-rx51_-_pwm_apply_might_sleep.patch";
+            patch = fetchpatch {
+              url = "https://github.com/peat-psuwit/rpi-linux/commit/23431052d2dce8084b72e399fce82b05d86b847f.patch";
+              hash = "sha256-UDX/BJCJG0WVndP/6PbPK+AZsfU3vVxDCrpn1kb1kqE=";
+            };
+          }
+        ];
+    });
+  };
   rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
 in
 {
@@ -80,7 +84,7 @@ in
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
-    version = "2024.07-rc4";
+    version = "2024.04";
     patches = [ ];
     makeFlags = [ ];
     src = u-boot-src;
@@ -97,16 +101,22 @@ in
   };
 
   # default to latest firmware
-  raspberrypiWirelessFirmware = final.rpi-kernels.latest_bcm2712.wireless-firmware;
-  raspberrypifw = final.rpi-kernels.latest_bcm2712.firmware;
+  raspberrypiWirelessFirmware = final.callPackage (
+    import ./raspberrypi-wireless-firmware.nix {
+      bluez-firmware = rpi-bluez-firmware-src;
+      firmware-nonfree = rpi-firmware-nonfree-src;
+    }
+  ) { };
+  raspberrypifw = prev.raspberrypifw.overrideAttrs (oldfw: { src = rpi-firmware-src; });
 
 } // {
   # rpi kernels and firmware are available at
-  # `pkgs.rpi-kernels.<VERSION>_<BOARD>.{kernel,firmware,wireless-firmware}'. 
+  # `pkgs.rpi-kernels.<VERSION>.<BOARD>'. 
   #
-  # For example: `pkgs.rpi-kernels.latest_bcm2712.kernel'
-  rpi-kernels = rpi-kernels [
-    (kernel-config "bcm2711")
-    (kernel-config "bcm2712")
-  ];
+  # For example: `pkgs.rpi-kernels.v6_6_31.bcm2712'
+  rpi-kernels = rpi-kernels (
+    prev.lib.lists.crossLists 
+      (board: version: { inherit board version; })
+      [boards (builtins.attrNames versions)]
+  );
 }
