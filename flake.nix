@@ -7,9 +7,13 @@
       flake = false;
       url = "https://ftp.denx.de/pub/u-boot/u-boot-2024.04.tar.bz2";
     };
-    rpi-linux-6_6-src = {
+    rpi-linux-6_6_31-src = {
       flake = false;
       url = "github:raspberrypi/linux/stable_20240529";
+    };
+    rpi-linux-6_6_34-src = {
+      flake = false;
+      url = "github:raspberrypi/linux/rpi-6.6.y";
     };
     rpi-firmware-src = {
       flake = false;
@@ -23,7 +27,7 @@
       flake = false;
       url = "github:RPi-Distro/bluez-firmware/bookworm";
     };
-    libcamera-apps-src = {
+    rpicam-apps-src = {
       flake = false;
       url = "github:raspberrypi/rpicam-apps/v1.5.0";
     };
@@ -55,8 +59,9 @@
         libcamera-overlay = self.overlays.libcamera;
       };
       packages.aarch64-linux = {
-        linux_2711 = pinned.rpi-kernels.v6_6_31.bcm2711;
-        linux_2712 = pinned.rpi-kernels.v6_6_31.bcm2712;
+        kernels = pinned.rpi-kernels;
+        # linux_2711 = pinned.rpi-kernels.v6_6_31.bcm2711;
+        # linux_2712 = pinned.rpi-kernels.v6_6_31.bcm2712;
         firmware = pinned.raspberrypifw;
         wireless-firmware = pinned.raspberrypiWirelessFirmware;
         uboot-rpi-arm64 = pinned.uboot-rpi-arm64;

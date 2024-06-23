@@ -1,13 +1,13 @@
-{ libcamera-apps-src
+{ rpicam-apps-src
 , libcamera-src
 , libpisp-src
 , ...
 }:
 final: prev:
 {
-  # A recent known working version of libcamera-apps
+  # A recent known working version of rpicam-apps
   libcamera-apps =
-    final.callPackage ./libcamera-apps.nix { inherit libcamera-apps-src; };
+    final.callPackage ./rpicam-apps.nix { inherit rpicam-apps-src; };
 
   libpisp = final.stdenv.mkDerivation {
     name = "libpisp";
@@ -46,6 +46,5 @@ final: prev:
       "-Ddocumentation=enabled"
       "-Dpycamera=enabled"
     ];
-
   });
 }

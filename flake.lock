@@ -1,22 +1,5 @@
 {
   "nodes": {
-    "libcamera-apps-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1717081637,
-        "narHash": "sha256-s4zJh6r3VhiquO54KWZ78dVCH1BmlphY9zEB9BidNyo=",
-        "owner": "raspberrypi",
-        "repo": "rpicam-apps",
-        "rev": "49344f2a8d1817558d4e6463032fcf11be618b38",
-        "type": "github"
-      },
-      "original": {
-        "owner": "raspberrypi",
-        "ref": "v1.5.0",
-        "repo": "rpicam-apps",
-        "type": "github"
-      }
-    },
     "libcamera-src": {
       "flake": false,
       "locked": {
@@ -69,14 +52,15 @@
     },
     "root": {
       "inputs": {
-        "libcamera-apps-src": "libcamera-apps-src",
         "libcamera-src": "libcamera-src",
         "libpisp-src": "libpisp-src",
         "nixpkgs": "nixpkgs",
         "rpi-bluez-firmware-src": "rpi-bluez-firmware-src",
         "rpi-firmware-nonfree-src": "rpi-firmware-nonfree-src",
         "rpi-firmware-src": "rpi-firmware-src",
-        "rpi-linux-6_6-src": "rpi-linux-6_6-src",
+        "rpi-linux-6_6_31-src": "rpi-linux-6_6_31-src",
+        "rpi-linux-6_6_34-src": "rpi-linux-6_6_34-src",
+        "rpicam-apps-src": "rpicam-apps-src",
         "u-boot-src": "u-boot-src"
       }
     },
@@ -131,7 +115,7 @@
         "type": "github"
       }
     },
-    "rpi-linux-6_6-src": {
+    "rpi-linux-6_6_31-src": {
       "flake": false,
       "locked": {
         "lastModified": 1716545726,
@@ -145,6 +129,40 @@
         "owner": "raspberrypi",
         "ref": "stable_20240529",
         "repo": "linux",
+        "type": "github"
+      }
+    },
+    "rpi-linux-6_6_34-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1718967581,
+        "narHash": "sha256-RMKvgdhHQQPSmGjAOpYYB7YpClPVks6f6Dw381qDYHY=",
+        "owner": "raspberrypi",
+        "repo": "linux",
+        "rev": "7af85d54e39733bb9a236b95ea5ed1ab8277d560",
+        "type": "github"
+      },
+      "original": {
+        "owner": "raspberrypi",
+        "ref": "rpi-6.6.y",
+        "repo": "linux",
+        "type": "github"
+      }
+    },
+    "rpicam-apps-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1717081637,
+        "narHash": "sha256-s4zJh6r3VhiquO54KWZ78dVCH1BmlphY9zEB9BidNyo=",
+        "owner": "raspberrypi",
+        "repo": "rpicam-apps",
+        "rev": "49344f2a8d1817558d4e6463032fcf11be618b38",
+        "type": "github"
+      },
+      "original": {
+        "owner": "raspberrypi",
+        "ref": "v1.5.0",
+        "repo": "rpicam-apps",
         "type": "github"
       }
     },

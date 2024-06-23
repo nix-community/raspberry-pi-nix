@@ -4,7 +4,7 @@
 let
   cfg = config.raspberry-pi-nix;
   board = cfg.board;
-  version = cfg.kernel_version;
+  version = cfg.kernel-version;
   kernel = pkgs.rpi-kernels."${version}"."${board}";
 in
 {
@@ -12,7 +12,7 @@ in
 
   options = with lib; {
     raspberry-pi-nix = {
-      kernel_version = mkOption {
+      kernel-version = mkOption {
         default = "v6_6_31";
         type = types.str;
         description = ''
@@ -115,7 +115,7 @@ in
                 TARGET_FIRMWARE_DIR="${firmware-path}"
                 TARGET_OVERLAYS_DIR="$TARGET_FIRMWARE_DIR/overlays"
                 TMPFILE="$TARGET_FIRMWARE_DIR/tmp"
-                UBOOT="${pkgs.uboot_rpi_arm64}/u-boot.bin"
+                UBOOT="${pkgs.uboot-rpi-arm64}/u-boot.bin"
                 KERNEL="${kernel}/Image"
                 SHOULD_UBOOT=${if cfg.uboot.enable then "1" else "0"}
                 SRC_FIRMWARE_DIR="${pkgs.raspberrypifw}/share/raspberrypi/boot"
@@ -133,7 +133,7 @@ in
                   cp "$UBOOT" "$TMPFILE"
                   mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/u-boot-rpi-arm64.bin"
                   echo "${
-                    builtins.toString pkgs.uboot_rpi_arm64
+                    builtins.toString pkgs.uboot-rpi-arm64
                   }" > "$STATE_DIRECTORY/uboot-version"
                   rm "$STATE_DIRECTORY/uboot-migration-in-progress"
                 }
@@ -194,7 +194,7 @@ in
                 }
 
                 if [[ "$SHOULD_UBOOT" -eq 1 ]] && [[ -f "$STATE_DIRECTORY/uboot-migration-in-progress" || ! -f "$STATE_DIRECTORY/uboot-version" || $(< "$STATE_DIRECTORY/uboot-version") != ${
-                  builtins.toString pkgs.uboot_rpi_arm64
+                  builtins.toString pkgs.uboot-rpi-arm64
                 } ]]; then
                   migrate_uboot
                 fi

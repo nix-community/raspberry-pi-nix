@@ -1,5 +1,6 @@
 { u-boot-src
-, rpi-linux-6_6-src
+, rpi-linux-6_6_31-src
+, rpi-linux-6_6_34-src
 , rpi-firmware-src
 , rpi-firmware-nonfree-src
 , rpi-bluez-firmware-src
@@ -8,19 +9,43 @@
 final: prev:
 let
   versions = {
-    v6_6_31 = rpi-linux-6_6-src;
+    v6_6_31 = {
+      src = rpi-linux-6_6_31-src;
+      patches = [
+        # Fix compilation errors due to incomplete patch backport.
+        # https://github.com/raspberrypi/linux/pull/6223
+        {
+          name = "gpio-pwm_-_pwm_apply_might_sleep.patch";
+          patch = prev.fetchpatch {
+            url = "https://github.com/peat-psuwit/rpi-linux/commit/879f34b88c60dd59765caa30576cb5bfb8e73c56.patch";
+            hash = "sha256-HlOkM9EFmlzOebCGoj7lNV5hc0wMjhaBFFZvaRCI0lI=";
+          };
+        }
+        {
+          name = "ir-rx51_-_pwm_apply_might_sleep.patch";
+          patch = prev.fetchpatch {
+            url = "https://github.com/peat-psuwit/rpi-linux/commit/23431052d2dce8084b72e399fce82b05d86b847f.patch";
+            hash = "sha256-UDX/BJCJG0WVndP/6PbPK+AZsfU3vVxDCrpn1kb1kqE=";
+          };
+        }
+      ];
+    };
+    v6_6_34.src = rpi-linux-6_6_34-src;
   };
   boards = [ "bcmrpi" "bcm2709" "bcmrpi3" "bcm2711" "bcm2712" ];
 
   # Helpers for building the `pkgs.rpi-kernels' map.
-  rpi-kernel = { version, board }: {
+  rpi-kernel = { version, board }: let 
+    kernel = versions[version];
+    version-slug = builtins.replaceStrings [ "v" "_" ] [ "" "." ] version;
+  in {
     "${version}"."${board}" = prev.lib.overrideDerivation (prev.buildLinux {
-        modDirVersion = version;
-        inherit version;
+        modDirVersion = version-slug;
+        version = version-slug;
         pname = "linux-rpi";
-        src = versions[version];
+        src = kernel.src;
         defconfig = "${board}_defconfig";
-        structuredExtraConfig = with lib.kernel; {
+        structuredExtraConfig = with prev.lib.kernel; {
           # Workaround https://github.com/raspberrypi/linux/issues/6198
           # Needed because NixOS 24.05+ sets DRM_SIMPLEDRM=y which pulls in
           # DRM_KMS_HELPER=y.
@@ -51,24 +76,7 @@ let
           sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
         '';
         postFixup = "";
-        kernelPatches = [
-          # Fix compilation errors due to incomplete patch backport.
-          # https://github.com/raspberrypi/linux/pull/6223
-          {
-            name = "gpio-pwm_-_pwm_apply_might_sleep.patch";
-            patch = fetchpatch {
-              url = "https://github.com/peat-psuwit/rpi-linux/commit/879f34b88c60dd59765caa30576cb5bfb8e73c56.patch";
-              hash = "sha256-HlOkM9EFmlzOebCGoj7lNV5hc0wMjhaBFFZvaRCI0lI=";
-            };
-          }
-          {
-            name = "ir-rx51_-_pwm_apply_might_sleep.patch";
-            patch = fetchpatch {
-              url = "https://github.com/peat-psuwit/rpi-linux/commit/23431052d2dce8084b72e399fce82b05d86b847f.patch";
-              hash = "sha256-UDX/BJCJG0WVndP/6PbPK+AZsfU3vVxDCrpn1kb1kqE=";
-            };
-          }
-        ];
+        kernelPatches = if kernel.patches != null then kernel.patches else [];
     });
   };
   rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
@@ -80,7 +88,7 @@ in
   compressFirmwareZstd = x: x;
 
   # provide generic rpi arm64 u-boot
-  uboot_rpi_arm64 = prev.buildUBoot rec {
+  uboot-rpi-arm64 = prev.buildUBoot rec {
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
@@ -115,8 +123,7 @@ in
   #
   # For example: `pkgs.rpi-kernels.v6_6_31.bcm2712'
   rpi-kernels = rpi-kernels (
-    prev.lib.lists.crossLists 
-      (board: version: { inherit board version; })
-      [boards (builtins.attrNames versions)]
+    prev.lib.cartesianProductOfSets # this gets renamed yet again to cartesianProduct in April 19 2024
+      { board = boards; version = (builtins.attrNames versions); }
   );
 }
