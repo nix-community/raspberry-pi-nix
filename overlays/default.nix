@@ -41,13 +41,13 @@ let
       version-slug = builtins.replaceStrings [ "v" "_" ] [ "" "." ] version;
     in
     {
-      "${version}"."${board}" = prev.lib.overrideDerivation (prev.buildLinux {
+      "${version}"."${board}" = (final.buildLinux {
         modDirVersion = version-slug;
         version = version-slug;
         pname = "linux-rpi";
         src = kernel.src;
         defconfig = "${board}_defconfig";
-        structuredExtraConfig = with prev.lib.kernel; {
+        structuredExtraConfig = with final.lib.kernel; {
           # Workaround https://github.com/raspberrypi/linux/issues/6198
           # Needed because NixOS 24.05+ sets DRM_SIMPLEDRM=y which pulls in
           # DRM_KMS_HELPER=y.
@@ -72,14 +72,16 @@ let
           KUNIT = no;
         };
         features.efiBootStub = false;
-        postConfigure = ''
-          # The v7 defconfig has this set to '-v7' which screws up our modDirVersion.
-          sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
-          sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
-        '';
-        postFixup = "";
-        kernelPatches = if kernel.patches != null then kernel.patches else [ ];
-      });
+        kernelPatches =
+          if kernel ? "patches" then kernel.patches else [ ];
+      }).overrideAttrs
+        (oldAttrs: {
+          postConfigure = ''
+            # The v7 defconfig has this set to '-v7' which screws up our modDirVersion.
+            sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+            sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+          '';
+        });
     };
   rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
 in
