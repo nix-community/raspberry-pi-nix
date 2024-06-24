@@ -16,14 +16,14 @@ let
         # https://github.com/raspberrypi/linux/pull/6223
         {
           name = "gpio-pwm_-_pwm_apply_might_sleep.patch";
-          patch = prev.fetchpatch {
+          patch = final.fetchpatch {
             url = "https://github.com/peat-psuwit/rpi-linux/commit/879f34b88c60dd59765caa30576cb5bfb8e73c56.patch";
             hash = "sha256-HlOkM9EFmlzOebCGoj7lNV5hc0wMjhaBFFZvaRCI0lI=";
           };
         }
         {
           name = "ir-rx51_-_pwm_apply_might_sleep.patch";
-          patch = prev.fetchpatch {
+          patch = final.fetchpatch {
             url = "https://github.com/peat-psuwit/rpi-linux/commit/23431052d2dce8084b72e399fce82b05d86b847f.patch";
             hash = "sha256-UDX/BJCJG0WVndP/6PbPK+AZsfU3vVxDCrpn1kb1kqE=";
           };
@@ -94,7 +94,7 @@ in
   compressFirmwareZstd = x: x;
 
   # provide generic rpi arm64 u-boot
-  uboot-rpi-arm64 = prev.buildUBoot rec {
+  uboot-rpi-arm64 = final.buildUBoot rec {
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
@@ -131,7 +131,7 @@ in
   #
   # For example: `pkgs.rpi-kernels.v6_6_31.bcm2712'
   rpi-kernels = rpi-kernels (
-    prev.lib.cartesianProductOfSets # this gets renamed yet again to cartesianProduct in April 19 2024
+    final.lib.cartesianProductOfSets # this gets renamed yet again to cartesianProduct in April 19 2024
       { board = boards; version = (builtins.attrNames versions); }
   );
 }
