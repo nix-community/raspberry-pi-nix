@@ -60,8 +60,6 @@
       };
       packages.aarch64-linux = {
         kernels = pinned.rpi-kernels;
-        # linux_2711 = pinned.rpi-kernels.v6_6_31.bcm2711;
-        # linux_2712 = pinned.rpi-kernels.v6_6_31.bcm2712;
         firmware = pinned.raspberrypifw;
         wireless-firmware = pinned.raspberrypiWirelessFirmware;
         uboot-rpi-arm64 = pinned.uboot-rpi-arm64;
