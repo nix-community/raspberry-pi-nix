@@ -37,7 +37,7 @@ let
   # Helpers for building the `pkgs.rpi-kernels' map.
   rpi-kernel = { version, board }:
     let
-      kernel = versions [ version ];
+      kernel = builtins.getAttr version versions;
       version-slug = builtins.replaceStrings [ "v" "_" ] [ "" "." ] version;
     in
     {
