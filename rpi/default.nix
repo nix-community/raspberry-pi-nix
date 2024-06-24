@@ -318,6 +318,8 @@ in
     };
     hardware.enableRedistributableFirmware = true;
 
+    users.groups = builtins.listToAttrs (map (k: { name = k; value = {}; })
+            ["input" "sudo" "plugdev" "games" "netdev" "gpio" "i2c" "spi"]);
     services = {
       udev.extraRules =
         let shell = "${pkgs.bash}/bin/bash";
