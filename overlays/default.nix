@@ -83,7 +83,9 @@ let
           '';
         });
     };
-  rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
+  rpi-kernels = builtins.foldl'
+    (b: a: final.lib.recursiveUpdate b (rpi-kernel a))
+    { };
 in
 {
   # disable firmware compression so that brcm firmware can be found at
