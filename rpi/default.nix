@@ -3,8 +3,8 @@
 
 let
   cfg = config.raspberry-pi-nix;
-  board = cfg.board;
   version = cfg.kernel-version;
+  board = cfg.board;
   kernel = pkgs.rpi-kernels."${version}"."${board}";
 in
 {
@@ -15,9 +15,7 @@ in
       kernel-version = mkOption {
         default = "v6_6_31";
         type = types.str;
-        description = ''
-          Kernel version to build.
-        '';
+        description = "Kernel version to build.";
       };
       board = mkOption {
         default = "bcm2712";
@@ -322,11 +320,7 @@ in
       # This pin is not necessary, it would be fine to replace it with
       # `kernel`. It is helpful to ensure
       # cache hits for kernel builds though.
-      kernelPackages = pkgs.linuxPackagesFor (kernel.override {
-        # Some patches cannot be applied because they are already upstream.
-        ignoreConfigErrors = true;
-      });
-
+      kernelPackages = pkgs.linuxPackagesFor kernel;
       loader = {
         grub.enable = lib.mkDefault false;
         initScript.enable = !cfg.uboot.enable;
