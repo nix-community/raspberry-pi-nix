@@ -35,11 +35,13 @@ let
   boards = [ "bcmrpi" "bcm2709" "bcmrpi3" "bcm2711" "bcm2712" ];
 
   # Helpers for building the `pkgs.rpi-kernels' map.
-  rpi-kernel = { version, board }: let 
-    kernel = versions[version];
-    version-slug = builtins.replaceStrings [ "v" "_" ] [ "" "." ] version;
-  in {
-    "${version}"."${board}" = prev.lib.overrideDerivation (prev.buildLinux {
+  rpi-kernel = { version, board }:
+    let
+      kernel = versions [ version ];
+      version-slug = builtins.replaceStrings [ "v" "_" ] [ "" "." ] version;
+    in
+    {
+      "${version}"."${board}" = prev.lib.overrideDerivation (prev.buildLinux {
         modDirVersion = version-slug;
         version = version-slug;
         pname = "linux-rpi";
@@ -76,9 +78,9 @@ let
           sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
         '';
         postFixup = "";
-        kernelPatches = if kernel.patches != null then kernel.patches else [];
-    });
-  };
+        kernelPatches = if kernel.patches != null then kernel.patches else [ ];
+      });
+    };
   rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
 in
 {
@@ -109,12 +111,14 @@ in
   };
 
   # default to latest firmware
-  raspberrypiWirelessFirmware = final.callPackage (
-    import ./raspberrypi-wireless-firmware.nix {
-      bluez-firmware = rpi-bluez-firmware-src;
-      firmware-nonfree = rpi-firmware-nonfree-src;
-    }
-  ) { };
+  raspberrypiWirelessFirmware = final.callPackage
+    (
+      import ./raspberrypi-wireless-firmware.nix {
+        bluez-firmware = rpi-bluez-firmware-src;
+        firmware-nonfree = rpi-firmware-nonfree-src;
+      }
+    )
+    { };
   raspberrypifw = prev.raspberrypifw.overrideAttrs (oldfw: { src = rpi-firmware-src; });
 
 } // {
