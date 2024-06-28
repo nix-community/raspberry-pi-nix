@@ -11,9 +11,9 @@
       flake = false;
       url = "github:raspberrypi/linux/stable_20240529";
     };
-    rpi-linux-6_6_34-src = {
+    rpi-linux-6_10_0-rc5-src = {
       flake = false;
-      url = "github:raspberrypi/linux/rpi-6.6.y";
+      url = "github:raspberrypi/linux/rpi-6.10.y";
     };
     rpi-firmware-src = {
       flake = false;

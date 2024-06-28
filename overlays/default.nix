@@ -1,6 +1,6 @@
 { u-boot-src
 , rpi-linux-6_6_31-src
-, rpi-linux-6_6_34-src
+, rpi-linux-6_10_0-rc5-src
 , rpi-firmware-src
 , rpi-firmware-nonfree-src
 , rpi-bluez-firmware-src
@@ -30,7 +30,18 @@ let
         }
       ];
     };
-    v6_6_34.src = rpi-linux-6_6_34-src;
+    v6_10_0-rc5 = {
+      src = rpi-linux-6_10_0-rc5-src;
+      patches = [
+        {
+          name = "remove-readme-target.patch";
+          patch = final.fetchpatch {
+            url = "https://github.com/raspberrypi/linux/commit/3c0fd51d184f1748b83d28e1113265425c19bcb5.patch";
+            hash = "sha256-v7uZOmPCUp2i7NGVgjqnQYe6dEBD+aATuP/oRs9jfuk=";
+          };
+        }
+      ];
+    };
   };
   boards = [ "bcmrpi" "bcm2709" "bcmrpi3" "bcm2711" "bcm2712" ];
 
@@ -48,10 +59,6 @@ let
         src = kernel.src;
         defconfig = "${board}_defconfig";
         structuredExtraConfig = with final.lib.kernel; {
-          # Workaround https://github.com/raspberrypi/linux/issues/6198
-          # Needed because NixOS 24.05+ sets DRM_SIMPLEDRM=y which pulls in
-          # DRM_KMS_HELPER=y.
-          BACKLIGHT_CLASS_DEVICE = yes;
           # The perl script to generate kernel options sets unspecified
           # parameters to `m` if possible [1]. This results in the
           # unspecified config option KUNIT [2] getting set to `m` which
