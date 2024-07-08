@@ -19,13 +19,17 @@
             ${lib.strings.concatStringsSep " " config.boot.kernelParams}
           '';
         };
+        cfg = config.raspberry-pi-nix;
+        version = cfg.kernel-version;
+        board = cfg.board;
+        kernel = pkgs.rpi-kernels."${version}"."${board}";
         populate-kernel =
-          if config.raspberry-pi-nix.uboot.enable
+          if cfg.uboot.enable
           then ''
-            cp ${pkgs.uboot_rpi_arm64}/u-boot.bin firmware/u-boot-rpi-arm64.bin
+            cp ${pkgs.uboot-rpi-arm64}/u-boot.bin firmware/u-boot-rpi-arm64.bin
           ''
           else ''
-            cp "${pkgs.rpi-kernels.latest.kernel}/Image" firmware/kernel.img
+            cp "${kernel}/Image" firmware/kernel.img
             cp "${kernel-params}" firmware/cmdline.txt
           '';
       in
@@ -36,7 +40,7 @@
           cp ${config.hardware.raspberry-pi.config-output} firmware/config.txt
         '';
         populateRootCommands =
-          if config.raspberry-pi-nix.uboot.enable
+          if cfg.uboot.enable
           then ''
             mkdir -p ./files/boot
             ${config.boot.loader.generic-extlinux-compatible.populateCmd} -c ${config.system.build.toplevel} -d ./files/boot

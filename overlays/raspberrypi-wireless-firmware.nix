@@ -1,9 +1,9 @@
 { bluez-firmware, firmware-nonfree }:
-{ lib, stdenvNoCC, fetchFromGitHub }:
+{ lib, stdenvNoCC }:
 
 stdenvNoCC.mkDerivation {
   pname = "raspberrypi-wireless-firmware";
-  version = "2023-11-15";
+  version = "2024-02-26";
 
   srcs = [ ];
 

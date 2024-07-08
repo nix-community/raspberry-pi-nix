@@ -292,3 +292,5 @@ is kept up to date by the overlay applied by this package, so you
 don't need configure this. However, if you want to use different
 firmware you can override that package to do so.
 
+## What's not working?
+- [ ] Pi 5 u-boot devices other than sd-cards (i.e. usb, nvme).

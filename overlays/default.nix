@@ -1,5 +1,6 @@
 { u-boot-src
-, rpi-linux-6_6-src
+, rpi-linux-6_6_31-src
+, rpi-linux-6_10_0-rc5-src
 , rpi-firmware-src
 , rpi-firmware-nonfree-src
 , rpi-bluez-firmware-src
@@ -7,31 +8,95 @@
 }:
 final: prev:
 let
-  # The version to stick at `pkgs.rpi-kernels.latest'
-  latest = "v6_6_28";
+  versions = {
+    v6_6_31 = {
+      src = rpi-linux-6_6_31-src;
+      patches = [
+        # Fix compilation errors due to incomplete patch backport.
+        # https://github.com/raspberrypi/linux/pull/6223
+        {
+          name = "gpio-pwm_-_pwm_apply_might_sleep.patch";
+          patch = final.fetchpatch {
+            url = "https://github.com/peat-psuwit/rpi-linux/commit/879f34b88c60dd59765caa30576cb5bfb8e73c56.patch";
+            hash = "sha256-HlOkM9EFmlzOebCGoj7lNV5hc0wMjhaBFFZvaRCI0lI=";
+          };
+        }
+        {
+          name = "ir-rx51_-_pwm_apply_might_sleep.patch";
+          patch = final.fetchpatch {
+            url = "https://github.com/peat-psuwit/rpi-linux/commit/23431052d2dce8084b72e399fce82b05d86b847f.patch";
+            hash = "sha256-UDX/BJCJG0WVndP/6PbPK+AZsfU3vVxDCrpn1kb1kqE=";
+          };
+        }
+      ];
+    };
+    v6_10_0-rc5 = {
+      src = rpi-linux-6_10_0-rc5-src;
+      patches = [
+        {
+          name = "remove-readme-target.patch";
+          patch = final.fetchpatch {
+            url = "https://github.com/raspberrypi/linux/commit/3c0fd51d184f1748b83d28e1113265425c19bcb5.patch";
+            hash = "sha256-v7uZOmPCUp2i7NGVgjqnQYe6dEBD+aATuP/oRs9jfuk=";
+          };
+        }
+      ];
+    };
+  };
+  boards = [ "bcmrpi" "bcm2709" "bcmrpi3" "bcm2711" "bcm2712" ];
 
   # Helpers for building the `pkgs.rpi-kernels' map.
-  rpi-kernel = { kernel, version, fw, wireless-fw, argsOverride ? null }:
+  rpi-kernel = { version, board }:
     let
-      new-kernel = prev.linux_rpi4.override {
-        argsOverride = {
-          src = kernel;
-          inherit version;
-          modDirVersion = version;
-        } // (if builtins.isNull argsOverride then { } else argsOverride);
-      };
-      new-fw = prev.raspberrypifw.overrideAttrs (oldfw: { src = fw; });
-      new-wireless-fw = final.callPackage wireless-fw { };
-      version-slug = builtins.replaceStrings [ "." ] [ "_" ] version;
+      kernel = builtins.getAttr version versions;
+      version-slug = builtins.replaceStrings [ "v" "_" ] [ "" "." ] version;
     in
     {
-      "v${version-slug}" = {
-        kernel = new-kernel;
-        firmware = new-fw;
-        wireless-firmware = new-wireless-fw;
-      };
+      "${version}"."${board}" = (final.buildLinux {
+        modDirVersion = version-slug;
+        version = version-slug;
+        pname = "linux-rpi";
+        src = kernel.src;
+        defconfig = "${board}_defconfig";
+        structuredExtraConfig = with final.lib.kernel; {
+          # Workaround https://github.com/raspberrypi/linux/issues/6198
+          # Needed because NixOS 24.05+ sets DRM_SIMPLEDRM=y which pulls in
+          # DRM_KMS_HELPER=y.
+          BACKLIGHT_CLASS_DEVICE = yes;
+          # The perl script to generate kernel options sets unspecified
+          # parameters to `m` if possible [1]. This results in the
+          # unspecified config option KUNIT [2] getting set to `m` which
+          # causes DRM_VC4_KUNIT_TEST [3] to get set to `y`.
+          #
+          # This vc4 unit test fails on boot due to a null pointer
+          # exception with the existing config. I'm not sure why, but in
+          # any case, the DRM_VC4_KUNIT_TEST config option itself states
+          # that it is only useful for kernel developers working on the
+          # vc4 driver. So, I feel no need to deviate from the standard
+          # rpi kernel and attempt to successfully enable this test and
+          # other unit tests because the nixos perl script has this
+          # sloppy "default to m" behavior. So, I set KUNIT to `n`.
+          #
+          # [1] https://github.com/NixOS/nixpkgs/blob/85bcb95aa83be667e562e781e9d186c57a07d757/pkgs/os-specific/linux/kernel/generate-config.pl#L1-L10
+          # [2] https://github.com/raspberrypi/linux/blob/1.20230405/lib/kunit/Kconfig#L5-L14
+          # [3] https://github.com/raspberrypi/linux/blob/bb63dc31e48948bc2649357758c7a152210109c4/drivers/gpu/drm/vc4/Kconfig#L38-L52
+          KUNIT = no;
+        };
+        features.efiBootStub = false;
+        kernelPatches =
+          if kernel ? "patches" then kernel.patches else [ ];
+      }).overrideAttrs
+        (oldAttrs: {
+          postConfigure = ''
+            # The v7 defconfig has this set to '-v7' which screws up our modDirVersion.
+            sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+            sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+          '';
+        });
     };
-  rpi-kernels = builtins.foldl' (b: a: b // rpi-kernel a) { };
+  rpi-kernels = builtins.foldl'
+    (b: a: final.lib.recursiveUpdate b (rpi-kernel a))
+    { };
 in
 {
   # disable firmware compression so that brcm firmware can be found at
@@ -40,7 +105,7 @@ in
   compressFirmwareZstd = x: x;
 
   # provide generic rpi arm64 u-boot
-  uboot_rpi_arm64 = prev.buildUBoot rec {
+  uboot-rpi-arm64 = final.buildUBoot rec {
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
@@ -61,46 +126,23 @@ in
   };
 
   # default to latest firmware
-  raspberrypiWirelessFirmware = final.rpi-kernels.latest.wireless-firmware;
-  raspberrypifw = final.rpi-kernels.latest.firmware;
+  raspberrypiWirelessFirmware = final.callPackage
+    (
+      import ./raspberrypi-wireless-firmware.nix {
+        bluez-firmware = rpi-bluez-firmware-src;
+        firmware-nonfree = rpi-firmware-nonfree-src;
+      }
+    )
+    { };
+  raspberrypifw = prev.raspberrypifw.overrideAttrs (oldfw: { src = rpi-firmware-src; });
 
 } // {
   # rpi kernels and firmware are available at
-  # `pkgs.rpi-kernels.<VERSION>.{kernel,firmware,wireless-firmware}'. 
+  # `pkgs.rpi-kernels.<VERSION>.<BOARD>'. 
   #
-  # For example: `pkgs.rpi-kernels.v5_15_87.kernel'
-  rpi-kernels = rpi-kernels [{
-    version = "6.6.28";
-    kernel = rpi-linux-6_6-src;
-    fw = rpi-firmware-src;
-    wireless-fw = import ./raspberrypi-wireless-firmware.nix {
-      bluez-firmware = rpi-bluez-firmware-src;
-      firmware-nonfree = rpi-firmware-nonfree-src;
-    };
-    argsOverride = {
-      structuredExtraConfig = with prev.lib.kernel; {
-        # The perl script to generate kernel options sets unspecified
-        # parameters to `m` if possible [1]. This results in the
-        # unspecified config option KUNIT [2] getting set to `m` which
-        # causes DRM_VC4_KUNIT_TEST [3] to get set to `y`.
-        #
-        # This vc4 unit test fails on boot due to a null pointer
-        # exception with the existing config. I'm not sure why, but in
-        # any case, the DRM_VC4_KUNIT_TEST config option itself states
-        # that it is only useful for kernel developers working on the
-        # vc4 driver. So, I feel no need to deviate from the standard
-        # rpi kernel and attempt to successfully enable this test and
-        # other unit tests because the nixos perl script has this
-        # sloppy "default to m" behavior. So, I set KUNIT to `n`.
-        #
-        # [1] https://github.com/NixOS/nixpkgs/blob/85bcb95aa83be667e562e781e9d186c57a07d757/pkgs/os-specific/linux/kernel/generate-config.pl#L1-L10
-        # [2] https://github.com/raspberrypi/linux/blob/1.20230405/lib/kunit/Kconfig#L5-L14
-        # [3] https://github.com/raspberrypi/linux/blob/bb63dc31e48948bc2649357758c7a152210109c4/drivers/gpu/drm/vc4/Kconfig#L38-L52
-        KUNIT = no;
-        GPIO_PWM = no;
-      };
-    };
-  }] // {
-    latest = final.rpi-kernels."${latest}";
-  };
+  # For example: `pkgs.rpi-kernels.v6_6_31.bcm2712'
+  rpi-kernels = rpi-kernels (
+    final.lib.cartesianProductOfSets # this gets renamed yet again to cartesianProduct in April 19 2024
+      { board = boards; version = (builtins.attrNames versions); }
+  );
 }

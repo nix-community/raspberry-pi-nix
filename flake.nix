@@ -2,38 +2,42 @@
   description = "raspberry-pi nixos configuration";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/9a9960b98418f8c385f52de3b09a63f9c561427a";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     u-boot-src = {
       flake = false;
       url = "https://ftp.denx.de/pub/u-boot/u-boot-2024.04.tar.bz2";
     };
-    rpi-linux-6_6-src = {
+    rpi-linux-6_6_31-src = {
       flake = false;
-      url = "github:raspberrypi/linux/stable_20240423";
+      url = "github:raspberrypi/linux/stable_20240529";
+    };
+    rpi-linux-6_10_0-rc5-src = {
+      flake = false;
+      url = "github:raspberrypi/linux/rpi-6.10.y";
     };
     rpi-firmware-src = {
       flake = false;
-      url = "github:raspberrypi/firmware/1.20240424";
+      url = "github:raspberrypi/firmware/1.20240529";
     };
     rpi-firmware-nonfree-src = {
       flake = false;
-      url = "github:RPi-Distro/firmware-nonfree/88aa085bfa1a4650e1ccd88896f8343c22a24055";
+      url = "github:RPi-Distro/firmware-nonfree/bookworm";
     };
     rpi-bluez-firmware-src = {
       flake = false;
-      url = "github:RPi-Distro/bluez-firmware/d9d4741caba7314d6500f588b1eaa5ab387a4ff5";
+      url = "github:RPi-Distro/bluez-firmware/bookworm";
     };
-    libcamera-apps-src = {
+    rpicam-apps-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera-apps/v1.4.4";
+      url = "github:raspberrypi/rpicam-apps/v1.5.0";
     };
     libcamera-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera/eb00c13d7c9f937732305d47af5b8ccf895e700f"; # v0.2.0+rpt20240418
+      url = "github:raspberrypi/libcamera/6ddd79b5bdbedc1f61007aed35391f1559f9e29a"; # v0.3.0+rpt20240617
     };
     libpisp-src = {
       flake = false;
-      url = "github:raspberrypi/libpisp/v1.0.5";
+      url = "github:raspberrypi/libpisp/v1.0.6";
     };
   };
 
@@ -55,9 +59,9 @@
         libcamera-overlay = self.overlays.libcamera;
       };
       packages.aarch64-linux = {
-        linux = pinned.rpi-kernels.latest.kernel;
-        firmware = pinned.rpi-kernels.latest.firmware;
-        wireless-firmware = pinned.rpi-kernels.latest.wireless-firmware;
+        kernels = pinned.rpi-kernels;
+        firmware = pinned.raspberrypifw;
+        wireless-firmware = pinned.raspberrypiWirelessFirmware;
         uboot-rpi-arm64 = pinned.uboot-rpi-arm64;
       };
     };
