@@ -73,19 +73,6 @@ in
   };
 
   config = {
-    boot.kernelParams =
-      if cfg.uboot.enable then [ ]
-      else [
-        # This is ugly and fragile, but the sdImage image has an msdos
-        # table, so the partition table id is a 1-indexed hex
-        # number. So, we drop the hex prefix and stick on a "02" to
-        # refer to the root partition.
-        "root=PARTUUID=${lib.strings.removePrefix "0x" config.sdImage.firmwarePartitionID}-02"
-        "rootfstype=ext4"
-        "fsck.repair=yes"
-        "rootwait"
-        "init=/sbin/init"
-      ];
     systemd.services = {
       "raspberry-pi-firmware-migrate" =
         {
@@ -309,16 +296,28 @@ in
         else [ rpi-overlay ];
     };
     boot = {
-      initrd.availableKernelModules = [
-        "usbhid"
-        "usb_storage"
-        "vc4"
-        "pcie_brcmstb" # required for the pcie bus to work
-        "reset-raspberrypi" # required for vl805 firmware to load
-      ];
-      # This pin is not necessary, it would be fine to replace it with
-      # `kernel`. It is helpful to ensure
-      # cache hits for kernel builds though.
+      kernelParams =
+        if cfg.uboot.enable then [ ]
+        else [
+          # This is ugly and fragile, but the sdImage image has an msdos
+          # table, so the partition table id is a 1-indexed hex
+          # number. So, we drop the hex prefix and stick on a "02" to
+          # refer to the root partition.
+          "root=PARTUUID=${lib.strings.removePrefix "0x" config.sdImage.firmwarePartitionID}-02"
+          "rootfstype=ext4"
+          "fsck.repair=yes"
+          "rootwait"
+          "init=/sbin/init"
+        ];
+      initrd = {
+        availableKernelModules = [
+          "usbhid"
+          "usb_storage"
+          "vc4"
+          "pcie_brcmstb" # required for the pcie bus to work
+          "reset-raspberrypi" # required for vl805 firmware to load
+        ];
+      };
       kernelPackages = pkgs.linuxPackagesFor kernel;
       loader = {
         grub.enable = lib.mkDefault false;
