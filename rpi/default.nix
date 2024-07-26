@@ -21,7 +21,7 @@ in
         type = types.str;
         description = ''
           The kernel board version to build.
-          Examples at: https://github.com/NixOS/nixpkgs/blob/5c8e2fb3c690e8be1d92cda8d2bf0562cd67ce47/pkgs/os-specific/linux/kernel/linux-rpi.nix#L20-L25
+          Examples at: https://www.raspberrypi.com/documentation/computers/linux_kernel.html#native-build-configuration
           without the _defconfig part.
         '';
       };
