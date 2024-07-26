@@ -18,7 +18,6 @@ in
         description = "Kernel version to build.";
       };
       board = mkOption {
-        default = "bcm2712";
         type = types.str;
         description = ''
           The kernel board version to build.
