@@ -18,7 +18,7 @@ in
         description = "Kernel version to build.";
       };
       board = mkOption {
-        type = types.str;
+        type = types.enum [ "bcm2711" "bcm2712" ];
         description = ''
           The kernel board version to build.
           Examples at: https://www.raspberrypi.com/documentation/computers/linux_kernel.html#native-build-configuration
@@ -333,8 +333,8 @@ in
     };
     hardware.enableRedistributableFirmware = true;
 
-    users.groups = builtins.listToAttrs (map (k: { name = k; value = {}; })
-            ["input" "sudo" "plugdev" "games" "netdev" "gpio" "i2c" "spi"]);
+    users.groups = builtins.listToAttrs (map (k: { name = k; value = { }; })
+      [ "input" "sudo" "plugdev" "games" "netdev" "gpio" "i2c" "spi" ]);
     services = {
       udev.extraRules =
         let shell = "${pkgs.bash}/bin/bash";

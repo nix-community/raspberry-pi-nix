@@ -43,7 +43,7 @@ let
       ];
     };
   };
-  boards = [ "bcmrpi" "bcm2709" "bcmrpi3" "bcm2711" "bcm2712" ];
+  boards = [ "bcm2711" "bcm2712" ];
 
   # Helpers for building the `pkgs.rpi-kernels' map.
   rpi-kernel = { version, board }:
