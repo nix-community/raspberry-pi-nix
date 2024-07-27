@@ -19,36 +19,35 @@ and `rpi/config.nix`. The other modules are mostly wrappers that set
 
 ## Example
 
-See [the example
-repo](https://github.com/tstat/raspberry-pi-nix-example) for a
-complete example.
+See the `rpi-example` config in this flake for a CI-checked example.
 
 ```nix
 {
   description = "raspberry-pi-nix example";
-  nixConfig = {
-    extra-substituters = [ "https://raspberry-pi-nix.cachix.org" ];
-    extra-trusted-public-keys = [
-      "raspberry-pi-nix.cachix.org-1:WmV2rdSangxW0rZjY/tBvBDSaNFQ3DyEQsVw8EvHn9o="
-    ];
-  };
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
-    raspberry-pi-nix.url = "github:tstat/raspberry-pi-nix";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    raspberry-pi-nix.url = "github:nix-community/raspberry-pi-nix";
   };
 
   outputs = { self, nixpkgs, raspberry-pi-nix }:
     let
       inherit (nixpkgs.lib) nixosSystem;
       basic-config = { pkgs, lib, ... }: {
+        # bcm2711 for rpi 3, 3+, 4, zero 2 w
+        # bcm2712 for rpi 5
+        # See the docs at:
+        # https://www.raspberrypi.com/documentation/computers/linux_kernel.html#native-build-configuration
+        raspberry-pi-nix.board = "bcm2711";
         time.timeZone = "America/New_York";
         users.users.root.initialPassword = "root";
         networking = {
           hostName = "basic-example";
           useDHCP = false;
-          interfaces = { wlan0.useDHCP = true; };
+          interfaces = {
+            wlan0.useDHCP = true;
+            eth0.useDHCP = true;
+          };
         };
-        environment.systemPackages = with pkgs; [ bluez bluez-tools ];
         hardware = {
           bluetooth.enable = true;
           raspberry-pi = {
@@ -80,11 +79,11 @@ complete example.
 ```
 
 ## Using the provided cache to avoid compiling linux
-This repo uses the raspberry pi linux kernel fork, and compiling linux
-takes a while. I do push my kernel builds to a cachix cache that you
-may use to avoid compiling linux yourself. The cache can be found
-at https://raspberry-pi-nix.cachix.org, and you can follow the
-instructions there to use this cache.
+This repo uses the raspberry pi linux kernel fork, and compiling linux takes a
+while. CI pushes kernel builds to the nix-community cachix cache that you may
+use to avoid compiling linux yourself. The cache can be found at
+https://nix-community.cachix.org, and you can follow the instructions there
+to use this cache.
 
 You don't need the cachix binary to use the cachix cache though, you
 just need to add the relevant
@@ -114,16 +113,15 @@ nix build '.#nixosConfigurations.rpi-example.config.system.build.sdImage'
 
 ## The firmware partition
 
-The image produced by this package is partitioned in the same way as
-the aarch64 installation media from nixpkgs: There is a firmware
-partition that contains necessary firmware, u-boot, and
-config.txt. Then there is another partition (labeled `NIXOS_SD`) that
-contains everything else. The firmware and `config.txt` file are
-managed by NixOS modules defined in this package. Additionally, a
-systemd service will update the firmware and `config.txt` in the
-firmware partition __in place__. Linux kernels are stored in the
-`NIXOS_SD` partition and will be booted by u-boot in the firmware
-partition.
+The image produced by this package is partitioned in the same way as the aarch64
+installation media from nixpkgs: There is a firmware partition that contains
+necessary firmware, the kernel or u-boot, and config.txt. Then there is another
+partition (labeled `NIXOS_SD`) that contains everything else. The firmware and
+`config.txt` file are managed by NixOS modules defined in this
+package. Additionally, a systemd service will update the firmware and
+`config.txt` in the firmware partition __in place__. If uboot is enabled then
+linux kernels are stored in the `NIXOS_SD` partition and will be booted by
+u-boot in the firmware partition.
 
 ## `config.txt` generation
 
@@ -258,39 +256,36 @@ nix build '.#nixosConfigurations.rpi-example.config.hardware.raspberry-pi.config
 
 ## Firmware partition implementation notes
 
-In Raspberry Pi devices the proprietary firmware manipulates the
-device tree in a number of ways before handing it off to the kernel
-(or in our case, to u-boot). The transformations that are performed
-aren't documented so well (although I have found [this
-list](https://forums.raspberrypi.com/viewtopic.php?t=329799#p1974233)
-). 
+In Raspberry Pi devices the proprietary firmware manipulates the device tree in
+a number of ways before handing it off to the kernel (or in our case, to
+u-boot). The transformations that are performed aren't documented so well
+(although I have found [this
+list](https://forums.raspberrypi.com/viewtopic.php?t=329799#p1974233) ).
 
-This manipulation makes it difficult to use the device tree configured
-directly by NixOS as the proprietary firmware's manipulation must be
-known and reproduced.
+This manipulation makes it difficult to use the device tree configured directly
+by NixOS as the proprietary firmware's manipulation must be known and
+reproduced.
 
-Even if the manipulation were successfully reproduced, some benefits
-would be lost. For example, the firmware can detect connected hardware
-during boot and automatically configure the device tree accordingly
-before passing it onto the kernel. If this firmware device tree is
-ignored then a NixOS system rebuild with a different device tree would
-be required when swapping connected hardware. Examples of what I mean
-by hardware include: the specific Raspberry Pi device booting the
-image, connected cameras, and connected displays.
+Even if the manipulation were successfully reproduced, some benefits would be
+lost. For example, the firmware can detect connected hardware during boot and
+automatically configure the device tree accordingly before passing it onto the
+kernel. If this firmware device tree is ignored then a NixOS system rebuild with
+a different device tree would be required when swapping connected
+hardware. Examples of what I mean by hardware include: the specific Raspberry Pi
+device booting the image, connected cameras, and connected displays.
 
-So, in order to avoid the headaches associated with failing to
-reproduce some firmware device tree manipulation, and to reap the
-benefits afforded by the firmware device tree configuration, u-boot is
-configured to use the device tree that it is given (i.e. the one that
-the raspberry pi firmware loads and manipulates). As a consequence,
-device tree configuration is controlled via the [config.txt
+So, in order to avoid the headaches associated with failing to reproduce some
+firmware device tree manipulation, and to reap the benefits afforded by the
+firmware device tree configuration, the bootloader is configured to use the
+device tree that it is given (i.e. the one that the raspberry pi firmware loads
+and manipulates). As a consequence, device tree configuration is controlled via
+the [config.txt
 file](https://www.raspberrypi.com/documentation/computers/config_txt.html).
 
-Additionally, the firmware, device trees, and overlays from the
-`raspberrypifw` package populate the firmware partition. This package
-is kept up to date by the overlay applied by this package, so you
-don't need configure this. However, if you want to use different
-firmware you can override that package to do so.
+Additionally, the firmware, device trees, and overlays from the `raspberrypifw`
+package populate the firmware partition. This package is kept up to date by the
+overlay applied by this package, so you don't need configure this. However, if
+you want to use different firmware you can override that package to do so.
 
 ## What's not working?
 - [ ] Pi 5 u-boot devices other than sd-cards (i.e. usb, nvme).
