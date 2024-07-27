@@ -58,11 +58,23 @@
         core-overlay = self.overlays.core;
         libcamera-overlay = self.overlays.libcamera;
       };
-      packages.aarch64-linux = {
-        kernels = pinned.rpi-kernels;
-        firmware = pinned.raspberrypifw;
-        wireless-firmware = pinned.raspberrypiWirelessFirmware;
-        uboot-rpi-arm64 = pinned.uboot-rpi-arm64;
-      };
+      checks.aarch64-linux = self.packages.aarch64-linux;
+      packages.aarch64-linux = with pinned.lib;
+        let
+          kernels =
+            foldlAttrs f { } pinned.rpi-kernels;
+          f = acc: kernel-version: board-attr-set:
+            foldlAttrs
+              (acc: board-version: drv: acc // {
+                "linux-${kernel-version}-${board-version}" = drv;
+              })
+              acc
+              board-attr-set;
+        in
+        {
+          firmware = pinned.raspberrypifw;
+          wireless-firmware = pinned.raspberrypiWirelessFirmware;
+          uboot-rpi-arm64 = pinned.uboot-rpi-arm64;
+        } // kernels;
     };
 }
