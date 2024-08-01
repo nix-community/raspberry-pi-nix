@@ -142,7 +142,7 @@ in
   #
   # For example: `pkgs.rpi-kernels.v6_6_31.bcm2712'
   rpi-kernels = rpi-kernels (
-    final.lib.cartesianProductOfSets # this gets renamed yet again to cartesianProduct in April 19 2024
+    final.lib.cartesianProduct
       { board = boards; version = (builtins.attrNames versions); }
   );
 }
