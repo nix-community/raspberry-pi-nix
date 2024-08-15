@@ -3,8 +3,7 @@
 , libpisp-src
 , ...
 }:
-final: prev:
-{
+final: prev: {
   # A recent known working version of rpicam-apps
   libcamera-apps =
     final.callPackage ./rpicam-apps.nix { inherit rpicam-apps-src; };
@@ -22,7 +21,7 @@ final: prev:
   };
 
   libcamera = prev.libcamera.overrideAttrs (old: {
-    version = "0.2.0";
+    version = "0.3.0";
     src = libcamera-src;
     buildInputs = old.buildInputs ++ (with final; [
       libpisp openssl libtiff
@@ -30,9 +29,11 @@ final: prev:
         python3-gnutls pybind11 pyyaml ply
       ]))
       libglibutil gst_all_1.gst-plugins-base
-      
     ]);
     patches = [ ];
+    postPatch = ''
+      patchShebangs src/py/ utils/
+    '';
     mesonFlags = [
       "--buildtype=release"
       "-Dpipelines=rpi/vc4,rpi/pisp"
