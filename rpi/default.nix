@@ -99,7 +99,6 @@ in
                 TARGET_FIRMWARE_DIR="${firmware-path}"
                 TARGET_OVERLAYS_DIR="$TARGET_FIRMWARE_DIR/overlays"
                 TMPFILE="$TARGET_FIRMWARE_DIR/tmp"
-                UBOOT="${pkgs.uboot-rpi-arm64}/u-boot.bin"
                 KERNEL="${kernel}/Image"
                 SHOULD_UBOOT=${if cfg.uboot.enable then "1" else "0"}
                 SRC_FIRMWARE_DIR="${pkgs.raspberrypifw}/share/raspberrypi/boot"
@@ -111,16 +110,18 @@ in
                 SRC_OVERLAYS=("$SRC_OVERLAYS_DIR"/*)
                 CONFIG="${config.hardware.raspberry-pi.config-output}"
 
-                migrate_uboot() {
-                  echo "migrating uboot"
-                  touch "$STATE_DIRECTORY/uboot-migration-in-progress"
-                  cp "$UBOOT" "$TMPFILE"
-                  mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/u-boot-rpi-arm64.bin"
-                  echo "${
-                    builtins.toString pkgs.uboot-rpi-arm64
-                  }" > "$STATE_DIRECTORY/uboot-version"
-                  rm "$STATE_DIRECTORY/uboot-migration-in-progress"
-                }
+                ${lib.strings.optionalString cfg.uboot.enable ''
+                  UBOOT="${pkgs.uboot-rpi-arm64}/u-boot.bin"
+
+                  migrate_uboot() {
+                    echo "migrating uboot"
+                    touch "$STATE_DIRECTORY/uboot-migration-in-progress"
+                    cp "$UBOOT" "$TMPFILE"
+                    mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/u-boot-rpi-arm64.bin"
+                    echo "${builtins.toString pkgs.uboot-rpi-arm64}" " > "$STATE_DIRECTORY/uboot-version"
+                    rm "$STATE_DIRECTORY/uboot-migration-in-progress"
+                  }
+                ''}
 
                 migrate_kernel() {
                   echo "migrating kernel"
@@ -177,11 +178,13 @@ in
                   rm "$STATE_DIRECTORY/firmware-migration-in-progress"
                 }
 
-                if [[ "$SHOULD_UBOOT" -eq 1 ]] && [[ -f "$STATE_DIRECTORY/uboot-migration-in-progress" || ! -f "$STATE_DIRECTORY/uboot-version" || $(< "$STATE_DIRECTORY/uboot-version") != ${
-                  builtins.toString pkgs.uboot-rpi-arm64
-                } ]]; then
-                  migrate_uboot
-                fi
+                ${lib.strings.optionalString cfg.uboot.enable ''
+                  if [[ "$SHOULD_UBOOT" -eq 1 ]] && [[ -f "$STATE_DIRECTORY/uboot-migration-in-progress" || ! -f "$STATE_DIRECTORY/uboot-version" || $(< "$STATE_DIRECTORY/uboot-version") != ${
+                    builtins.toString pkgs.uboot-rpi-arm64
+                  } ]]; then
+                    migrate_uboot
+                  fi
+                ''}
 
                 if [[ "$SHOULD_UBOOT" -ne 1 ]] && [[ ! -f "$STATE_DIRECTORY/kernel-version" || $(< "$STATE_DIRECTORY/kernel-version") != ${
                   builtins.toString kernel
