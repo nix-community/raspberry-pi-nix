@@ -80,6 +80,7 @@
         {
           example-sd-image = self.nixosConfigurations.rpi-example.config.system.build.sdImage;
           firmware = pinned.raspberrypifw;
+          libcamera = pinned.libcamera;
           wireless-firmware = pinned.raspberrypiWirelessFirmware;
           uboot-rpi-arm64 = pinned.uboot-rpi-arm64;
         } // kernels;
