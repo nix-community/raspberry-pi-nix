@@ -105,7 +105,7 @@ in
   compressFirmwareZstd = x: x;
 
   # provide generic rpi arm64 u-boot
-  uboot-rpi-arm64 = final.buildUBoot rec {
+  uboot-rpi-arm64 = final.buildUBoot {
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
