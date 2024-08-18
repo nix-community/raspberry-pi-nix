@@ -1,5 +1,5 @@
 { u-boot-src
-, rpi-linux-6_6_31-src
+, rpi-linux-6_6_y-src
 , rpi-linux-6_10_0-rc5-src
 , rpi-firmware-src
 , rpi-firmware-nonfree-src
@@ -9,26 +9,8 @@
 final: prev:
 let
   versions = {
-    v6_6_31 = {
-      src = rpi-linux-6_6_31-src;
-      patches = [
-        # Fix compilation errors due to incomplete patch backport.
-        # https://github.com/raspberrypi/linux/pull/6223
-        {
-          name = "gpio-pwm_-_pwm_apply_might_sleep.patch";
-          patch = final.fetchpatch {
-            url = "https://github.com/peat-psuwit/rpi-linux/commit/879f34b88c60dd59765caa30576cb5bfb8e73c56.patch";
-            hash = "sha256-HlOkM9EFmlzOebCGoj7lNV5hc0wMjhaBFFZvaRCI0lI=";
-          };
-        }
-        {
-          name = "ir-rx51_-_pwm_apply_might_sleep.patch";
-          patch = final.fetchpatch {
-            url = "https://github.com/peat-psuwit/rpi-linux/commit/23431052d2dce8084b72e399fce82b05d86b847f.patch";
-            hash = "sha256-UDX/BJCJG0WVndP/6PbPK+AZsfU3vVxDCrpn1kb1kqE=";
-          };
-        }
-      ];
+    v6_6_45 = {
+      src = rpi-linux-6_6_y-src;
     };
     v6_10_0-rc5 = {
       src = rpi-linux-6_10_0-rc5-src;
@@ -140,7 +122,7 @@ in
   # rpi kernels and firmware are available at
   # `pkgs.rpi-kernels.<VERSION>.<BOARD>'. 
   #
-  # For example: `pkgs.rpi-kernels.v6_6_31.bcm2712'
+  # For example: `pkgs.rpi-kernels.v6_6_45.bcm2712'
   rpi-kernels = rpi-kernels (
     final.lib.cartesianProduct
       { board = boards; version = (builtins.attrNames versions); }
