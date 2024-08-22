@@ -26,7 +26,7 @@
         populate-kernel =
           if cfg.uboot.enable
           then ''
-            cp ${pkgs.uboot-rpi-arm64}/u-boot.bin firmware/u-boot-rpi-arm64.bin
+            cp ${cfg.uboot.package}/u-boot.bin firmware/u-boot-rpi-arm64.bin
           ''
           else ''
             cp "${kernel}/Image" firmware/kernel.img

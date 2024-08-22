@@ -68,6 +68,8 @@ in
             cm4 with an nvme drive.
           '';
         };
+
+        package = mkPackageOption pkgs "uboot-rpi-arm64" {};
       };
     };
   };
@@ -99,6 +101,7 @@ in
                 TARGET_FIRMWARE_DIR="${firmware-path}"
                 TARGET_OVERLAYS_DIR="$TARGET_FIRMWARE_DIR/overlays"
                 TMPFILE="$TARGET_FIRMWARE_DIR/tmp"
+                UBOOT="${cfg.uboot.package}/u-boot.bin"
                 KERNEL="${kernel}/Image"
                 SHOULD_UBOOT=${if cfg.uboot.enable then "1" else "0"}
                 SRC_FIRMWARE_DIR="${pkgs.raspberrypifw}/share/raspberrypi/boot"
@@ -118,7 +121,7 @@ in
                     touch "$STATE_DIRECTORY/uboot-migration-in-progress"
                     cp "$UBOOT" "$TMPFILE"
                     mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/u-boot-rpi-arm64.bin"
-                    echo "${builtins.toString pkgs.uboot-rpi-arm64}" " > "$STATE_DIRECTORY/uboot-version"
+                    echo "${builtins.toString cfg.uboot.package}" " > "$STATE_DIRECTORY/uboot-version"
                     rm "$STATE_DIRECTORY/uboot-migration-in-progress"
                   }
                 ''}
@@ -180,7 +183,7 @@ in
 
                 ${lib.strings.optionalString cfg.uboot.enable ''
                   if [[ "$SHOULD_UBOOT" -eq 1 ]] && [[ -f "$STATE_DIRECTORY/uboot-migration-in-progress" || ! -f "$STATE_DIRECTORY/uboot-version" || $(< "$STATE_DIRECTORY/uboot-version") != ${
-                    builtins.toString pkgs.uboot-rpi-arm64
+                    builtins.toString cfg.uboot.package
                   } ]]; then
                     migrate_uboot
                   fi
