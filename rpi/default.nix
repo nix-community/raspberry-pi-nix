@@ -114,7 +114,7 @@ in
                 CONFIG="${config.hardware.raspberry-pi.config-output}"
 
                 ${lib.strings.optionalString cfg.uboot.enable ''
-                  UBOOT="${pkgs.uboot-rpi-arm64}/u-boot.bin"
+                  UBOOT="${cfg.uboot.package}/u-boot.bin"
 
                   migrate_uboot() {
                     echo "migrating uboot"
