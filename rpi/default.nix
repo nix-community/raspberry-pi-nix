@@ -121,7 +121,7 @@ in
                     touch "$STATE_DIRECTORY/uboot-migration-in-progress"
                     cp "$UBOOT" "$TMPFILE"
                     mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/u-boot-rpi-arm64.bin"
-                    echo "${builtins.toString cfg.uboot.package}" " > "$STATE_DIRECTORY/uboot-version"
+                    echo "${builtins.toString cfg.uboot.package}" > "$STATE_DIRECTORY/uboot-version"
                     rm "$STATE_DIRECTORY/uboot-migration-in-progress"
                   }
                 ''}
