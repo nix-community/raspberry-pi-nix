@@ -5,19 +5,19 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     u-boot-src = {
       flake = false;
-      url = "https://ftp.denx.de/pub/u-boot/u-boot-2024.04.tar.bz2";
+      url = "https://ftp.denx.de/pub/u-boot/u-boot-2024.07.tar.bz2";
     };
-    rpi-linux-6_6_31-src = {
+    rpi-linux-6_6_47-src = {
       flake = false;
-      url = "github:raspberrypi/linux/stable_20240529";
+      url = "github:raspberrypi/linux/rpi-6.6.y";
     };
-    rpi-linux-6_10_0-rc5-src = {
+    rpi-linux-6_10_8-src = {
       flake = false;
       url = "github:raspberrypi/linux/rpi-6.10.y";
     };
     rpi-firmware-src = {
       flake = false;
-      url = "github:raspberrypi/firmware/1.20240529";
+      url = "github:raspberrypi/firmware/1.20240902";
     };
     rpi-firmware-nonfree-src = {
       flake = false;
@@ -29,15 +29,15 @@
     };
     rpicam-apps-src = {
       flake = false;
-      url = "github:raspberrypi/rpicam-apps/v1.5.0";
+      url = "github:raspberrypi/rpicam-apps/v1.5.1";
     };
     libcamera-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera/6ddd79b5bdbedc1f61007aed35391f1559f9e29a"; # v0.3.0+rpt20240617
+      url = "github:raspberrypi/libcamera/v0.3.1+rpt20240906";
     };
     libpisp-src = {
       flake = false;
-      url = "github:raspberrypi/libpisp/v1.0.6";
+      url = "github:raspberrypi/libpisp/v1.0.7";
     };
   };
 
