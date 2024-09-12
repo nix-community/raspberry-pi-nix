@@ -33,7 +33,7 @@
     };
     libcamera-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera/v0.3.1+rpt20240906";
+      url = "github:raspberrypi/libcamera/69a894c4adad524d3063dd027f5c4774485cf9db"; # v0.3.1+rpt20240906
     };
     libpisp-src = {
       flake = false;

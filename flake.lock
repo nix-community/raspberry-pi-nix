@@ -12,8 +12,8 @@
       },
       "original": {
         "owner": "raspberrypi",
-        "ref": "v0.3.1+rpt20240906",
         "repo": "libcamera",
+        "rev": "69a894c4adad524d3063dd027f5c4774485cf9db",
         "type": "github"
       }
     },
