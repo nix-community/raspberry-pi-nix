@@ -8,7 +8,7 @@ let
   kernel = pkgs.rpi-kernels."${version}"."${board}";
 in
 {
-  imports = [ ../sd-image ./config.nix ./i2c.nix ];
+  imports = [ ./config.nix ./i2c.nix ];
 
   options = with lib; {
     raspberry-pi-nix = {
@@ -93,7 +93,7 @@ in
             {
               Type = "oneshot";
               MountImages =
-                "/dev/disk/by-label/${config.sdImage.firmwarePartitionName}:${firmware-path}";
+                "/dev/disk/by-label/FIRMWARE:${firmware-path}";
               StateDirectory = "raspberrypi-firmware";
               ExecStart = pkgs.writeShellScript "migrate-rpi-firmware" ''
                 shopt -s nullglob
@@ -308,8 +308,8 @@ in
           # table, so the partition table id is a 1-indexed hex
           # number. So, we drop the hex prefix and stick on a "02" to
           # refer to the root partition.
-          "root=PARTUUID=${lib.strings.removePrefix "0x" config.sdImage.firmwarePartitionID}-02"
-          "rootfstype=ext4"
+          # "root=PARTUUID=${lib.strings.removePrefix "0x" config.sdImage.firmwarePartitionID}-02"
+          # "rootfstype=ext4"
           "fsck.repair=yes"
           "rootwait"
           "init=/sbin/init"
