@@ -13,7 +13,7 @@ in
   options = with lib; {
     raspberry-pi-nix = {
       kernel-version = mkOption {
-        default = "v6_6_47";
+        default = "v6_6_54";
         type = types.str;
         description = "Kernel version to build.";
       };
@@ -69,7 +69,7 @@ in
           '';
         };
 
-        package = mkPackageOption pkgs "uboot-rpi-arm64" {};
+        package = mkPackageOption pkgs "uboot-rpi-arm64" { };
       };
     };
   };

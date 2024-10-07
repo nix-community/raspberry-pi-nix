@@ -7,17 +7,17 @@
       flake = false;
       url = "https://ftp.denx.de/pub/u-boot/u-boot-2024.07.tar.bz2";
     };
-    rpi-linux-6_6_47-src = {
+    rpi-linux-6_6_54-src = {
       flake = false;
       url = "github:raspberrypi/linux/rpi-6.6.y";
     };
-    rpi-linux-6_10_8-src = {
+    rpi-linux-6_10_12-src = {
       flake = false;
       url = "github:raspberrypi/linux/rpi-6.10.y";
     };
     rpi-firmware-src = {
       flake = false;
-      url = "github:raspberrypi/firmware/1.20240902";
+      url = "github:raspberrypi/firmware/1.20241001";
     };
     rpi-firmware-nonfree-src = {
       flake = false;
@@ -29,7 +29,7 @@
     };
     rpicam-apps-src = {
       flake = false;
-      url = "github:raspberrypi/rpicam-apps/v1.5.1";
+      url = "github:raspberrypi/rpicam-apps/v1.5.2";
     };
     libcamera-src = {
       flake = false;

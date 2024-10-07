@@ -10,7 +10,7 @@ final: prev: {
 
   libpisp = final.stdenv.mkDerivation {
     name = "libpisp";
-    version = "1.0.6";
+    version = "1.0.7";
     src = libpisp-src;
     nativeBuildInputs = with final; [ pkg-config meson ninja ];
     buildInputs = with final; [ nlohmann_json boost ];
@@ -21,14 +21,20 @@ final: prev: {
   };
 
   libcamera = prev.libcamera.overrideAttrs (old: {
-    version = "0.3.0";
+    version = "0.3.1";
     src = libcamera-src;
     buildInputs = old.buildInputs ++ (with final; [
-      libpisp openssl libtiff
+      libpisp
+      openssl
+      libtiff
       (python3.withPackages (ps: with ps; [
-        python3-gnutls pybind11 pyyaml ply
+        python3-gnutls
+        pybind11
+        pyyaml
+        ply
       ]))
-      libglibutil gst_all_1.gst-plugins-base
+      libglibutil
+      gst_all_1.gst-plugins-base
     ]);
     patches = [ ];
     postPatch = ''
