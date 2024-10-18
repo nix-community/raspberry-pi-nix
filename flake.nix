@@ -29,7 +29,8 @@
     };
     rpicam-apps-src = {
       flake = false;
-      url = "github:raspberrypi/rpicam-apps/v1.5.2";
+      #url = "github:raspberrypi/rpicam-apps/v1.5.2";
+      url = "github:raspberrypi/rpicam-apps/v1.5.1";
     };
     libcamera-src = {
       flake = false;
