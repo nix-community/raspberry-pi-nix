@@ -93,7 +93,7 @@ in
                 };
               };
               base-dt-params = lib.mkOption {
-                type = with lib.types; attrsOf (submodule rpi-config-param);
+                type = with lib.types; attrsOf (submodule dt-param);
                 default = { };
                 example = {
                   i2c = {
