@@ -6,6 +6,7 @@ let
   version = cfg.kernel-version;
   board = cfg.board;
   kernel = pkgs.rpi-kernels."${version}"."${board}";
+  initrd = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
 in
 {
   imports = [ ./config.nix ./i2c.nix ];
@@ -130,6 +131,8 @@ in
                   touch "$STATE_DIRECTORY/kernel-migration-in-progress"
                   cp "$KERNEL" "$TMPFILE"
                   mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/kernel.img"
+                  cp "${initrd}" "$TMPFILE"
+                  mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/initrd"
                   echo "${
                     builtins.toString kernel
                   }" > "$STATE_DIRECTORY/kernel-version"
@@ -242,6 +245,14 @@ in
           kernel = {
             enable = true;
             value = if cfg.uboot.enable then "u-boot-rpi-arm64.bin" else "kernel.img";
+          };
+          ramfsfile = {
+            enable = !cfg.uboot.enable;
+            value = "initrd";
+          };
+          ramfsaddr = {
+            enable = !cfg.uboot.enable;
+            value = -1;
           };
           arm_64bit = {
             enable = true;

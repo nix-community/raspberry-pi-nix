@@ -23,6 +23,7 @@
         version = cfg.kernel-version;
         board = cfg.board;
         kernel = pkgs.rpi-kernels."${version}"."${board}";
+        initrd = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
         populate-kernel =
           if cfg.uboot.enable
           then ''
@@ -30,6 +31,7 @@
           ''
           else ''
             cp "${kernel}/Image" firmware/kernel.img
+            cp "${initrd}" firmware/initrd
             cp "${kernel-params}" firmware/cmdline.txt
           '';
       in
