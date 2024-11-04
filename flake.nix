@@ -43,10 +43,19 @@
 
   outputs = srcs@{ self, ... }:
     let
+      hostSystem = "x86_64-linux";
+      targetSystem = "aarch64-linux";
+
+      hostPkgs = import srcs.nixpkgs {
+        system = hostSystem;
+      };
+
       pinned = import srcs.nixpkgs {
-        system = "aarch64-linux";
+        system = hostSystem;
+        crossSystem = { config = "aarch64-unknown-linux-gnu"; };
         overlays = with self.overlays; [ core libcamera ];
       };
+
     in
     {
       overlays = {
@@ -59,9 +68,10 @@
         libcamera-overlay = self.overlays.libcamera;
       };
       nixosConfigurations = {
-        rpi-example = srcs.nixpkgs.lib.nixosSystem {
-          system = "aarch64-linux";
+        rpi-example = pinned.lib.nixosSystem {
+          system = targetSystem;
           modules = [ self.nixosModules.raspberry-pi ./example ];
+          pkgs = pinned;
         };
       };
       checks.aarch64-linux = self.packages.aarch64-linux;
