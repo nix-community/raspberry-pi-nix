@@ -31,7 +31,7 @@
         cfg = config.raspberry-pi-nix;
         version = cfg.kernel-version;
         board = cfg.board;
-        kernel = pkgs.rpi-kernels."${version}"."${board}";
+        kernel = config.system.build.kernel;
         initrd = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
         populate-kernel =
           if cfg.uboot.enable

@@ -5,7 +5,7 @@ let
   cfg = config.raspberry-pi-nix;
   version = cfg.kernel-version;
   board = cfg.board;
-  kernel = pkgs.rpi-kernels."${version}"."${board}";
+  kernel = config.system.build.kernel;
   initrd = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
 in
 {
@@ -328,7 +328,7 @@ in
           "reset-raspberrypi" # required for vl805 firmware to load
         ];
       };
-      kernelPackages = pkgs.linuxPackagesFor kernel;
+      kernelPackages = pkgs.linuxPackagesFor pkgs.rpi-kernels."${version}"."${board}";
       loader = {
         grub.enable = lib.mkDefault false;
         initScript.enable = !cfg.uboot.enable;
