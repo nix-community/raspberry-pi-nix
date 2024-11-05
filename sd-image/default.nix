@@ -22,7 +22,7 @@
         cfg = config.raspberry-pi-nix;
         version = cfg.kernel-version;
         board = cfg.board;
-        kernel = pkgs.rpi-kernels."${version}"."${board}";
+        kernel = config.system.build.kernel;
         populate-kernel =
           if cfg.uboot.enable
           then ''
