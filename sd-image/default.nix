@@ -31,7 +31,7 @@
         cfg = config.raspberry-pi-nix;
         version = cfg.kernel-version;
         board = cfg.board;
-        kernel = config.system.build.kernel;
+        kernel = "${config.system.build.kernel}/${config.system.boot.loader.kernelFile}";
         initrd = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
         populate-kernel =
           if cfg.uboot.enable
@@ -39,7 +39,7 @@
             cp ${cfg.uboot.package}/u-boot.bin firmware/u-boot-rpi-arm64.bin
           ''
           else ''
-            cp "${kernel}/Image" firmware/kernel.img
+            cp "${kernel}" firmware/kernel.img
             cp "${initrd}" firmware/initrd
             cp "${kernel-params}" firmware/cmdline.txt
           '';
