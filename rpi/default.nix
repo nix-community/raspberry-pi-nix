@@ -26,6 +26,11 @@ in
           without the _defconfig part.
         '';
       };
+      firmware-partition-label = mkOption {
+        default = "FIRMWARE";
+        type = types.str;
+        description = "label of rpi firmware partition";
+      };
       pin-inputs = {
         enable = mkOption {
           default = true;
@@ -94,7 +99,7 @@ in
             {
               Type = "oneshot";
               MountImages =
-                "/dev/disk/by-label/FIRMWARE:${firmware-path}";
+                "/dev/disk/by-label/${cfg.firmware-partition-label}:${firmware-path}";
               StateDirectory = "raspberrypi-firmware";
               ExecStart = pkgs.writeShellScript "migrate-rpi-firmware" ''
                 shopt -s nullglob
