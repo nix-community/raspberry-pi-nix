@@ -19,64 +19,7 @@ and `rpi/config.nix`. The other modules are mostly wrappers that set
 
 ## Example
 
-See the `rpi-example` config in this flake for a CI-checked example.
-
-```nix
-{
-  description = "raspberry-pi-nix example";
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    raspberry-pi-nix.url = "github:nix-community/raspberry-pi-nix";
-  };
-
-  outputs = { self, nixpkgs, raspberry-pi-nix }:
-    let
-      inherit (nixpkgs.lib) nixosSystem;
-      basic-config = { pkgs, lib, ... }: {
-        # bcm2711 for rpi 3, 3+, 4, zero 2 w
-        # bcm2712 for rpi 5
-        # See the docs at:
-        # https://www.raspberrypi.com/documentation/computers/linux_kernel.html#native-build-configuration
-        raspberry-pi-nix.board = "bcm2711";
-        time.timeZone = "America/New_York";
-        users.users.root.initialPassword = "root";
-        networking = {
-          hostName = "basic-example";
-          useDHCP = false;
-          interfaces = {
-            wlan0.useDHCP = true;
-            eth0.useDHCP = true;
-          };
-        };
-        hardware = {
-          bluetooth.enable = true;
-          raspberry-pi = {
-            config = {
-              all = {
-                base-dt-params = {
-                  # enable autoprobing of bluetooth driver
-                  # https://github.com/raspberrypi/linux/blob/c8c99191e1419062ac8b668956d19e788865912a/arch/arm/boot/dts/overlays/README#L222-L224
-                  krnbt = {
-                    enable = true;
-                    value = "on";
-                  };
-                };
-              };
-            };
-          };
-        };
-      };
-
-    in {
-      nixosConfigurations = {
-        rpi-example = nixosSystem {
-          system = "aarch64-linux";
-          modules = [ raspberry-pi-nix.nixosModules.raspberry-pi basic-config ];
-        };
-      };
-    };
-}
-```
+See the `rpi-example` config in this flake for an example config built by CI.
 
 ## Using the provided cache to avoid compiling linux
 This repo uses the raspberry pi linux kernel fork, and compiling linux takes a
@@ -87,10 +30,10 @@ to use this cache.
 
 ## Building an sd-card image
 
-An image suitable for flashing to an sd-card can be found at the
-attribute `config.system.build.sdImage`. For example, if you wanted to
-build an image for `rpi-example` in the above configuration
-example you could run:
+Include the provided `sd-image` nixos module this flake provides, then an image
+suitable for flashing to an sd-card can be found at the attribute
+`config.system.build.sdImage`. For example, if you wanted to build an image for
+`rpi-example` in the above configuration example you could run:
 
 ```
 nix build '.#nixosConfigurations.rpi-example.config.system.build.sdImage'
