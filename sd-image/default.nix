@@ -8,7 +8,6 @@
 
     boot.consoleLogLevel = lib.mkDefault 7;
 
-    # https://github.com/raspberrypi/firmware/issues/1539#issuecomment-784498108
     boot.kernelParams = [
       # This is ugly and fragile, but the sdImage image has an msdos
       # table, so the partition table id is a 1-indexed hex

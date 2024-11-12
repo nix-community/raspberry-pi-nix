@@ -321,6 +321,7 @@ in
         if cfg.uboot.enable then [ ]
         else [
           "console=tty1"
+          # https://github.com/raspberrypi/firmware/issues/1539#issuecomment-784498108
           "console=serial0,115200n8"
           "init=/sbin/init"
         ];
