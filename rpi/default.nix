@@ -6,9 +6,10 @@ let
   version = cfg.kernel-version;
   board = cfg.board;
   kernel = config.system.build.kernel;
+  initrd = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
 in
 {
-  imports = [ ../sd-image ./config.nix ./i2c.nix ];
+  imports = [ ./config.nix ./i2c.nix ];
 
   options = with lib; {
     raspberry-pi-nix = {
@@ -24,6 +25,11 @@ in
           Examples at: https://www.raspberrypi.com/documentation/computers/linux_kernel.html#native-build-configuration
           without the _defconfig part.
         '';
+      };
+      firmware-partition-label = mkOption {
+        default = "FIRMWARE";
+        type = types.str;
+        description = "label of rpi firmware partition";
       };
       pin-inputs = {
         enable = mkOption {
@@ -93,7 +99,7 @@ in
             {
               Type = "oneshot";
               MountImages =
-                "/dev/disk/by-label/${config.sdImage.firmwarePartitionName}:${firmware-path}";
+                "/dev/disk/by-label/${cfg.firmware-partition-label}:${firmware-path}";
               StateDirectory = "raspberrypi-firmware";
               ExecStart = pkgs.writeShellScript "migrate-rpi-firmware" ''
                 shopt -s nullglob
@@ -101,7 +107,7 @@ in
                 TARGET_FIRMWARE_DIR="${firmware-path}"
                 TARGET_OVERLAYS_DIR="$TARGET_FIRMWARE_DIR/overlays"
                 TMPFILE="$TARGET_FIRMWARE_DIR/tmp"
-                KERNEL="${kernel}/Image"
+                KERNEL="${kernel}/${config.system.boot.loader.kernelFile}"
                 SHOULD_UBOOT=${if cfg.uboot.enable then "1" else "0"}
                 SRC_FIRMWARE_DIR="${pkgs.raspberrypifw}/share/raspberrypi/boot"
                 STARTFILES=("$SRC_FIRMWARE_DIR"/start*.elf)
@@ -130,6 +136,8 @@ in
                   touch "$STATE_DIRECTORY/kernel-migration-in-progress"
                   cp "$KERNEL" "$TMPFILE"
                   mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/kernel.img"
+                  cp "${initrd}" "$TMPFILE"
+                  mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/initrd"
                   echo "${
                     builtins.toString kernel
                   }" > "$STATE_DIRECTORY/kernel-version"
@@ -243,6 +251,14 @@ in
             enable = true;
             value = if cfg.uboot.enable then "u-boot-rpi-arm64.bin" else "kernel.img";
           };
+          ramfsfile = {
+            enable = !cfg.uboot.enable;
+            value = "initrd";
+          };
+          ramfsaddr = {
+            enable = !cfg.uboot.enable;
+            value = -1;
+          };
           arm_64bit = {
             enable = true;
             value = true;
@@ -304,14 +320,9 @@ in
       kernelParams =
         if cfg.uboot.enable then [ ]
         else [
-          # This is ugly and fragile, but the sdImage image has an msdos
-          # table, so the partition table id is a 1-indexed hex
-          # number. So, we drop the hex prefix and stick on a "02" to
-          # refer to the root partition.
-          "root=PARTUUID=${lib.strings.removePrefix "0x" config.sdImage.firmwarePartitionID}-02"
-          "rootfstype=ext4"
-          "fsck.repair=yes"
-          "rootwait"
+          "console=tty1"
+          # https://github.com/raspberrypi/firmware/issues/1539#issuecomment-784498108
+          "console=serial0,115200n8"
           "init=/sbin/init"
         ];
       initrd = {

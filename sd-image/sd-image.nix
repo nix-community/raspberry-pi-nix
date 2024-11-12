@@ -30,7 +30,8 @@ let
   } // optionalAttrs (config.sdImage.rootPartitionUUID != null) {
     uuid = config.sdImage.rootPartitionUUID;
   });
-in {
+in
+{
   imports = [ ];
 
   options.sdImage = {
@@ -79,14 +80,6 @@ in {
       description = ''
         Volume ID for the /boot/firmware partition on the SD card. This value
         must be a 32-bit hexadecimal number.
-      '';
-    };
-
-    firmwarePartitionName = mkOption {
-      type = types.str;
-      default = "FIRMWARE";
-      description = ''
-        Name of the filesystem which holds the boot firmware.
       '';
     };
 
@@ -160,7 +153,7 @@ in {
   config = {
     fileSystems = {
       "/boot/firmware" = {
-        device = "/dev/disk/by-label/${config.sdImage.firmwarePartitionName}";
+        device = "/dev/disk/by-label/${config.raspberry-pi-nix.firmware-partition-label}";
         fsType = "vfat";
       };
       "/" = {
@@ -226,7 +219,7 @@ in {
             # Create a FAT32 /boot/firmware partition of suitable size into firmware_part.img
             eval $(partx $img -o START,SECTORS --nr 1 --pairs)
             truncate -s $((SECTORS * 512)) firmware_part.img
-            faketime "1970-01-01 00:00:00" mkfs.vfat -i ${config.sdImage.firmwarePartitionID} -n ${config.sdImage.firmwarePartitionName} firmware_part.img
+            faketime "1970-01-01 00:00:00" mkfs.vfat -i ${config.sdImage.firmwarePartitionID} -n ${config.raspberry-pi-nix.firmware-partition-label} firmware_part.img
 
             # Populate the files intended for /boot/firmware
             mkdir firmware
@@ -244,7 +237,8 @@ in {
                 zstd -T$NIX_BUILD_CORES --rm $img
             fi
           '';
-        }) { };
+        })
+      { };
 
     boot.postBootCommands = lib.mkIf config.sdImage.expandOnBoot ''
       # On the first boot do some maintenance tasks

@@ -8,8 +8,16 @@
 
     boot.consoleLogLevel = lib.mkDefault 7;
 
-    # https://github.com/raspberrypi/firmware/issues/1539#issuecomment-784498108
-    boot.kernelParams = [ "console=serial0,115200n8" "console=tty1" ];
+    boot.kernelParams = [
+      # This is ugly and fragile, but the sdImage image has an msdos
+      # table, so the partition table id is a 1-indexed hex
+      # number. So, we drop the hex prefix and stick on a "02" to
+      # refer to the root partition.
+      "root=PARTUUID=${lib.strings.removePrefix "0x" config.sdImage.firmwarePartitionID}-02"
+      "rootfstype=ext4"
+      "fsck.repair=yes"
+      "rootwait"
+    ];
 
     sdImage =
       let
@@ -22,14 +30,16 @@
         cfg = config.raspberry-pi-nix;
         version = cfg.kernel-version;
         board = cfg.board;
-        kernel = config.system.build.kernel;
+        kernel = "${config.system.build.kernel}/${config.system.boot.loader.kernelFile}";
+        initrd = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
         populate-kernel =
           if cfg.uboot.enable
           then ''
             cp ${cfg.uboot.package}/u-boot.bin firmware/u-boot-rpi-arm64.bin
           ''
           else ''
-            cp "${kernel}/Image" firmware/kernel.img
+            cp "${kernel}" firmware/kernel.img
+            cp "${initrd}" firmware/initrd
             cp "${kernel-params}" firmware/cmdline.txt
           '';
       in
