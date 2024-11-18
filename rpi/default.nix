@@ -1,15 +1,20 @@
 { pinned, core-overlay, libcamera-overlay }:
 { lib, pkgs, config, ... }:
-
+with lib;
 let
   cfg = config.raspberry-pi-nix;
   version = cfg.kernel-version;
   board = cfg.board;
-  kernel = config.system.build.kernel;
-  initrd = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
+  atomicCopySafe = import ../atomic-copy/atomic-copy-safe.nix { inherit pkgs; };
+  atomicCopyClobber = import ../atomic-copy/atomic-copy-clobber.nix { inherit pkgs; };
+
+  # used for direct-to-kernel boot only: emulate cleanName()
+  # https://github.com/NixOS/nixpkgs/blob/904ecf0b4e055dc465f5ae6574be2af8cc25dec3/nixos/modules/system/boot/loader/generic-extlinux-compatible/extlinux-conf-builder.sh#L47
+  kernelStorePath = "${config.system.build.kernel}/${config.system.boot.loader.kernelFile}";
+  kernelBootPath = "nixos/${builtins.replaceStrings [ "/nix/store/" "/" ] [ "" "-" ] kernelStorePath}";
 in
 {
-  imports = [ ./config.nix ./i2c.nix ];
+  imports = [ ../generic-extlinux-compatible ./config.nix ./i2c.nix ];
 
   options = with lib; {
     raspberry-pi-nix = {
@@ -77,153 +82,16 @@ in
 
         package = mkPackageOption pkgs "uboot-rpi-arm64" { };
       };
+      rootGPUID = mkOption {
+        description = "The UID of the root partition";
+        type = types.str;
+        # https://github.com/NixOS/nixpkgs/blob/23e89b7da85c3640bbc2173fe04f4bd114342367/nixos/lib/make-disk-image.nix#L177
+        default = "F222513B-DED1-49FA-B591-20CE86A2FE7F";
+      };
     };
   };
 
   config = {
-    systemd.services = {
-      "raspberry-pi-firmware-migrate" =
-        {
-          description = "update the firmware partition";
-          wantedBy = if cfg.firmware-migration-service.enable then [ "multi-user.target" ] else [ ];
-          serviceConfig =
-            let
-              firmware-path = "/boot/firmware";
-              kernel-params = pkgs.writeTextFile {
-                name = "cmdline.txt";
-                text = ''
-                  ${lib.strings.concatStringsSep " " config.boot.kernelParams}
-                '';
-              };
-            in
-            {
-              Type = "oneshot";
-              MountImages =
-                "/dev/disk/by-label/${cfg.firmware-partition-label}:${firmware-path}";
-              StateDirectory = "raspberrypi-firmware";
-              ExecStart = pkgs.writeShellScript "migrate-rpi-firmware" ''
-                shopt -s nullglob
-
-                TARGET_FIRMWARE_DIR="${firmware-path}"
-                TARGET_OVERLAYS_DIR="$TARGET_FIRMWARE_DIR/overlays"
-                TMPFILE="$TARGET_FIRMWARE_DIR/tmp"
-                KERNEL="${kernel}/${config.system.boot.loader.kernelFile}"
-                SHOULD_UBOOT=${if cfg.uboot.enable then "1" else "0"}
-                SRC_FIRMWARE_DIR="${pkgs.raspberrypifw}/share/raspberrypi/boot"
-                STARTFILES=("$SRC_FIRMWARE_DIR"/start*.elf)
-                DTBS=("$SRC_FIRMWARE_DIR"/*.dtb)
-                BOOTCODE="$SRC_FIRMWARE_DIR/bootcode.bin"
-                FIXUPS=("$SRC_FIRMWARE_DIR"/fixup*.dat)
-                SRC_OVERLAYS_DIR="$SRC_FIRMWARE_DIR/overlays"
-                SRC_OVERLAYS=("$SRC_OVERLAYS_DIR"/*)
-                CONFIG="${config.hardware.raspberry-pi.config-output}"
-
-                ${lib.strings.optionalString cfg.uboot.enable ''
-                  UBOOT="${cfg.uboot.package}/u-boot.bin"
-
-                  migrate_uboot() {
-                    echo "migrating uboot"
-                    touch "$STATE_DIRECTORY/uboot-migration-in-progress"
-                    cp "$UBOOT" "$TMPFILE"
-                    mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/u-boot-rpi-arm64.bin"
-                    echo "${builtins.toString cfg.uboot.package}" > "$STATE_DIRECTORY/uboot-version"
-                    rm "$STATE_DIRECTORY/uboot-migration-in-progress"
-                  }
-                ''}
-
-                migrate_kernel() {
-                  echo "migrating kernel"
-                  touch "$STATE_DIRECTORY/kernel-migration-in-progress"
-                  cp "$KERNEL" "$TMPFILE"
-                  mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/kernel.img"
-                  cp "${initrd}" "$TMPFILE"
-                  mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/initrd"
-                  echo "${
-                    builtins.toString kernel
-                  }" > "$STATE_DIRECTORY/kernel-version"
-                  rm "$STATE_DIRECTORY/kernel-migration-in-progress"
-                }
-
-                migrate_cmdline() {
-                  echo "migrating cmdline"
-                  touch "$STATE_DIRECTORY/cmdline-migration-in-progress"
-                  cp "${kernel-params}" "$TMPFILE"
-                  mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/cmdline.txt"
-                  echo "${
-                    builtins.toString kernel-params
-                  }" > "$STATE_DIRECTORY/cmdline-version"
-                  rm "$STATE_DIRECTORY/cmdline-migration-in-progress"
-                }
-
-                migrate_config() {
-                  echo "migrating config.txt"
-                  touch "$STATE_DIRECTORY/config-migration-in-progress"
-                  cp "$CONFIG" "$TMPFILE"
-                  mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/config.txt"
-                  echo "${config.hardware.raspberry-pi.config-output}" > "$STATE_DIRECTORY/config-version"
-                  rm "$STATE_DIRECTORY/config-migration-in-progress"
-                }
-
-                migrate_firmware() {
-                  echo "migrating raspberrypi firmware"
-                  touch "$STATE_DIRECTORY/firmware-migration-in-progress"
-                  for SRC in "''${STARTFILES[@]}" "''${DTBS[@]}" "$BOOTCODE" "''${FIXUPS[@]}"
-                  do
-                    cp "$SRC" "$TMPFILE"
-                    mv -T "$TMPFILE" "$TARGET_FIRMWARE_DIR/$(basename "$SRC")"
-                  done
-
-                  if [[ ! -d "$TARGET_OVERLAYS_DIR" ]]; then
-                    mkdir "$TARGET_OVERLAYS_DIR"
-                  fi
-
-                  for SRC in "''${SRC_OVERLAYS[@]}"
-                  do
-                    cp "$SRC" "$TMPFILE"
-                    mv -T "$TMPFILE" "$TARGET_OVERLAYS_DIR/$(basename "$SRC")"
-                  done
-                  echo "${
-                    builtins.toString pkgs.raspberrypifw
-                  }" > "$STATE_DIRECTORY/firmware-version"
-                  rm "$STATE_DIRECTORY/firmware-migration-in-progress"
-                }
-
-                ${lib.strings.optionalString cfg.uboot.enable ''
-                  if [[ "$SHOULD_UBOOT" -eq 1 ]] && [[ -f "$STATE_DIRECTORY/uboot-migration-in-progress" || ! -f "$STATE_DIRECTORY/uboot-version" || $(< "$STATE_DIRECTORY/uboot-version") != ${
-                    builtins.toString cfg.uboot.package
-                  } ]]; then
-                    migrate_uboot
-                  fi
-                ''}
-
-                if [[ "$SHOULD_UBOOT" -ne 1 ]] && [[ ! -f "$STATE_DIRECTORY/kernel-version" || $(< "$STATE_DIRECTORY/kernel-version") != ${
-                  builtins.toString kernel
-                } ]]; then
-                  migrate_kernel
-                fi
-
-                if [[ "$SHOULD_UBOOT" -ne 1 ]] && [[ ! -f "$STATE_DIRECTORY/cmdline-version" || $(< "$STATE_DIRECTORY/cmdline-version") != ${
-                  builtins.toString kernel-params
-                } ]]; then
-                  migrate_cmdline
-                fi
-
-                if [[ -f "$STATE_DIRECTORY/config-migration-in-progress" || ! -f "$STATE_DIRECTORY/config-version" || $(< "$STATE_DIRECTORY/config-version") != ${
-                  builtins.toString config.hardware.raspberry-pi.config-output
-                } ]]; then
-                  migrate_config
-                fi
-
-                if [[ -f "$STATE_DIRECTORY/firmware-migration-in-progress" || ! -f "$STATE_DIRECTORY/firmware-version" || $(< "$STATE_DIRECTORY/firmware-version") != ${
-                  builtins.toString pkgs.raspberrypifw
-                } ]]; then
-                  migrate_firmware
-                fi
-              '';
-            };
-        };
-    };
-
     # Default config.txt on Raspberry Pi OS:
     # https://github.com/RPi-Distro/pi-gen/blob/master/stage1/00-boot-files/files/config.txt
     hardware.raspberry-pi.config = {
@@ -245,11 +113,9 @@ in
       };
       all = {
         options = {
-          # The firmware will start our u-boot binary rather than a
-          # linux kernel.
           kernel = {
             enable = true;
-            value = if cfg.uboot.enable then "u-boot-rpi-arm64.bin" else "kernel.img";
+            value = if cfg.uboot.enable then "u-boot-rpi-arm64.bin" else kernelBootPath;
           };
           ramfsfile = {
             enable = !cfg.uboot.enable;
@@ -318,13 +184,15 @@ in
     };
     boot = {
       kernelParams =
-        if cfg.uboot.enable then [ ]
+        [ "console=serial0,115200n8" "console=tty1" ] ++
+        (if cfg.uboot.enable then [ ]
         else [
-          "console=tty1"
-          # https://github.com/raspberrypi/firmware/issues/1539#issuecomment-784498108
-          "console=serial0,115200n8"
-          "init=/sbin/init"
-        ];
+          "root=PARTUUID=${cfg.rootGPUID}"
+          "rootfstype=ext4"
+          "fsck.repair=yes"
+          "rootwait"
+          "init=/nix/var/nix/profiles/system/init"
+        ]);
       initrd = {
         availableKernelModules = [
           "usbhid"
@@ -337,12 +205,43 @@ in
       kernelPackages = pkgs.linuxPackagesFor pkgs.rpi-kernels."${version}"."${board}";
       loader = {
         grub.enable = lib.mkDefault false;
-        initScript.enable = !cfg.uboot.enable;
-        generic-extlinux-compatible = {
-          enable = lib.mkDefault cfg.uboot.enable;
+
+        generic-extlinux-compatible.enable = false;
+        generic-extlinux-compatible-pi-loader = {
+          # extlinux-style boot is only used when uboot is enabled
+          # when uboot is disabled, use this module to put files into
+          # the boot partition as part of installBootloader
+          enable = true;
           # We want to use the device tree provided by firmware, so don't
           # add FDTDIR to the extlinux conf file.
           useGenerationDeviceTree = false;
+          extraCommandsAfter = let
+            configTxt = config.hardware.raspberry-pi.config-output;
+            kernelParams = pkgs.writeTextFile {
+              name = "cmdline.txt";
+              text = ''
+                ${lib.strings.concatStringsSep " " config.boot.kernelParams}
+              '';
+            };
+            script = flip concatMapStrings config.boot.loader.generic-extlinux-compatible-pi-loader.mirroredBoots (args: ''
+              # Add raspi files
+              cd ${pkgs.raspberrypifw}/share/raspberrypi/boot
+              ${atomicCopySafe} bootcode.bin ${args.path}/bootcode.bin
+              ${atomicCopySafe} overlays     ${args.path}/overlays
+              ${pkgs.findutils}/bin/find . -type f -name 'fixup*.dat' -exec ${atomicCopySafe} {} ${args.path}/{} \;
+              ${pkgs.findutils}/bin/find . -type f -name 'start*.elf' -exec ${atomicCopySafe} {} ${args.path}/{} \;
+              ${pkgs.findutils}/bin/find . -type f -name '*.dtb'      -exec ${atomicCopySafe} {} ${args.path}/{} \;
+
+              # Add config.txt
+              ${atomicCopyClobber} ${configTxt} ${args.path}/config.txt
+            '' + (if cfg.uboot.enable then ''
+              # Add u-boot files
+              ${atomicCopySafe} ${cfg.uboot.package}/u-boot.bin ${args.path}/u-boot-rpi-arm64.bin
+            '' else ''
+              # Add kernel params
+              ${atomicCopyClobber} ${kernelParams} ${args.path}/cmdline.txt
+            ''));
+          in [ (toString (pkgs.writeShellScript "cp-pi-loaders.sh" script)) ];
         };
       };
     };
