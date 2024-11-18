@@ -18,6 +18,12 @@ final: prev: {
     # https://github.com/NixOS/nixpkgs/issues/86131
     BOOST_INCLUDEDIR = "${prev.lib.getDev final.boost}/include";
     BOOST_LIBRARYDIR = "${prev.lib.getLib final.boost}/lib";
+
+    postInstall = ''
+      ls -l
+      mkdir -p $out/lib/libpisp/backend
+      cp src/libpisp/backend/backend_default_config.json $out/lib/libpisp/backend/backend_default_config.json
+    '';
   };
 
   libcamera = prev.libcamera.overrideAttrs (old: {
