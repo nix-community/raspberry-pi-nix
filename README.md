@@ -17,6 +17,12 @@ The important modules are `overlay/default.nix`, `rpi/default.nix`,
 and `rpi/config.nix`. The other modules are mostly wrappers that set
 `config.txt` settings and enable required kernel modules.
 
+## Stability note
+
+`master` is the development branch -- if you want to avoid breaking changes, you
+should pin your flake to a specific release and refer to the release notes when
+upgrading.
+
 ## Example
 
 See the `rpi-example` config in this flake for an example config built by CI.
