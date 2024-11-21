@@ -62,15 +62,18 @@
         core = import ./overlays (builtins.removeAttrs srcs [ "self" ]);
         libcamera = import ./overlays/libcamera.nix (builtins.removeAttrs srcs [ "self" ]);
       };
-      nixosModules.raspberry-pi = import ./rpi {
-        inherit pinned;
-        core-overlay = self.overlays.core;
-        libcamera-overlay = self.overlays.libcamera;
+      nixosModules = {
+        raspberry-pi = import ./rpi {
+          inherit pinned;
+          core-overlay = self.overlays.core;
+          libcamera-overlay = self.overlays.libcamera;
+        };
+        sd-image = import ./sd-image;
       };
       nixosConfigurations = {
         rpi-example = pinned.lib.nixosSystem {
           system = targetSystem;
-          modules = [ self.nixosModules.raspberry-pi ./example ];
+          modules = [ self.nixosModules.raspberry-pi self.nixosModules.sd-image ./example ];
           pkgs = pinned;
         };
       };
