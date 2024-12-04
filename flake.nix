@@ -11,13 +11,13 @@
       flake = false;
       url = "github:raspberrypi/linux/rpi-6.6.y";
     };
-    rpi-linux-6_10_12-src = {
+    rpi-linux-6_12_1-src = {
       flake = false;
-      url = "github:raspberrypi/linux/rpi-6.10.y";
+      url = "github:raspberrypi/linux/rpi-6.12.y";
     };
     rpi-firmware-src = {
       flake = false;
-      url = "github:raspberrypi/firmware/1.20241001";
+      url = "github:raspberrypi/firmware/1.20241126";
     };
     rpi-firmware-nonfree-src = {
       flake = false;
@@ -33,7 +33,7 @@
     };
     libcamera-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera/69a894c4adad524d3063dd027f5c4774485cf9db"; # v0.3.1+rpt20240906
+      url = "github:raspberrypi/libcamera/1230f78d2f6d38d812568fd27f7b985b9ff19e39"; # v0.3.2+rpt20241119
     };
     libpisp-src = {
       flake = false;
