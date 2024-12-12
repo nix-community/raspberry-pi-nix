@@ -18,6 +18,20 @@ in
         type = types.str;
         description = "Kernel version to build.";
       };
+      kernel-build-system = mkOption {
+        type = types.nullOr (types.enum [ "x86_64-linux" ]);
+        default = null;
+        description = ''
+          The build system to compile the kernel on.
+
+          Only the linux kernel will be cross compiled, while most of the derivations are still pulled from cache.nixos.org.
+
+          Use this if you cannot or don't want to use the nix-community cache and either:
+            - you are building on an x86_64 system using binfmt_misc for aarch64-linux.
+            - or if your x86_64 builder has a better CPU than your aarch64 builder.
+        '';
+        example = "x86_64-linux";
+      };
       board = mkOption {
         type = types.enum [ "bcm2711" "bcm2712" ];
         description = ''
@@ -334,7 +348,11 @@ in
           "reset-raspberrypi" # required for vl805 firmware to load
         ];
       };
-      kernelPackages = pkgs.linuxPackagesFor pkgs.rpi-kernels."${version}"."${board}";
+      kernelPackages =
+        if cfg.kernel-build-system == null then
+          pkgs.linuxPackagesFor pkgs.rpi-kernels."${version}"."${board}"
+        else
+          pkgs.linuxPackagesFor (pkgs.rpi-kernels-cross cfg.kernel-build-system)."${version}"."${board}";
       loader = {
         grub.enable = lib.mkDefault false;
         initScript.enable = !cfg.uboot.enable;
