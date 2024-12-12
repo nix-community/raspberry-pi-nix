@@ -34,6 +34,10 @@ use to avoid compiling linux yourself. The cache can be found at
 https://nix-community.cachix.org, and you can follow the instructions there
 to use this cache.
 
+## Cross compiling the kernel
+This can be useful if you cannot or don't want to use the nix-community cache and you do not have a fast aarch64-linux remote builder.
+In this case, set `raspberry-pi-nix.kernel-build-system = "x86_64-linux"` to cross compile the kernel natively on your x86_64-linux machine.
+
 ## Building an sd-card image
 
 Include the provided `sd-image` nixos module this flake provides, then an image
