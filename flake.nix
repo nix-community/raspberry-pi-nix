@@ -60,11 +60,12 @@
           libcamera-overlay = self.overlays.libcamera;
         };
         sd-image = import ./sd-image;
+        net-image = import ./net-image;
       };
       nixosConfigurations = {
         rpi-example = srcs.nixpkgs.lib.nixosSystem {
           system = "aarch64-linux";
-          modules = [ self.nixosModules.raspberry-pi self.nixosModules.sd-image ./example ];
+          modules = [ self.nixosModules.raspberry-pi self.nixosModules.sd-image self.nixosModules.net-image ./example ];
         };
       };
       checks.aarch64-linux = self.packages.aarch64-linux;
@@ -82,6 +83,7 @@
         in
         {
           example-sd-image = self.nixosConfigurations.rpi-example.config.system.build.sdImage;
+          example-net-image = self.nixosConfigurations.rpi-example.config.system.build.netImage;
           firmware = pinned.raspberrypifw;
           libcamera = pinned.libcamera;
           wireless-firmware = pinned.raspberrypiWirelessFirmware;
