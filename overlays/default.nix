@@ -1,6 +1,6 @@
 { u-boot-src
 , rpi-linux-6_6_54-src
-, rpi-linux-6_10_12-src
+, rpi-linux-6_12_6-src
 , rpi-firmware-src
 , rpi-firmware-nonfree-src
 , rpi-bluez-firmware-src
@@ -10,8 +10,8 @@ final: prev:
 let
   versions = {
     v6_6_54.src = rpi-linux-6_6_54-src;
-    v6_10_12 = {
-      src = rpi-linux-6_10_12-src;
+    v6_12_6 = {
+      src = rpi-linux-6_12_6-src;
       patches = [
         {
           name = "remove-readme-target.patch";
