@@ -129,13 +129,13 @@ in
 
             echo "Exporting rootfs image"
             mkdir -p $rootfs
-            mv ${rootfsImage} $rootfs
+            cp -r ${rootfsImage} $rootfs
 
             # Populate the files intended for /boot/firmware
             mkdir -p firmware
             ${config.netImage.populateFirmwareCommands}
             mkdir -p $bootfs
-            mv firmware $bootfs
+            cp -r firmware $bootfs
 
             ${config.netImage.postBuildCommands}
           '';
