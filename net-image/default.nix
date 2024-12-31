@@ -37,19 +37,19 @@
         populate-kernel =
           if cfg.uboot.enable
           then ''
-            cp ${cfg.uboot.package}/u-boot.bin firmware/u-boot-rpi-arm64.bin
+            cp ${cfg.uboot.package}/u-boot.bin ./u-boot-rpi-arm64.bin
           ''
           else ''
-            cp "${kernel}" firmware/kernel.img
-            cp "${initrd}" firmware/initrd
-            cp "${kernel-params}" firmware/cmdline.txt
+            cp "${kernel}" ./kernel.img
+            cp "${initrd}" ./initrd
+            cp "${kernel-params}" ./cmdline.txt
           '';
       in
       {
         populateFirmwareCommands = ''
           ${populate-kernel}
-          cp -r ${pkgs.raspberrypifw}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} firmware
-          cp ${config.hardware.raspberry-pi.config-output} firmware/config.txt
+          cp -r ${pkgs.raspberrypifw}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} ./
+          cp ${config.hardware.raspberry-pi.config-output} ./config.txt
         '';
         populateRootCommands =
           if cfg.uboot.enable

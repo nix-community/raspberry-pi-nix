@@ -78,11 +78,11 @@ in
 
     populateFirmwareCommands = mkOption {
       example =
-        literalExpression "'' cp \${pkgs.myBootLoader}/u-boot.bin firmware/ ''";
+        literalExpression "'' cp \${pkgs.myBootLoader}/u-boot.bin ./ ''";
       description = ''
-        Shell commands to populate the ./firmware directory.
+        Shell commands to populate the ./ directory.
         All files in that directory are copied to the
-        /boot/firmware partition on the Netboot image.
+        tftp files on the Netboot image.
       '';
     };
 
@@ -94,16 +94,6 @@ in
         All files in that directory are copied to the
         root (/) partition on the Netboot image. Use this to
         populate the ./files/boot (/boot) directory.
-      '';
-    };
-
-    postBuildCommands = mkOption {
-      example = literalExpression
-        "'' dd if=\${pkgs.myBootLoader}/SPL of=$img bs=1024 seek=1 conv=notrunc ''";
-      default = "";
-      description = ''
-        Shell commands to run after the image is built.
-        Can be used for boards requiring to dd u-boot SPL before actual partitions.
       '';
     };
   };
@@ -131,13 +121,10 @@ in
             mkdir -p $rootfs
             cp -r ${rootfsImage} $rootfs
 
-            # Populate the files intended for /boot/firmware
-            mkdir -p firmware
+            # Populate the files intended for tftp
             ${config.netImage.populateFirmwareCommands}
             mkdir -p $bootfs
-            cp -r firmware $bootfs
-
-            ${config.netImage.postBuildCommands}
+            cp -r . $bootfs
           '';
         })
       { };

@@ -1,8 +1,6 @@
-# Builds an ext4 image containing a populated /nix/store with the closure
+# Builds a directory containing a populated /nix/store with the closure
 # of store paths passed in the storePaths parameter, in addition to the
-# contents of a directory that can be populated with commands. The
-# generated image is sized to only fit its contents, with the expectation
-# that a script resizes the filesystem at boot time.
+# contents of a directory that can be populated with commands.
 {
   pkgs,
   lib,
