@@ -9,7 +9,7 @@
       eth0.useDHCP = true;
     };
   };
-  raspberry-pi-nix.board = "bcm2711";
+  raspberry-pi-nix.board = "bcm2712";
   hardware = {
     raspberry-pi = {
       config = {
