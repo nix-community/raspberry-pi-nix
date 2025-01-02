@@ -1,5 +1,5 @@
 { u-boot-src
-, rpi-linux-6_6_54-src
+, rpi-linux-6_6_67-src
 , rpi-linux-6_10_12-src
 , rpi-firmware-src
 , rpi-firmware-nonfree-src
@@ -9,7 +9,7 @@
 final: prev:
 let
   versions = {
-    v6_6_54.src = rpi-linux-6_6_54-src;
+    v6_6_67.src = rpi-linux-6_6_67-src;
     v6_10_12 = {
       src = rpi-linux-6_10_12-src;
       patches = [
@@ -116,7 +116,7 @@ in
   # rpi kernels and firmware are available at
   # `pkgs.rpi-kernels.<VERSION>.<BOARD>'. 
   #
-  # For example: `pkgs.rpi-kernels.v6_6_54.bcm2712'
+  # For example: `pkgs.rpi-kernels.v6_6_67.bcm2712'
   rpi-kernels = rpi-kernels (
     final.lib.cartesianProduct
       { board = boards; version = (builtins.attrNames versions); }
