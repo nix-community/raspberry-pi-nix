@@ -15,10 +15,13 @@
       "root=/dev/nfs"
       "rootwait"
       "elevator=deadline"
-      "console=tty1"
-      "console=serial0,115200n8"
-      "init=/sbin/init"
-      "loglevel=7"
+    #   "console=tty1"
+    #   "console=serial0,115200n8"
+    #   "init=/sbin/init"
+    #   "loglevel=7"
+      "systemd.debug_shell=1"
+      "systemd.log_level=debug"
+      "disable_splash"
     ];
 
     netImage =
