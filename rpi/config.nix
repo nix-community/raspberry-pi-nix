@@ -110,7 +110,7 @@ in
               dt-overlays = lib.mkOption {
                 type = with lib.types; attrsOf (submodule dt-overlay);
                 default = { };
-                example = { vc4-kms-v3d = { cma-256 = { enable = true; }; }; };
+                example = { vc4-fkms-v3d = { cma-256 = { enable = true; }; }; };
                 description = "dtb overlays to apply";
               };
             };
