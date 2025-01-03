@@ -77,7 +77,7 @@ in
     };
 
     nfsOptions = mkOption {
-      type = listOf types.str;
+      type = with types; listOf str;
       default = [
           "nolock"
           "rw"
