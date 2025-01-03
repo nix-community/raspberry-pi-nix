@@ -70,7 +70,7 @@ in
 
     nfsRoot = mkOption {
       type = types.str;
-      default = "192.168.0.108:/mnt/nfsshare/${config.netImage.imageBaseName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system},v3";
+      default = "192.168.0.108:/mnt/nfsshare/${config.netImage.imageBaseName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
       description = ''
         cmdline.txt nfs parameter for the root filesystem.
       '';

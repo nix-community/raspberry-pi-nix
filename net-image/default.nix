@@ -10,7 +10,7 @@
 
     boot.kernelParams = [
       "rw"
-      "nfsroot=${config.netImage.nfsRoot}"
+      "nfsroot=${config.netImage.nfsRoot},v3"
       "ip=dhcp"
       "root=/dev/nfs"
       "rootwait"
