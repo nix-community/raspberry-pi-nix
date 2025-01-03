@@ -123,14 +123,14 @@ in
             set -e
             set -x
             mkdir -p $out/nix-support $out/net-image
-            export rootfs=$out/net-image/${config.netImage.rootDirectoryName}
+            export rootfs=$out/net-image/os/${config.netImage.rootDirectoryName}
             export bootfs=$out/net-image/boot
 
             echo "${pkgs.stdenv.buildPlatform.system}" > $out/nix-support/system
 
             echo "Exporting rootfs image"
             mkdir -p $rootfs
-            cp -r ${rootfsImage} $rootfs
+            cp -r ${rootfsImage}/* $rootfs
 
             # Populate the files intended for tftp
             ${config.netImage.populateFirmwareCommands}
