@@ -106,6 +106,10 @@ in
         device = "${config.netImage.nfsRoot}/boot/firmware";
         fsType = "nfs";
       };
+      "/mnt-root" = {
+        device = "${config.netImage.nfsRoot}";
+        fsType = "nfs";
+      };
       "/" = {
         device = "${config.netImage.nfsRoot}";
         fsType = "nfs";
