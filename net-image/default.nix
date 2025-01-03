@@ -26,7 +26,7 @@
       "earlyprintk=serial,ttyS0,115200"
       "initcall_debug"
       "printk.time=1"
-      "drm.debug=0x1f"
+      # "drm.debug=0x1f"
     ];
 
     netImage =
