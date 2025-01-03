@@ -100,14 +100,13 @@ in
 
   config = {
     boot.initrd.network.enable = true;
+    boot.initrd.postMountCommands = ''
+        mkdir -p /mnt-root
+    '';
 
     fileSystems = {
       "/boot/firmware" = {
         device = "${config.netImage.nfsRoot}/boot/firmware";
-        fsType = "nfs";
-      };
-      "/mnt-root" = {
-        device = "${config.netImage.nfsRoot}";
         fsType = "nfs";
       };
       "/" = {
