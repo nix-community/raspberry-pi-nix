@@ -6,7 +6,7 @@
   config = {
     boot.loader.grub.enable = false;
 
-    boot.consoleLogLevel = lib.mkDefault 7;
+    boot.consoleLogLevel = lib.mkDefault 8;
 
     boot.kernelParams = [
       "rw"
@@ -23,6 +23,10 @@
       "systemd.log_level=debug"
       "disable_splash"
       "nomodeset"
+      "earlyprintk=serial,ttyS0,115200"
+      "initcall_debug"
+      "printk.time=1"
+      "drm.debug=0x1f"
     ];
 
     netImage =
