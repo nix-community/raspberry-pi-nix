@@ -128,14 +128,17 @@ in
 
             echo "${pkgs.stdenv.buildPlatform.system}" > $out/nix-support/system
 
+            # Populate the files intended for NFS
             echo "Exporting rootfs image"
             mkdir -p $rootfs
             cp -r ${rootfsImage}/* $rootfs
 
-            # Populate the files intended for tftp
+            # Populate the files intended for TFTP
+            echo "Exporting rootfs image"
             ${config.netImage.populateFirmwareCommands}
             mkdir -p $bootfs
             cp -r . $bootfs
+            cp -r . $rootfs/boot/firmware
           '';
         })
       { };
