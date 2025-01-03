@@ -285,7 +285,7 @@ in
           };
         };
         dt-overlays = {
-          vc4-fkms-v3d = {
+          vc4-kms-v3d = {
             enable = lib.mkDefault true;
             params = { };
           };

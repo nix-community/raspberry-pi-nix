@@ -22,6 +22,7 @@
       "systemd.debug_shell=1"
       "systemd.log_level=debug"
       "disable_splash"
+      "nomodeset"
     ];
 
     netImage =
