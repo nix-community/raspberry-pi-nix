@@ -100,9 +100,6 @@ in
 
   config = {
     boot.initrd.network.enable = true;
-    # boot.initrd.network.dhcp = true;
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.systemd-boot.configurationLimit = 1;
 
     fileSystems = {
       "/boot/firmware" = {
