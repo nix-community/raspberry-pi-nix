@@ -65,7 +65,11 @@
       nixosConfigurations = {
         rpi-example = srcs.nixpkgs.lib.nixosSystem {
           system = "aarch64-linux";
-          modules = [ self.nixosModules.raspberry-pi self.nixosModules.sd-image self.nixosModules.net-image ./example ];
+          modules = [ self.nixosModules.raspberry-pi self.nixosModules.sd-image ./example ];
+        };
+        rpi-net-example = srcs.nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          modules = [ self.nixosModules.raspberry-pi self.nixosModules.net-image ./example ];
         };
       };
       checks.aarch64-linux = self.packages.aarch64-linux;
@@ -83,7 +87,7 @@
         in
         {
           example-sd-image = self.nixosConfigurations.rpi-example.config.system.build.sdImage;
-          example-net-image = self.nixosConfigurations.rpi-example.config.system.build.netImage;
+          example-net-image = self.nixosConfigurations.rpi-net-example.config.system.build.netImage;
           firmware = pinned.raspberrypifw;
           libcamera = pinned.libcamera;
           wireless-firmware = pinned.raspberrypiWirelessFirmware;
