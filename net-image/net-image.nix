@@ -138,6 +138,7 @@ in
             ${config.netImage.populateFirmwareCommands}
             mkdir -p $bootfs
             cp -r . $bootfs
+            mkdir -p $rootfs/boot/firmware
             cp -r . $rootfs/boot/firmware
           '';
         })
