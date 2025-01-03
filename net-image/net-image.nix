@@ -99,6 +99,17 @@ in
   };
 
   config = {
+    fileSystems = {
+      "/boot/firmware" = {
+        device = "${config.netImage.nfsRoot}/boot/firmware";
+        fsType = "nfs";
+      };
+      "/" = {
+        device = "${config.netImage.nfsRoot}";
+        fsType = "nfs";
+      };
+    };
+
     netImage.storePaths = [ config.system.build.toplevel ];
 
     system.build.netImage = pkgs.callPackage
