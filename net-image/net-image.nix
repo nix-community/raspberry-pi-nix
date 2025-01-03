@@ -70,7 +70,7 @@ in
 
     nfsRoot = mkOption {
       type = types.str;
-      default = "192.168.0.108:/mnt/nfsshare/${config.netImage.imageBaseName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system},v3";
+      default = "192.168.0.108:/mnt/nfsshare/${config.netImage.imageBaseName}-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
       description = ''
         cmdline.txt nfs parameter for the root filesystem.
       '';
@@ -100,7 +100,10 @@ in
 
   config = {
     boot.initrd.network.enable = true;
-    boot.initrd.postMountCommands = ''
+    # boot.initrd.postDeviceCommands = ''
+    #     mkdir -p /mnt-root
+    # '';
+    boot.initrd.extraUtilsCommands = ''
         mkdir -p /mnt-root
     '';
 
@@ -108,6 +111,7 @@ in
       "/boot/firmware" = {
         device = "${config.netImage.nfsRoot}/boot/firmware";
         fsType = "nfs";
+        options = [ "vers=3" ];
       };
       "/" = {
         device = "${config.netImage.nfsRoot}";
