@@ -101,10 +101,10 @@ in
   config = {
     boot.initrd.network.enable = true;
     # boot.initrd.postDeviceCommands = ''
-    #     mkdir -p /mnt-root
+    #     mkdir -p $out/mnt-root
     # '';
     boot.initrd.extraUtilsCommands = ''
-        mkdir -p /mnt-root
+        mkdir -p $out/mnt-root
     '';
 
     fileSystems = {
