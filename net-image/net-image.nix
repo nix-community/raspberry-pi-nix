@@ -76,6 +76,34 @@ in
       '';
     };
 
+    nfsOptions = mkOption {
+      type = listOf types.str;
+      default = [
+          "nolock"
+          "rw"
+          "vers=3"
+          "rsize=131072"
+          "wsize=131072"
+          "namlen=255"
+          "hard"
+          "noacl"
+          "proto=tcp"
+          "timeo=11"
+          "retrans=3"
+          "sec=sys"
+          "mountaddr=192.168.0.108"
+          "mountvers=3"
+          "mountproto=tcp"
+          "local_lock=all"
+          "addr=192.168.0.108"
+          "noatime"
+          "nodiratime"
+        ];
+      description = ''
+        NFS options to use when mounting the root filesystem.
+      '';
+    };
+
     populateFirmwareCommands = mkOption {
       example =
         literalExpression "'' cp \${pkgs.myBootLoader}/u-boot.bin ./ ''";
@@ -111,12 +139,12 @@ in
       "/boot/firmware" = {
         device = "${config.netImage.nfsRoot}/boot/firmware";
         fsType = "nfs";
-        options = "nolock,rw,vers=3,rsize=131072,wsize=131072,namlen=255,hard,noacl,proto=tcp,timeo=11,retrans=3,sec=sys,mountaddr=192.168.0.1,mountvers=3,mountproto=tcp,local_lock=all,addr=192.168.0.1,noatime,nodiratime";
+        options = config.netImage.nfsOptions;
       };
       "/" = {
         device = "${config.netImage.nfsRoot}";
         fsType = "nfs";
-        options = "nolock,rw,vers=3,rsize=131072,wsize=131072,namlen=255,hard,noacl,proto=tcp,timeo=11,retrans=3,sec=sys,mountaddr=192.168.0.1,mountvers=3,mountproto=tcp,local_lock=all,addr=192.168.0.1,noatime,nodiratime";
+        options = config.netImage.nfsOptions;
       };
     };
 
