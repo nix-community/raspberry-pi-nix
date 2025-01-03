@@ -111,12 +111,12 @@ in
       "/boot/firmware" = {
         device = "${config.netImage.nfsRoot}/boot/firmware";
         fsType = "nfs";
-        options = [ "vers=3" ];
+        options = "nolock,rw,vers=3,rsize=131072,wsize=131072,namlen=255,hard,noacl,proto=tcp,timeo=11,retrans=3,sec=sys,mountaddr=192.168.0.1,mountvers=3,mountproto=tcp,local_lock=all,addr=192.168.0.1,noatime,nodiratime";
       };
       "/" = {
         device = "${config.netImage.nfsRoot}";
         fsType = "nfs";
-        options = [ "vers=3" ];
+        options = "nolock,rw,vers=3,rsize=131072,wsize=131072,namlen=255,hard,noacl,proto=tcp,timeo=11,retrans=3,sec=sys,mountaddr=192.168.0.1,mountvers=3,mountproto=tcp,local_lock=all,addr=192.168.0.1,noatime,nodiratime";
       };
     };
 
