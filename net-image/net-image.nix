@@ -104,7 +104,7 @@ in
           # Use the 'sys' security flavor
           "sec=sys"
           # Specify the NFS server address
-          "mountaddr=192.168.0.108"
+          # "mountaddr=192.168.0.108"
           # Use NFS mount protocol version 3
           "mountvers=3"
           # Use TCP for the mount protocol
@@ -112,7 +112,7 @@ in
           # Enable local locking
           "local_lock=all"
           # Specify the NFS server address
-          "addr=192.168.0.108"
+          # "addr=192.168.0.108"
           # Do not update inode access times on reads
           "noatime"
           # Do not update directory inode access times on reads
