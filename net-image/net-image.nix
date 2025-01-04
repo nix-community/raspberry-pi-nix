@@ -79,24 +79,43 @@ in
     nfsOptions = mkOption {
       type = with types; listOf str;
       default = [
+          /* Disable file locking */
           "nolock"
+          /* Mount the filesystem read-write */
           "rw"
+          /* Use NFS version 3 */
           "vers=3"
+          /* Set the read buffer size to 131072 bytes */
           "rsize=131072"
+          /* Set the write buffer size to 131072 bytes */
           "wsize=131072"
+          /* Set the maximum filename length to 255 characters */
           "namlen=255"
+          /* Use hard mounts (retry indefinitely on failure) */
           "hard"
+          /* Disable Access Control Lists */
           "noacl"
+          /* Use TCP as the transport protocol */
           "proto=tcp"
+          /* Set the NFS timeout to 11 tenths of a second */
           "timeo=11"
+          /* Set the number of NFS retransmissions to 3 */
           "retrans=3"
+          /* Use the 'sys' security flavor */
           "sec=sys"
+          /* Specify the NFS server address */
           "mountaddr=192.168.0.108"
+          /* Use NFS mount protocol version 3 */
           "mountvers=3"
+          /* Use TCP for the mount protocol */
           "mountproto=tcp"
+          /* Enable local locking */
           "local_lock=all"
+          /* Specify the NFS server address */
           "addr=192.168.0.108"
+          /* Do not update inode access times on reads */
           "noatime"
+          /* Do not update directory inode access times on reads */
           "nodiratime"
         ];
       description = ''
