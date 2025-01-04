@@ -127,24 +127,61 @@ in
   };
 
   config = {
-    boot.initrd.network.enable = true;
-    # boot.initrd.postDeviceCommands = ''
-    #     mkdir -p $out/mnt-root
-    # '';
-    boot.initrd.extraUtilsCommands = ''
-        mkdir -p $out/mnt-root
-    '';
+    # net
+    networking.useDHCP = lib.mkForce true;
+    networking.interfaces.eth0.useDHCP = lib.mkForce true;
+    networking.interfaces.wlan0.useDHCP = lib.mkForce false;
 
+    # boot
+    boot.initrd.network.enable = lib.mkForce true;
+    boot.initrd.network.flushBeforeStage2 = lib.mkForce false;
+    boot.initrd.supportedFilesystems = [
+        # Network File System (NFS) support for mounting root over the network
+        "nfs"
+        # Overlay filesystem for layering file systems
+        "overlay"
+    ];
+
+    boot.initrd.availableKernelModules = [
+        # Network File System (NFS) module
+        "nfs"
+        # Overlay filesystem module
+        "overlay"
+        # Broadcom PHY library for Ethernet device support
+        "bcm_phy_lib"
+        # Broadcom-specific driver module
+        "broadcom"
+        # Broadcom GENET Ethernet controller driver
+        "genet"
+    ];
+
+    boot.initrd.kernelModules = [
+        # Network File System (NFS) module
+        "nfs"
+        # Overlay filesystem module
+        "overlay"
+        # Broadcom PHY library for Ethernet device support
+        "bcm_phy_lib"
+        # Broadcom-specific driver module
+        "broadcom"
+        # Broadcom GENET Ethernet controller driver
+        "genet"
+    ];
+
+
+    # fileSystems
     fileSystems = {
       "/boot/firmware" = {
         device = "${config.netImage.nfsRoot}/boot/firmware";
         fsType = "nfs";
-        options = config.netImage.nfsOptions;
+        # options = config.netImage.nfsOptions;
+        neededForBoot = lib.mkForce true;
       };
       "/" = {
         device = "${config.netImage.nfsRoot}";
         fsType = "nfs";
-        options = config.netImage.nfsOptions;
+        # options = config.netImage.nfsOptions;
+        neededForBoot = lib.mkForce true;
       };
     };
 
