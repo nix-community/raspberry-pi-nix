@@ -174,13 +174,13 @@ in
       "/boot/firmware" = {
         device = "${config.netImage.nfsRoot}/boot/firmware";
         fsType = "nfs";
-        # options = config.netImage.nfsOptions;
+        options = config.netImage.nfsOptions;
         neededForBoot = lib.mkForce true;
       };
       "/" = {
         device = "${config.netImage.nfsRoot}";
         fsType = "nfs";
-        # options = config.netImage.nfsOptions;
+        options = config.netImage.nfsOptions;
         neededForBoot = lib.mkForce true;
       };
     };
