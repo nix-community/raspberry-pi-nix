@@ -6,7 +6,7 @@ stdenv.mkDerivation {
 
   src = rpicam-apps-src;
 
-  nativeBuildInputs = with pkgs; [ meson pkg-config ];
+  nativeBuildInputs = with pkgs; [ meson pkg-config makeWrapper ];
   buildInputs = with pkgs; [ libjpeg libtiff libcamera libepoxy boost libexif libpng ffmpeg libdrm ninja ];
   mesonFlags = [
     "-Denable_qt=disabled"
@@ -20,6 +20,23 @@ stdenv.mkDerivation {
   # https://github.com/NixOS/nixpkgs/issues/86131
   BOOST_INCLUDEDIR = "${lib.getDev pkgs.boost}/include";
   BOOST_LIBRARYDIR = "${lib.getLib pkgs.boost}/lib";
+
+  postFixup = ''
+    wrapProgram $out/bin/rpicam-hello \
+      --set LIBCAMERA_IPA_PROXY_PATH ${pkgs.libcamera}/libexec/libcamera
+
+    wrapProgram $out/bin/rpicam-raw \
+      --set LIBCAMERA_IPA_PROXY_PATH ${pkgs.libcamera}/libexec/libcamera
+
+    wrapProgram $out/bin/rpicam-vid \
+      --set LIBCAMERA_IPA_PROXY_PATH ${pkgs.libcamera}/libexec/libcamera
+
+    wrapProgram $out/bin/rpicam-jpeg \
+      --set LIBCAMERA_IPA_PROXY_PATH ${pkgs.libcamera}/libexec/libcamera
+
+    wrapProgram $out/bin/rpicam-still \
+      --set LIBCAMERA_IPA_PROXY_PATH ${pkgs.libcamera}/libexec/libcamera
+  '';
 
   meta = with lib; {
     description = "Userland tools interfacing with Raspberry Pi cameras";
