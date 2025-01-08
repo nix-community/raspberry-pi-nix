@@ -7,6 +7,10 @@
       flake = false;
       url = "https://ftp.denx.de/pub/u-boot/u-boot-2024.07.tar.bz2";
     };
+    rpi-linux-stable-src = {
+      flake = false;
+      url = "github:raspberrypi/linux/stable_20241008";
+    };
     rpi-linux-6_6_67-src = {
       flake = false;
       url = "github:raspberrypi/linux/rpi-6.6.y";
