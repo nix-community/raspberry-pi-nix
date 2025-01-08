@@ -21,7 +21,7 @@
     };
     rpi-firmware-src = {
       flake = false;
-      url = "github:raspberrypi/firmware/1.20241001";
+      url = "github:raspberrypi/firmware/1.20241008";
     };
     rpi-firmware-nonfree-src = {
       flake = false;
