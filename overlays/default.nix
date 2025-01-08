@@ -28,13 +28,13 @@ let
   boards = [ "bcm2711" "bcm2712" ];
 
   # Helpers for building the `pkgs.rpi-kernels' map.
-  rpi-kernel = { version, board }:
+  rpi-kernel = { version, board, pkgs ? final }:
     let
       kernel = builtins.getAttr version versions;
       version-slug = builtins.replaceStrings [ "v" "_" ] [ "" "." ] version;
     in
     {
-      "${version}"."${board}" = (final.buildLinux {
+      "${version}"."${board}" = (pkgs.buildLinux {
         modDirVersion = version-slug;
         version = version-slug;
         pname = "linux-rpi";
@@ -72,8 +72,20 @@ let
           '';
         });
     };
+
   rpi-kernels = builtins.foldl'
     (b: a: final.lib.recursiveUpdate b (rpi-kernel a))
+    { };
+
+  rip-kernels-cross = buildSystem: builtins.foldl'
+    (b: a: final.lib.recursiveUpdate b (rpi-kernel (
+      a // {
+        pkgs = import final.pkgs.path {
+          system = buildSystem;
+          crossSystem = "aarch64-linux";
+        };
+      }
+    )))
     { };
 in
 {
@@ -116,10 +128,15 @@ in
 
 } // {
   # rpi kernels and firmware are available at
-  # `pkgs.rpi-kernels.<VERSION>.<BOARD>'. 
+  # `pkgs.rpi-kernels.<VERSION>.<BOARD>'.
   #
   # For example: `pkgs.rpi-kernels.v6_6_67.bcm2712'
   rpi-kernels = rpi-kernels (
+    final.lib.cartesianProduct
+      { board = boards; version = (builtins.attrNames versions); }
+  );
+
+  rpi-kernels-cross = buildSystem: rip-kernels-cross buildSystem (
     final.lib.cartesianProduct
       { board = boards; version = (builtins.attrNames versions); }
   );
