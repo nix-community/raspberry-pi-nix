@@ -63,12 +63,16 @@
           core-overlay = self.overlays.core;
           libcamera-overlay = self.overlays.libcamera;
         };
-        sd-image = import ./sd-image;
+        generic-extlinux-compatible = import ./generic-extlinux-compatible;
       };
       nixosConfigurations = {
-        rpi-example = srcs.nixpkgs.lib.nixosSystem {
+        rpi-example-direct = srcs.nixpkgs.lib.nixosSystem {
           system = "aarch64-linux";
-          modules = [ self.nixosModules.raspberry-pi self.nixosModules.sd-image ./example ];
+          modules = [ self.nixosModules.raspberry-pi ./example/direct.nix ];
+        };
+        rpi-example-uboot = srcs.nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          modules = [ self.nixosModules.raspberry-pi ./example/uboot.nix ];
         };
       };
       checks.aarch64-linux = self.packages.aarch64-linux;
@@ -85,7 +89,8 @@
               board-attr-set;
         in
         {
-          example-sd-image = self.nixosConfigurations.rpi-example.config.system.build.sdImage;
+          example-image-direct = self.nixosConfigurations.rpi-example-direct.config.system.build.image;
+          example-image-uboot = self.nixosConfigurations.rpi-example-uboot.config.system.build.image;
           firmware = pinned.raspberrypifw;
           libcamera = pinned.libcamera;
           wireless-firmware = pinned.raspberrypiWirelessFirmware;
