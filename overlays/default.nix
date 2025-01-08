@@ -1,4 +1,5 @@
 { u-boot-src
+, rpi-linux-stable-src
 , rpi-linux-6_6_67-src
 , rpi-linux-6_10_12-src
 , rpi-firmware-src
@@ -9,6 +10,7 @@
 final: prev:
 let
   versions = {
+    v6_6_51.src = rpi-linux-stable-src;
     v6_6_67.src = rpi-linux-6_6_67-src;
     v6_10_12 = {
       src = rpi-linux-6_10_12-src;
