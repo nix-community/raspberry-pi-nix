@@ -1,4 +1,4 @@
-{ pinned, core-overlay, libcamera-overlay }:
+{ pinned, core-overlay, libcamera-overlay, ... }:
 { lib, pkgs, config, ... }:
 
 let
