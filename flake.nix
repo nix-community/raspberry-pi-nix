@@ -5,23 +5,23 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     u-boot-src = {
       flake = false;
-      url = "https://ftp.denx.de/pub/u-boot/u-boot-2024.07.tar.bz2";
+      url = "https://ftp.denx.de/pub/u-boot/u-boot-2025.01.tar.bz2";
     };
     rpi-linux-stable-src = {
       flake = false;
       url = "github:raspberrypi/linux/stable_20241008";
     };
-    rpi-linux-6_6_67-src = {
+    rpi-linux-6_6_y-src = {
       flake = false;
       url = "github:raspberrypi/linux/rpi-6.6.y";
     };
-    rpi-linux-6_10_12-src = {
+    rpi-linux-6_12_y-src = {
       flake = false;
-      url = "github:raspberrypi/linux/rpi-6.10.y";
+      url = "github:raspberrypi/linux/rpi-6.12.y";
     };
     rpi-firmware-src = {
       flake = false;
-      url = "github:raspberrypi/firmware/1.20241008";
+      url = "github:raspberrypi/firmware/1.20241126";
     };
     rpi-firmware-nonfree-src = {
       flake = false;
@@ -33,11 +33,11 @@
     };
     rpicam-apps-src = {
       flake = false;
-      url = "github:raspberrypi/rpicam-apps/v1.5.2";
+      url = "github:raspberrypi/rpicam-apps/v1.5.3";
     };
     libcamera-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera/69a894c4adad524d3063dd027f5c4774485cf9db"; # v0.3.1+rpt20240906
+      url = "github:raspberrypi/libcamera/v0.3.2+rpt20241119";
     };
     libpisp-src = {
       flake = false;
@@ -51,15 +51,18 @@
         system = "aarch64-linux";
         overlays = with self.overlays; [ core libcamera ];
       };
+      lock = builtins.fromJSON (builtins.readFile ./flake.lock);
+      lib = srcs.nixpkgs.lib;
+      inputs = lib.recursiveUpdate (builtins.removeAttrs srcs [ "self" ]) { inherit lock; };
     in
     {
       overlays = {
-        core = import ./overlays (builtins.removeAttrs srcs [ "self" ]);
-        libcamera = import ./overlays/libcamera.nix (builtins.removeAttrs srcs [ "self" ]);
+        core = import ./overlays inputs;
+        libcamera = import ./overlays/libcamera.nix inputs;
       };
       nixosModules = {
         raspberry-pi = import ./rpi {
-          inherit pinned;
+          inherit pinned inputs;
           core-overlay = self.overlays.core;
           libcamera-overlay = self.overlays.libcamera;
         };

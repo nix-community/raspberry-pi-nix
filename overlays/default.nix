@@ -1,19 +1,20 @@
 { u-boot-src
 , rpi-linux-stable-src
-, rpi-linux-6_6_67-src
-, rpi-linux-6_10_12-src
+, rpi-linux-6_6_y-src
+, rpi-linux-6_12_y-src
 , rpi-firmware-src
 , rpi-firmware-nonfree-src
 , rpi-bluez-firmware-src
+, lock
 , ...
 }:
 final: prev:
 let
   versions = {
     v6_6_51.src = rpi-linux-stable-src;
-    v6_6_67.src = rpi-linux-6_6_67-src;
-    v6_10_12 = {
-      src = rpi-linux-6_10_12-src;
+    v6_6_70.src = rpi-linux-6_6_y-src;
+    v6_12_9 = {
+      src = rpi-linux-6_12_y-src;
       patches = [
         {
           name = "remove-readme-target.patch";
@@ -87,7 +88,7 @@ in
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
-    version = "2024.04";
+    version = builtins.head (builtins.match ".*-(.*?).tar.*" lock.nodes.u-boot-src.original.url);
     patches = [ ];
     makeFlags = [ ];
     src = u-boot-src;
@@ -118,7 +119,7 @@ in
   # rpi kernels and firmware are available at
   # `pkgs.rpi-kernels.<VERSION>.<BOARD>'. 
   #
-  # For example: `pkgs.rpi-kernels.v6_6_67.bcm2712'
+  # Check all available versions/boards with: nix flake show --all-systems
   rpi-kernels = rpi-kernels (
     final.lib.cartesianProduct
       { board = boards; version = (builtins.attrNames versions); }
