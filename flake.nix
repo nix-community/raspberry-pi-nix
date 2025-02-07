@@ -91,5 +91,9 @@
           wireless-firmware = pinned.raspberrypiWirelessFirmware;
           uboot-rpi-arm64 = pinned.uboot-rpi-arm64;
         } // kernels;
+      formatter =
+        srcs.nixpkgs.lib.genAttrs
+        [ "aarch64-linux" "aarch64-darwin" "x86_64-linux"]
+        (system: srcs.nixpkgs.legacyPackages.${system}.nixfmt-classic);
     };
 }
