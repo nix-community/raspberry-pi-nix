@@ -1,8 +1,4 @@
-{ rpicam-apps-src
-, libcamera-src
-, libpisp-src
-, ...
-}:
+{ rpicam-apps-src, libcamera-src, libpisp-src, ... }:
 final: prev: {
   # A recent known working version of rpicam-apps
   libcamera-apps =
@@ -27,12 +23,8 @@ final: prev: {
       libpisp
       openssl
       libtiff
-      (python3.withPackages (ps: with ps; [
-        python3-gnutls
-        pybind11
-        pyyaml
-        ply
-      ]))
+      (python3.withPackages
+        (ps: with ps; [ python3-gnutls pybind11 pyyaml ply ]))
       libglibutil
       gst_all_1.gst-plugins-base
     ]);

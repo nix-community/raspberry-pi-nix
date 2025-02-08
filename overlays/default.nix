@@ -1,12 +1,5 @@
-{ u-boot-src
-, rpi-linux-stable-src
-, rpi-linux-6_6_67-src
-, rpi-linux-6_12_11-src
-, rpi-firmware-src
-, rpi-firmware-nonfree-src
-, rpi-bluez-firmware-src
-, ...
-}:
+{ u-boot-src, rpi-linux-stable-src, rpi-linux-6_6_67-src, rpi-linux-6_12_11-src
+, rpi-firmware-src, rpi-firmware-nonfree-src, rpi-bluez-firmware-src, ... }:
 final: prev:
 let
   versions = {
@@ -14,15 +7,14 @@ let
     v6_6_67.src = rpi-linux-6_6_67-src;
     v6_12_11 = {
       src = rpi-linux-6_12_11-src;
-      patches = [
-        {
-          name = "remove-readme-target.patch";
-          patch = final.fetchpatch {
-            url = "https://github.com/raspberrypi/linux/commit/3c0fd51d184f1748b83d28e1113265425c19bcb5.patch";
-            hash = "sha256-v7uZOmPCUp2i7NGVgjqnQYe6dEBD+aATuP/oRs9jfuk=";
-          };
-        }
-      ];
+      patches = [{
+        name = "remove-readme-target.patch";
+        patch = final.fetchpatch {
+          url =
+            "https://github.com/raspberrypi/linux/commit/3c0fd51d184f1748b83d28e1113265425c19bcb5.patch";
+          hash = "sha256-v7uZOmPCUp2i7NGVgjqnQYe6dEBD+aATuP/oRs9jfuk=";
+        };
+      }];
     };
   };
   boards = [ "bcm2711" "bcm2712" ];
@@ -32,8 +24,7 @@ let
     let
       kernel = builtins.getAttr version versions;
       version-slug = builtins.replaceStrings [ "v" "_" ] [ "" "." ] version;
-    in
-    {
+    in {
       "${version}"."${board}" = (final.buildLinux {
         modDirVersion = version-slug;
         version = version-slug;
@@ -61,22 +52,18 @@ let
           KUNIT = no;
         };
         features.efiBootStub = false;
-        kernelPatches =
-          if kernel ? "patches" then kernel.patches else [ ];
-      }).overrideAttrs
-        (oldAttrs: {
-          postConfigure = ''
-            # The v7 defconfig has this set to '-v7' which screws up our modDirVersion.
-            sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
-            sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
-          '';
-        });
+        kernelPatches = if kernel ? "patches" then kernel.patches else [ ];
+      }).overrideAttrs (oldAttrs: {
+        postConfigure = ''
+          # The v7 defconfig has this set to '-v7' which screws up our modDirVersion.
+          sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+          sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+        '';
+      });
     };
-  rpi-kernels = builtins.foldl'
-    (b: a: final.lib.recursiveUpdate b (rpi-kernel a))
-    { };
-in
-{
+  rpi-kernels =
+    builtins.foldl' (b: a: final.lib.recursiveUpdate b (rpi-kernel a)) { };
+in {
   # disable firmware compression so that brcm firmware can be found at
   # the path expected by raspberry pi firmware/device tree
   compressFirmwareXz = x: x;
@@ -105,22 +92,20 @@ in
 
   # default to latest firmware
   raspberrypiWirelessFirmware = final.callPackage
-    (
-      import ./raspberrypi-wireless-firmware.nix {
-        bluez-firmware = rpi-bluez-firmware-src;
-        firmware-nonfree = rpi-firmware-nonfree-src;
-      }
-    )
-    { };
-  raspberrypifw = prev.raspberrypifw.overrideAttrs (oldfw: { src = rpi-firmware-src; });
+    (import ./raspberrypi-wireless-firmware.nix {
+      bluez-firmware = rpi-bluez-firmware-src;
+      firmware-nonfree = rpi-firmware-nonfree-src;
+    }) { };
+  raspberrypifw =
+    prev.raspberrypifw.overrideAttrs (oldfw: { src = rpi-firmware-src; });
 
 } // {
   # rpi kernels and firmware are available at
   # `pkgs.rpi-kernels.<VERSION>.<BOARD>'. 
   #
   # For example: `pkgs.rpi-kernels.v6_6_67.bcm2712'
-  rpi-kernels = rpi-kernels (
-    final.lib.cartesianProduct
-      { board = boards; version = (builtins.attrNames versions); }
-  );
+  rpi-kernels = rpi-kernels (final.lib.cartesianProduct {
+    board = boards;
+    version = (builtins.attrNames versions);
+  });
 }
