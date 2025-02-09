@@ -18,7 +18,7 @@ in
   options = with lib; {
     raspberry-pi-nix = {
       kernel-version = mkOption {
-        default = "v6_6_74";
+        default = builtins.elemAt (attrNames pkgs.rpi-kernels) 0;
         type = types.str;
         description = "Kernel version to build.";
       };
