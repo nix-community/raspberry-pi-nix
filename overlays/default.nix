@@ -126,7 +126,7 @@ in
   # rpi kernels and firmware are available at
   # `pkgs.rpi-kernels.<VERSION>.<BOARD>'. 
   #
-  # Check all available versions/boards with: nix flake show --all-systems
+  # Check all available versions/boards with: nix flake show
   rpi-kernels = rpi-kernels (
     final.lib.cartesianProduct
       { board = boards; version = (builtins.attrNames versions); }
