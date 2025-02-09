@@ -33,15 +33,15 @@
     };
     rpicam-apps-src = {
       flake = false;
-      url = "github:raspberrypi/rpicam-apps/v1.5.3";
+      url = "github:raspberrypi/rpicam-apps/v1.6.0";
     };
     libcamera-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera/v0.3.2+rpt20241119";
+      url = "github:raspberrypi/libcamera/v0.4.0+rpt20250127";
     };
     libpisp-src = {
       flake = false;
-      url = "github:raspberrypi/libpisp/v1.0.7";
+      url = "github:raspberrypi/libpisp/v1.1.0";
     };
   };
 

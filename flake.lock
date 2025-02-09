@@ -3,16 +3,16 @@
     "libcamera-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1732011234,
-        "narHash": "sha256-pG8QdMY9UWH+UodXi1j/hVuVFRe58vvOsf7tOrrb774=",
+        "lastModified": 1737638033,
+        "narHash": "sha256-UaChmwpE038pFmRsbTsZhQ0GSnVrmNAhjVYH3kTURnE=",
         "owner": "raspberrypi",
         "repo": "libcamera",
-        "rev": "1230f78d2f6d38d812568fd27f7b985b9ff19e39",
+        "rev": "83cb81014528a66f81131a4067a6de29550e3667",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
-        "ref": "v0.3.2+rpt20241119",
+        "ref": "v0.4.0+rpt20250127",
         "repo": "libcamera",
         "type": "github"
       }
@@ -20,16 +20,16 @@
     "libpisp-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1724944683,
-        "narHash": "sha256-Fo2UJmQHS855YSSKKmGrsQnJzXog1cdpkIOO72yYAM4=",
+        "lastModified": 1737986076,
+        "narHash": "sha256-lQUvK/YbckQ2RzFoGAQjQe9Kj/aQjBSq+S4OFsuBlwg=",
         "owner": "raspberrypi",
         "repo": "libpisp",
-        "rev": "28196ed6edcfeda88d23cc5f213d51aa6fa17bb3",
+        "rev": "e7974a156008bcd7bf077e1315afba6d54c2bb4a",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
-        "ref": "v1.0.7",
+        "ref": "v1.1.0",
         "repo": "libpisp",
         "type": "github"
       }
@@ -170,16 +170,16 @@
     "rpicam-apps-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1731410967,
-        "narHash": "sha256-dDb4/SL5SPuBhmp1g8h8ZMq9PnG2SZMIik2gnO8PkuY=",
+        "lastModified": 1737988296,
+        "narHash": "sha256-pTSHmRmGV203HjrH6MWNDEz2xLitCsILKsOYD9PgjwU=",
         "owner": "raspberrypi",
         "repo": "rpicam-apps",
-        "rev": "50958df98d3cf77b54706a794226d556d649981c",
+        "rev": "025ca84648c9b9d74711477bf94b05bec349f53d",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
-        "ref": "v1.5.3",
+        "ref": "v1.6.0",
         "repo": "rpicam-apps",
         "type": "github"
       }
