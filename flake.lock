@@ -3,17 +3,17 @@
     "libcamera-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1725630279,
-        "narHash": "sha256-KH30jmHfxXq4j2CL7kv18DYECJRp9ECuWNPnqPZajPA=",
+        "lastModified": 1732011234,
+        "narHash": "sha256-pG8QdMY9UWH+UodXi1j/hVuVFRe58vvOsf7tOrrb774=",
         "owner": "raspberrypi",
         "repo": "libcamera",
-        "rev": "69a894c4adad524d3063dd027f5c4774485cf9db",
+        "rev": "1230f78d2f6d38d812568fd27f7b985b9ff19e39",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
+        "ref": "v0.3.2+rpt20241119",
         "repo": "libcamera",
-        "rev": "69a894c4adad524d3063dd027f5c4774485cf9db",
         "type": "github"
       }
     },
@@ -36,11 +36,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1736061677,
-        "narHash": "sha256-DjkQPnkAfd7eB522PwnkGhOMuT9QVCZspDpJJYyOj60=",
+        "lastModified": 1738843498,
+        "narHash": "sha256-7x+Q4xgFj9UxZZO9aUDCR8h4vyYut4zPUvfj3i+jBHE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "cbd8ec4de4469333c82ff40d057350c30e9f7d36",
+        "rev": "f5a32fa27df91dfc4b762671a0e0a859a8a0058f",
         "type": "github"
       },
       "original": {
@@ -56,11 +56,11 @@
         "libpisp-src": "libpisp-src",
         "nixpkgs": "nixpkgs",
         "rpi-bluez-firmware-src": "rpi-bluez-firmware-src",
+        "rpi-firmware-6_12_y-src": "rpi-firmware-6_12_y-src",
+        "rpi-firmware-6_6_y-src": "rpi-firmware-6_6_y-src",
         "rpi-firmware-nonfree-src": "rpi-firmware-nonfree-src",
-        "rpi-firmware-src": "rpi-firmware-src",
-        "rpi-linux-6_12_11-src": "rpi-linux-6_12_11-src",
-        "rpi-linux-6_6_67-src": "rpi-linux-6_6_67-src",
-        "rpi-linux-stable-src": "rpi-linux-stable-src",
+        "rpi-linux-6_12_y-src": "rpi-linux-6_12_y-src",
+        "rpi-linux-6_6_y-src": "rpi-linux-6_6_y-src",
         "rpicam-apps-src": "rpicam-apps-src",
         "u-boot-src": "u-boot-src"
       }
@@ -82,14 +82,48 @@
         "type": "github"
       }
     },
+    "rpi-firmware-6_12_y-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1738767052,
+        "narHash": "sha256-xNMtiqVbfT8yopiwJtoyeR4UW3gqRVbvh9ajF1B/QeY=",
+        "owner": "raspberrypi",
+        "repo": "firmware",
+        "rev": "c8939655392c604d67fc1525e8362ca8419fb0ef",
+        "type": "github"
+      },
+      "original": {
+        "owner": "raspberrypi",
+        "ref": "next",
+        "repo": "firmware",
+        "type": "github"
+      }
+    },
+    "rpi-firmware-6_6_y-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1738698958,
+        "narHash": "sha256-b+lJ1HkbcSUo/zSt+1CGy6wkne7Kem9j0IPslfeVsys=",
+        "owner": "raspberrypi",
+        "repo": "firmware",
+        "rev": "8a8adaf2f1d6836facdc1c66f4e838b2025ec851",
+        "type": "github"
+      },
+      "original": {
+        "owner": "raspberrypi",
+        "ref": "master",
+        "repo": "firmware",
+        "type": "github"
+      }
+    },
     "rpi-firmware-nonfree-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1723266537,
-        "narHash": "sha256-T7eTKXqY9cxEMdab8Snda4CEOrEihy5uOhA6Fy+Mhnw=",
+        "lastModified": 1734901638,
+        "narHash": "sha256-Yu9hoy4lWQlkjq9LTTmXaLpUKzaEkJaMz9oYmOfbDos=",
         "owner": "RPi-Distro",
         "repo": "firmware-nonfree",
-        "rev": "4b356e134e8333d073bd3802d767a825adec3807",
+        "rev": "a6ed59a078d52ad72f0f2b99e68f324e7411afa1",
         "type": "github"
       },
       "original": {
@@ -99,31 +133,14 @@
         "type": "github"
       }
     },
-    "rpi-firmware-src": {
+    "rpi-linux-6_12_y-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1728405098,
-        "narHash": "sha256-4gnK0KbqFnjBmWia9Jt2gveVWftmHrprpwBqYVqE/k0=",
-        "owner": "raspberrypi",
-        "repo": "firmware",
-        "rev": "7bbb5f80d20a2335066a8781459c9f33e5eebc64",
-        "type": "github"
-      },
-      "original": {
-        "owner": "raspberrypi",
-        "ref": "1.20241008",
-        "repo": "firmware",
-        "type": "github"
-      }
-    },
-    "rpi-linux-6_12_11-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1738149451,
-        "narHash": "sha256-NGmZcaC2vlewTEV/p0z2+6PWnHB229dkGui45kI8HOE=",
+        "lastModified": 1738746022,
+        "narHash": "sha256-eP70vz1TC3WKg6fY8ZXOhwMYQkzoU5pqmS4foL9TxTs=",
         "owner": "raspberrypi",
         "repo": "linux",
-        "rev": "fab655ee33e6d647da5996c5548cfd7d43447a53",
+        "rev": "1f193661c9a0eb916b3c64c7a5d5dba31948b0c3",
         "type": "github"
       },
       "original": {
@@ -133,14 +150,14 @@
         "type": "github"
       }
     },
-    "rpi-linux-6_6_67-src": {
+    "rpi-linux-6_6_y-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1734790986,
-        "narHash": "sha256-q9swM2TmmuzbUuQnbLZk5PseKWD7/SNPwtth6bpGIqE=",
+        "lastModified": 1738686643,
+        "narHash": "sha256-hjOlNBPYVDNBboroox+sbbYBBo3iitgzT1OuVkWwYFM=",
         "owner": "raspberrypi",
         "repo": "linux",
-        "rev": "811ff707533bcd67cdcd368bbd46223082009b12",
+        "rev": "fab0093d88452972f05f4b13e91e31d00b55421a",
         "type": "github"
       },
       "original": {
@@ -150,36 +167,19 @@
         "type": "github"
       }
     },
-    "rpi-linux-stable-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1728403745,
-        "narHash": "sha256-phCxkuO+jUGZkfzSrBq6yErQeO2Td+inIGHxctXbD5U=",
-        "owner": "raspberrypi",
-        "repo": "linux",
-        "rev": "5aeecea9f4a45248bcf564dec924965e066a7bfd",
-        "type": "github"
-      },
-      "original": {
-        "owner": "raspberrypi",
-        "ref": "stable_20241008",
-        "repo": "linux",
-        "type": "github"
-      }
-    },
     "rpicam-apps-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1727515047,
-        "narHash": "sha256-qCYGrcibOeGztxf+sd44lD6VAOGoUNwRqZDdAmcTa/U=",
+        "lastModified": 1731410967,
+        "narHash": "sha256-dDb4/SL5SPuBhmp1g8h8ZMq9PnG2SZMIik2gnO8PkuY=",
         "owner": "raspberrypi",
         "repo": "rpicam-apps",
-        "rev": "a8ccf9f3cd9df49875dfb834a2b490d41d226031",
+        "rev": "50958df98d3cf77b54706a794226d556d649981c",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
-        "ref": "v1.5.2",
+        "ref": "v1.5.3",
         "repo": "rpicam-apps",
         "type": "github"
       }
@@ -187,14 +187,14 @@
     "u-boot-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1719857238,
-        "narHash": "sha256-mJ2TBy0Y5ZtcGFgtU5RKr0UDUp5FWzojbFb+o/ebRJU=",
+        "lastModified": 1736211284,
+        "narHash": "sha256-n63E3AHzbkn/SAfq+DHYDsBMY8qob+cbcoKgPKgE4ps=",
         "type": "tarball",
-        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2024.07.tar.bz2"
+        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2025.01.tar.bz2"
       },
       "original": {
         "type": "tarball",
-        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2024.07.tar.bz2"
+        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2025.01.tar.bz2"
       }
     }
   },
