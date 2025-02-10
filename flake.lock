@@ -36,11 +36,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1738843498,
-        "narHash": "sha256-7x+Q4xgFj9UxZZO9aUDCR8h4vyYut4zPUvfj3i+jBHE=",
+        "lastModified": 1739055578,
+        "narHash": "sha256-2MhC2Bgd06uI1A0vkdNUyDYsMD0SLNGKtD8600mZ69A=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f5a32fa27df91dfc4b762671a0e0a859a8a0058f",
+        "rev": "a45fa362d887f4d4a7157d95c28ca9ce2899b70e",
         "type": "github"
       },
       "original": {
@@ -85,11 +85,11 @@
     "rpi-firmware-6_12_y-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1738767052,
-        "narHash": "sha256-xNMtiqVbfT8yopiwJtoyeR4UW3gqRVbvh9ajF1B/QeY=",
+        "lastModified": 1739194478,
+        "narHash": "sha256-tUjp4Kd1cLbr7CTVchVQelyxmZHU7N+reD0tOliOpf8=",
         "owner": "raspberrypi",
         "repo": "firmware",
-        "rev": "c8939655392c604d67fc1525e8362ca8419fb0ef",
+        "rev": "8b94a287ab06796bab834daf160ef7a4a1de676f",
         "type": "github"
       },
       "original": {
@@ -136,11 +136,11 @@
     "rpi-linux-6_12_y-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1738746022,
-        "narHash": "sha256-eP70vz1TC3WKg6fY8ZXOhwMYQkzoU5pqmS4foL9TxTs=",
+        "lastModified": 1739192593,
+        "narHash": "sha256-h0LXTWINJ+sCjcOaL6CwgMAIAU12keoWN8MrqMaebns=",
         "owner": "raspberrypi",
         "repo": "linux",
-        "rev": "1f193661c9a0eb916b3c64c7a5d5dba31948b0c3",
+        "rev": "5ece90f2923bed9a398a60e83cf7031082c3da9c",
         "type": "github"
       },
       "original": {
@@ -153,11 +153,11 @@
     "rpi-linux-6_6_y-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1738686643,
-        "narHash": "sha256-hjOlNBPYVDNBboroox+sbbYBBo3iitgzT1OuVkWwYFM=",
+        "lastModified": 1739193137,
+        "narHash": "sha256-ckUHFKg6ks8FuSFGMK1LFVHwp4s5YYrEyMp+7YKUAr0=",
         "owner": "raspberrypi",
         "repo": "linux",
-        "rev": "fab0093d88452972f05f4b13e91e31d00b55421a",
+        "rev": "0f292fbb6346b05766152902076895558ac23f9a",
         "type": "github"
       },
       "original": {
@@ -187,14 +187,14 @@
     "u-boot-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1736211284,
-        "narHash": "sha256-n63E3AHzbkn/SAfq+DHYDsBMY8qob+cbcoKgPKgE4ps=",
+        "lastModified": 1738017526,
+        "narHash": "sha256-918/Pf6pl2R6XKEVy5Fm6GncTs7JFJEHbZt2v7iBuTk=",
         "type": "tarball",
-        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2025.01.tar.bz2"
+        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2025.04-rc1.tar.bz2"
       },
       "original": {
         "type": "tarball",
-        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2025.01.tar.bz2"
+        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2025.04-rc1.tar.bz2"
       }
     }
   },

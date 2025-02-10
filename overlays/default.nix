@@ -11,11 +11,11 @@
 final: prev:
 let
   versions = {
-    v6_6_74 = {
+    v6_6_75 = {
       src = rpi-linux-6_6_y-src;
       firmware = rpi-firmware-6_6_y-src;
     };
-    v6_12_12 = {
+    v6_12_13 = {
       src = rpi-linux-6_12_y-src;
       firmware = rpi-firmware-6_12_y-src;
       patches = [

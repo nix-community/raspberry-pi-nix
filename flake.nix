@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     u-boot-src = {
       flake = false;
-      url = "https://ftp.denx.de/pub/u-boot/u-boot-2025.01.tar.bz2";
+      url = "https://ftp.denx.de/pub/u-boot/u-boot-2025.04-rc1.tar.bz2";
     };
     rpi-linux-6_6_y-src = {
       flake = false;
