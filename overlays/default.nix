@@ -1,5 +1,4 @@
-{ u-boot-src
-, rpi-linux-6_6_y-src
+{ rpi-linux-6_6_y-src
 , rpi-linux-6_12_y-src
 , rpi-firmware-6_6_y-src
 , rpi-firmware-6_12_y-src
@@ -11,11 +10,11 @@
 final: prev:
 let
   versions = {
-    v6_6_75 = {
+    v6_6_78 = {
       src = rpi-linux-6_6_y-src;
       firmware = rpi-firmware-6_6_y-src;
     };
-    v6_12_13 = {
+    v6_12_15 = {
       src = rpi-linux-6_12_y-src;
       firmware = rpi-firmware-6_12_y-src;
       patches = [
@@ -92,14 +91,10 @@ in
   compressFirmwareZstd = x: x;
 
   # provide generic rpi arm64 u-boot
-  uboot-rpi-arm64 = final.buildUBoot rec {
+  uboot-rpi-arm64 = final.buildUBoot {
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
-    version = builtins.head (builtins.match ".*-(.*?).tar.*" lock.nodes.u-boot-src.original.url);
-    patches = [ ];
-    makeFlags = [ ];
-    src = u-boot-src;
     # In raspberry pi sbcs the firmware manipulates the device tree in
     # a variety of ways before handing it off to the linux kernel. [1]
     # Since we have installed u-boot in place of a linux kernel we may

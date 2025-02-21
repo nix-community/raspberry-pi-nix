@@ -3,10 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
-    u-boot-src = {
-      flake = false;
-      url = "https://ftp.denx.de/pub/u-boot/u-boot-2025.04-rc1.tar.bz2";
-    };
     rpi-linux-6_6_y-src = {
       flake = false;
       url = "github:raspberrypi/linux/rpi-6.6.y";
@@ -17,7 +13,7 @@
     };
     rpi-firmware-6_6_y-src = {
       flake = false;
-      url = "github:raspberrypi/firmware/master";
+      url = "github:raspberrypi/firmware/stable";
     };
     rpi-firmware-6_12_y-src = {
       flake = false;
@@ -37,7 +33,7 @@
     };
     libcamera-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera/v0.4.0+rpt20250127";
+      url = "github:raspberrypi/libcamera/v0.4.0+rpt20250213";
     };
     libpisp-src = {
       flake = false;

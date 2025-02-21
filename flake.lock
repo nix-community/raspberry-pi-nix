@@ -3,16 +3,16 @@
     "libcamera-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1737638033,
-        "narHash": "sha256-UaChmwpE038pFmRsbTsZhQ0GSnVrmNAhjVYH3kTURnE=",
+        "lastModified": 1739434802,
+        "narHash": "sha256-89uo3ajxozSpM4AGVIVb5GJ70giAQeyw0duIj5PRBgo=",
         "owner": "raspberrypi",
         "repo": "libcamera",
-        "rev": "83cb81014528a66f81131a4067a6de29550e3667",
+        "rev": "29156679717bec7cc4784aeba3548807f2c27fca",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
-        "ref": "v0.4.0+rpt20250127",
+        "ref": "v0.4.0+rpt20250213",
         "repo": "libcamera",
         "type": "github"
       }
@@ -36,11 +36,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1739055578,
-        "narHash": "sha256-2MhC2Bgd06uI1A0vkdNUyDYsMD0SLNGKtD8600mZ69A=",
+        "lastModified": 1739923778,
+        "narHash": "sha256-BqUY8tz0AQ4to2Z4+uaKczh81zsGZSYxjgvtw+fvIfM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "a45fa362d887f4d4a7157d95c28ca9ce2899b70e",
+        "rev": "36864ed72f234b9540da4cf7a0c49e351d30d3f1",
         "type": "github"
       },
       "original": {
@@ -61,8 +61,7 @@
         "rpi-firmware-nonfree-src": "rpi-firmware-nonfree-src",
         "rpi-linux-6_12_y-src": "rpi-linux-6_12_y-src",
         "rpi-linux-6_6_y-src": "rpi-linux-6_6_y-src",
-        "rpicam-apps-src": "rpicam-apps-src",
-        "u-boot-src": "u-boot-src"
+        "rpicam-apps-src": "rpicam-apps-src"
       }
     },
     "rpi-bluez-firmware-src": {
@@ -85,11 +84,11 @@
     "rpi-firmware-6_12_y-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1739194478,
-        "narHash": "sha256-tUjp4Kd1cLbr7CTVchVQelyxmZHU7N+reD0tOliOpf8=",
+        "lastModified": 1739975675,
+        "narHash": "sha256-DklG7vO4BNK660P9Rd+f8oNavojgGcldB8d2+PPhGvk=",
         "owner": "raspberrypi",
         "repo": "firmware",
-        "rev": "8b94a287ab06796bab834daf160ef7a4a1de676f",
+        "rev": "03a4fb56ccf125623f4f90333345e393be60b7bf",
         "type": "github"
       },
       "original": {
@@ -102,16 +101,16 @@
     "rpi-firmware-6_6_y-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1738698958,
-        "narHash": "sha256-b+lJ1HkbcSUo/zSt+1CGy6wkne7Kem9j0IPslfeVsys=",
+        "lastModified": 1737985299,
+        "narHash": "sha256-gdZt9xS3X1Prh+TU0DLy6treFoJjiUUUiZ3IoDbopzI=",
         "owner": "raspberrypi",
         "repo": "firmware",
-        "rev": "8a8adaf2f1d6836facdc1c66f4e838b2025ec851",
+        "rev": "39a2813a75827b3a4d104a97e8f872df5d4f7e54",
         "type": "github"
       },
       "original": {
         "owner": "raspberrypi",
-        "ref": "master",
+        "ref": "stable",
         "repo": "firmware",
         "type": "github"
       }
@@ -136,11 +135,11 @@
     "rpi-linux-6_12_y-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1739192593,
-        "narHash": "sha256-h0LXTWINJ+sCjcOaL6CwgMAIAU12keoWN8MrqMaebns=",
+        "lastModified": 1740135746,
+        "narHash": "sha256-939eaxkn+rjimNG7W2rKt8jr6i1sVbdVXJ/bOJjm4iE=",
         "owner": "raspberrypi",
         "repo": "linux",
-        "rev": "5ece90f2923bed9a398a60e83cf7031082c3da9c",
+        "rev": "60e5cbd47bcd98f6f71ea0a9d51f0509d9ecd942",
         "type": "github"
       },
       "original": {
@@ -153,11 +152,11 @@
     "rpi-linux-6_6_y-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1739193137,
-        "narHash": "sha256-ckUHFKg6ks8FuSFGMK1LFVHwp4s5YYrEyMp+7YKUAr0=",
+        "lastModified": 1739981167,
+        "narHash": "sha256-5jVf97xuHG3YuHFHRn6rCdxRjHA3lL/TyFY344jrsyU=",
         "owner": "raspberrypi",
         "repo": "linux",
-        "rev": "0f292fbb6346b05766152902076895558ac23f9a",
+        "rev": "011cbf22d7583687ae18690185169e5da0be000a",
         "type": "github"
       },
       "original": {
@@ -182,19 +181,6 @@
         "ref": "v1.6.0",
         "repo": "rpicam-apps",
         "type": "github"
-      }
-    },
-    "u-boot-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1738017526,
-        "narHash": "sha256-918/Pf6pl2R6XKEVy5Fm6GncTs7JFJEHbZt2v7iBuTk=",
-        "type": "tarball",
-        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2025.04-rc1.tar.bz2"
-      },
-      "original": {
-        "type": "tarball",
-        "url": "https://ftp.denx.de/pub/u-boot/u-boot-2025.04-rc1.tar.bz2"
       }
     }
   },
