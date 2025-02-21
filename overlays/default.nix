@@ -1,19 +1,22 @@
-{ u-boot-src
-, rpi-linux-stable-src
-, rpi-linux-6_6_67-src
-, rpi-linux-6_12_11-src
-, rpi-firmware-src
+{ rpi-linux-6_6_y-src
+, rpi-linux-6_12_y-src
+, rpi-firmware-6_6_y-src
+, rpi-firmware-6_12_y-src
 , rpi-firmware-nonfree-src
 , rpi-bluez-firmware-src
+, lock
 , ...
 }:
 final: prev:
 let
   versions = {
-    v6_6_51.src = rpi-linux-stable-src;
-    v6_6_67.src = rpi-linux-6_6_67-src;
-    v6_12_11 = {
-      src = rpi-linux-6_12_11-src;
+    v6_6_78 = {
+      src = rpi-linux-6_6_y-src;
+      firmware = rpi-firmware-6_6_y-src;
+    };
+    v6_12_15 = {
+      src = rpi-linux-6_12_y-src;
+      firmware = rpi-firmware-6_12_y-src;
       patches = [
         {
           name = "remove-readme-target.patch";
@@ -24,6 +27,7 @@ let
         }
       ];
     };
+ 
   };
   boards = [ "bcm2711" "bcm2712" ];
 
@@ -34,43 +38,47 @@ let
       version-slug = builtins.replaceStrings [ "v" "_" ] [ "" "." ] version;
     in
     {
-      "${version}"."${board}" = (final.buildLinux {
-        modDirVersion = version-slug;
-        version = version-slug;
-        pname = "linux-rpi";
-        src = kernel.src;
-        defconfig = "${board}_defconfig";
-        structuredExtraConfig = with final.lib.kernel; {
-          # The perl script to generate kernel options sets unspecified
-          # parameters to `m` if possible [1]. This results in the
-          # unspecified config option KUNIT [2] getting set to `m` which
-          # causes DRM_VC4_KUNIT_TEST [3] to get set to `y`.
-          #
-          # This vc4 unit test fails on boot due to a null pointer
-          # exception with the existing config. I'm not sure why, but in
-          # any case, the DRM_VC4_KUNIT_TEST config option itself states
-          # that it is only useful for kernel developers working on the
-          # vc4 driver. So, I feel no need to deviate from the standard
-          # rpi kernel and attempt to successfully enable this test and
-          # other unit tests because the nixos perl script has this
-          # sloppy "default to m" behavior. So, I set KUNIT to `n`.
-          #
-          # [1] https://github.com/NixOS/nixpkgs/blob/85bcb95aa83be667e562e781e9d186c57a07d757/pkgs/os-specific/linux/kernel/generate-config.pl#L1-L10
-          # [2] https://github.com/raspberrypi/linux/blob/1.20230405/lib/kunit/Kconfig#L5-L14
-          # [3] https://github.com/raspberrypi/linux/blob/bb63dc31e48948bc2649357758c7a152210109c4/drivers/gpu/drm/vc4/Kconfig#L38-L52
-          KUNIT = no;
-        };
-        features.efiBootStub = false;
-        kernelPatches =
-          if kernel ? "patches" then kernel.patches else [ ];
-      }).overrideAttrs
-        (oldAttrs: {
-          postConfigure = ''
-            # The v7 defconfig has this set to '-v7' which screws up our modDirVersion.
-            sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
-            sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
-          '';
-        });
+      "${version}"."${board}" = {
+        kernel = (final.buildLinux {
+          modDirVersion = version-slug;
+          version = version-slug;
+          pname = "linux-rpi";
+          src = kernel.src;
+          defconfig = "${board}_defconfig";
+          structuredExtraConfig = with final.lib.kernel; {
+            # The perl script to generate kernel options sets unspecified
+            # parameters to `m` if possible [1]. This results in the
+            # unspecified config option KUNIT [2] getting set to `m` which
+            # causes DRM_VC4_KUNIT_TEST [3] to get set to `y`.
+            #
+            # This vc4 unit test fails on boot due to a null pointer
+            # exception with the existing config. I'm not sure why, but in
+            # any case, the DRM_VC4_KUNIT_TEST config option itself states
+            # that it is only useful for kernel developers working on the
+            # vc4 driver. So, I feel no need to deviate from the standard
+            # rpi kernel and attempt to successfully enable this test and
+            # other unit tests because the nixos perl script has this
+            # sloppy "default to m" behavior. So, I set KUNIT to `n`.
+            #
+            # [1] https://github.com/NixOS/nixpkgs/blob/85bcb95aa83be667e562e781e9d186c57a07d757/pkgs/os-specific/linux/kernel/generate-config.pl#L1-L10
+            # [2] https://github.com/raspberrypi/linux/blob/1.20230405/lib/kunit/Kconfig#L5-L14
+            # [3] https://github.com/raspberrypi/linux/blob/bb63dc31e48948bc2649357758c7a152210109c4/drivers/gpu/drm/vc4/Kconfig#L38-L52
+            KUNIT = no;
+          };
+          features.efiBootStub = false;
+          kernelPatches =
+            if kernel ? "patches" then kernel.patches else [ ];
+        }).overrideAttrs
+          (oldAttrs: {
+            postConfigure = ''
+              # The v7 defconfig has this set to '-v7' which screws up our modDirVersion.
+              sed -i $buildRoot/.config -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+              sed -i $buildRoot/include/config/auto.conf -e 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION=""/'
+            '';
+          });
+        firmware = prev.raspberrypifw.overrideAttrs (oldfw: { src = kernel.firmware; });
+
+      };
     };
   rpi-kernels = builtins.foldl'
     (b: a: final.lib.recursiveUpdate b (rpi-kernel a))
@@ -83,14 +91,10 @@ in
   compressFirmwareZstd = x: x;
 
   # provide generic rpi arm64 u-boot
-  uboot-rpi-arm64 = final.buildUBoot rec {
+  uboot-rpi-arm64 = final.buildUBoot {
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
-    version = "2024.04";
-    patches = [ ];
-    makeFlags = [ ];
-    src = u-boot-src;
     # In raspberry pi sbcs the firmware manipulates the device tree in
     # a variety of ways before handing it off to the linux kernel. [1]
     # Since we have installed u-boot in place of a linux kernel we may
@@ -112,13 +116,12 @@ in
       }
     )
     { };
-  raspberrypifw = prev.raspberrypifw.overrideAttrs (oldfw: { src = rpi-firmware-src; });
 
 } // {
   # rpi kernels and firmware are available at
   # `pkgs.rpi-kernels.<VERSION>.<BOARD>'. 
   #
-  # For example: `pkgs.rpi-kernels.v6_6_67.bcm2712'
+  # Check all available versions/boards with: nix flake show
   rpi-kernels = rpi-kernels (
     final.lib.cartesianProduct
       { board = boards; version = (builtins.attrNames versions); }

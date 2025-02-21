@@ -1,6 +1,7 @@
 { rpicam-apps-src
 , libcamera-src
 , libpisp-src
+, lock
 , ...
 }:
 final: prev: {
@@ -10,7 +11,7 @@ final: prev: {
 
   libpisp = final.stdenv.mkDerivation {
     name = "libpisp";
-    version = "1.0.7";
+    version = lock.nodes.libpisp-src.original.ref;
     src = libpisp-src;
     nativeBuildInputs = with final; [ pkg-config meson ninja ];
     buildInputs = with final; [ nlohmann_json boost ];
@@ -18,10 +19,15 @@ final: prev: {
     # https://github.com/NixOS/nixpkgs/issues/86131
     BOOST_INCLUDEDIR = "${prev.lib.getDev final.boost}/include";
     BOOST_LIBRARYDIR = "${prev.lib.getLib final.boost}/lib";
+    # Copy image filters into lib
+    postInstall = ''
+      mkdir -p $out/lib/libpisp/backend
+      cp src/libpisp/backend/*.json $out/lib/libpisp/backend
+    '';
   };
 
   libcamera = prev.libcamera.overrideAttrs (old: {
-    version = "0.3.1";
+    version = lock.nodes.libcamera-src.original.ref;
     src = libcamera-src;
     buildInputs = old.buildInputs ++ (with final; [
       libpisp
@@ -50,8 +56,12 @@ final: prev: {
       "-Dlc-compliance=disabled"
       "-Dcam=disabled"
       "-Dqcam=disabled"
-      "-Ddocumentation=enabled"
+      "-Ddocumentation=disabled"
       "-Dpycamera=enabled"
     ];
+
+    # Issue introduced recently
+    # https://github.com/raspberrypi/libcamera/issues/226
+    CXXFLAGS = "-Wno-sign-compare -Wno-stringop-truncation";
   });
 }
