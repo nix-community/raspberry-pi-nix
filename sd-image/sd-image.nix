@@ -24,7 +24,7 @@ with lib;
 let
   rootfsImage = pkgs.callPackage "${modulesPath}/../lib/make-ext4-fs.nix" ({
     inherit (config.sdImage) storePaths;
-    compressImage = true;
+    compressImage = config.sdImage.compressDuringBuild;
     populateImageCommands = config.sdImage.populateRootCommands;
     volumeLabel = "NIXOS_SD";
   } // optionalAttrs (config.sdImage.rootPartitionUUID != null) {
@@ -141,6 +141,14 @@ in
       '';
     };
 
+    compressDuringBuild = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        Whether the SD image should be compressed during intermediate build steps (saving cache space, but takes longer)
+      '';
+    };
+
     expandOnBoot = mkOption {
       type = types.bool;
       default = true;
@@ -172,7 +180,7 @@ in
           nativeBuildInputs =
             [ dosfstools e2fsprogs mtools libfaketime util-linux zstd ];
 
-          inherit (config.sdImage) compressImage;
+          inherit (config.sdImage) compressImage compressDuringBuild;
 
           buildCommand = ''
             mkdir -p $out/nix-support $out/sd-image
@@ -185,8 +193,12 @@ in
               echo "file sd-image $img" >> $out/nix-support/hydra-build-products
             fi
 
-            echo "Decompressing rootfs image"
-            zstd -d --no-progress "${rootfsImage}" -o ./root-fs.img
+            if test -n "$compressDuringBuild"; then
+              echo "Decompressing rootfs image"
+              zstd -d --no-progress "${rootfsImage}" -o ./root-fs.img
+            else
+              ln -s "${rootfsImage}" ./root-fs.img
+            fi
 
             # Gap in front of the first partition, in MiB
             gap=${toString config.sdImage.firmwarePartitionOffset}
