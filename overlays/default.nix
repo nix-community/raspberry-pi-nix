@@ -1,7 +1,6 @@
-{ u-boot-src
-, rpi-linux-stable-src
-, rpi-linux-6_6_67-src
-, rpi-linux-6_12_11-src
+{ rpi-linux-stable-src
+, rpi-linux-6_6_78-src
+, rpi-linux-6_12_17-src
 , rpi-firmware-src
 , rpi-firmware-nonfree-src
 , rpi-bluez-firmware-src
@@ -11,9 +10,9 @@ final: prev:
 let
   versions = {
     v6_6_51.src = rpi-linux-stable-src;
-    v6_6_67.src = rpi-linux-6_6_67-src;
-    v6_12_11 = {
-      src = rpi-linux-6_12_11-src;
+    v6_6_78.src = rpi-linux-6_6_78-src;
+    v6_12_17 = {
+      src = rpi-linux-6_12_17-src;
       patches = [
         {
           name = "remove-readme-target.patch";
@@ -63,6 +62,7 @@ let
         features.efiBootStub = false;
         kernelPatches =
           if kernel ? "patches" then kernel.patches else [ ];
+        ignoreConfigErrors = true;
       }).overrideAttrs
         (oldAttrs: {
           postConfigure = ''
@@ -83,14 +83,10 @@ in
   compressFirmwareZstd = x: x;
 
   # provide generic rpi arm64 u-boot
-  uboot-rpi-arm64 = final.buildUBoot rec {
+  uboot-rpi-arm64 = final.buildUBoot {
     defconfig = "rpi_arm64_defconfig";
     extraMeta.platforms = [ "aarch64-linux" ];
     filesToInstall = [ "u-boot.bin" ];
-    version = "2024.04";
-    patches = [ ];
-    makeFlags = [ ];
-    src = u-boot-src;
     # In raspberry pi sbcs the firmware manipulates the device tree in
     # a variety of ways before handing it off to the linux kernel. [1]
     # Since we have installed u-boot in place of a linux kernel we may
@@ -118,7 +114,7 @@ in
   # rpi kernels and firmware are available at
   # `pkgs.rpi-kernels.<VERSION>.<BOARD>'. 
   #
-  # For example: `pkgs.rpi-kernels.v6_6_67.bcm2712'
+  # For example: `pkgs.rpi-kernels.v6_6_78.bcm2712'
   rpi-kernels = rpi-kernels (
     final.lib.cartesianProduct
       { board = boards; version = (builtins.attrNames versions); }
