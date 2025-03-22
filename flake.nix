@@ -17,7 +17,7 @@
     };
     rpi-firmware-6_14_y-src = {
       flake = false;
-      url = "github:raspberrypi/firmware/next";
+      url = "github:raspberrypi/firmware/master";
     };
     rpi-firmware-nonfree-src = {
       flake = false;
