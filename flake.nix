@@ -3,21 +3,21 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
-    rpi-linux-stable-src = {
-      flake = false;
-      url = "github:raspberrypi/linux/stable_20241008";
-    };
-    rpi-linux-6_6_78-src = {
+    rpi-linux-6_6_y-src = {
       flake = false;
       url = "github:raspberrypi/linux/rpi-6.6.y";
     };
-    rpi-linux-6_12_17-src = {
+    rpi-linux-6_14_y-src = {
       flake = false;
-      url = "github:raspberrypi/linux/rpi-6.12.y";
+      url = "github:raspberrypi/linux/rpi-6.14.y";
     };
-    rpi-firmware-src = {
+    rpi-firmware-6_6_y-src = {
       flake = false;
-      url = "github:raspberrypi/firmware/1.20241008";
+      url = "github:raspberrypi/firmware/stable";
+    };
+    rpi-firmware-6_14_y-src = {
+      flake = false;
+      url = "github:raspberrypi/firmware/next";
     };
     rpi-firmware-nonfree-src = {
       flake = false;
@@ -29,15 +29,15 @@
     };
     rpicam-apps-src = {
       flake = false;
-      url = "github:raspberrypi/rpicam-apps/v1.5.2";
+      url = "github:raspberrypi/rpicam-apps/v1.6.0";
     };
     libcamera-src = {
       flake = false;
-      url = "github:raspberrypi/libcamera/69a894c4adad524d3063dd027f5c4774485cf9db"; # v0.3.1+rpt20240906
+      url = "github:raspberrypi/libcamera/v0.4.0+rpt20250213";
     };
     libpisp-src = {
       flake = false;
-      url = "github:raspberrypi/libpisp/v1.0.7";
+      url = "github:raspberrypi/libpisp/v1.2.0";
     };
   };
 
@@ -47,15 +47,18 @@
         system = "aarch64-linux";
         overlays = with self.overlays; [ core libcamera ];
       };
+      lock = builtins.fromJSON (builtins.readFile ./flake.lock);
+      lib = srcs.nixpkgs.lib;
+      inputs = lib.recursiveUpdate (builtins.removeAttrs srcs [ "self" ]) { inherit lock; };
     in
     {
       overlays = {
-        core = import ./overlays (builtins.removeAttrs srcs [ "self" ]);
-        libcamera = import ./overlays/libcamera.nix (builtins.removeAttrs srcs [ "self" ]);
+        core = import ./overlays inputs;
+        libcamera = import ./overlays/libcamera.nix inputs;
       };
       nixosModules = {
         raspberry-pi = import ./rpi {
-          inherit pinned;
+          inherit pinned inputs;
           core-overlay = self.overlays.core;
           libcamera-overlay = self.overlays.libcamera;
         };
@@ -82,7 +85,6 @@
         in
         {
           example-sd-image = self.nixosConfigurations.rpi-example.config.system.build.sdImage;
-          firmware = pinned.raspberrypifw;
           libcamera = pinned.libcamera;
           wireless-firmware = pinned.raspberrypiWirelessFirmware;
           uboot-rpi-arm64 = pinned.uboot-rpi-arm64;

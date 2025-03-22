@@ -32,6 +32,7 @@
         board = cfg.board;
         kernel = "${config.system.build.kernel}/${config.system.boot.loader.kernelFile}";
         initrd = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
+        firmware = pkgs.rpi-kernels."${version}"."${board}".firmware;
         populate-kernel =
           if cfg.uboot.enable
           then ''
@@ -46,7 +47,7 @@
       {
         populateFirmwareCommands = ''
           ${populate-kernel}
-          cp -r ${pkgs.raspberrypifw}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} firmware
+          cp -r ${firmware}/share/raspberrypi/boot/{start*.elf,*.dtb,bootcode.bin,fixup*.dat,overlays} firmware
           cp ${config.hardware.raspberry-pi.config-output} firmware/config.txt
         '';
         populateRootCommands =

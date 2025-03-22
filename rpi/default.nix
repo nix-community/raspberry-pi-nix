@@ -1,4 +1,4 @@
-{ pinned, core-overlay, libcamera-overlay }:
+{ pinned, core-overlay, libcamera-overlay, ... }:
 { lib, pkgs, config, ... }:
 
 let
@@ -7,6 +7,10 @@ let
   board = cfg.board;
   kernel = config.system.build.kernel;
   initrd = "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}";
+
+  kernel-with-firmware = pkgs.rpi-kernels."${version}"."${board}";
+  kernel-pkg = kernel-with-firmware.kernel;
+  firmware-pkg = kernel-with-firmware.firmware;
 in
 {
   imports = [ ./config.nix ./i2c.nix ];
@@ -14,7 +18,7 @@ in
   options = with lib; {
     raspberry-pi-nix = {
       kernel-version = mkOption {
-        default = "v6_6_51";
+        default = builtins.elemAt (attrNames pkgs.rpi-kernels) 0;
         type = types.str;
         description = "Kernel version to build.";
       };
@@ -121,7 +125,7 @@ in
                 TMPFILE="$TARGET_FIRMWARE_DIR/tmp"
                 KERNEL="${kernel}/${config.system.boot.loader.kernelFile}"
                 SHOULD_UBOOT=${if cfg.uboot.enable then "1" else "0"}
-                SRC_FIRMWARE_DIR="${pkgs.raspberrypifw}/share/raspberrypi/boot"
+                SRC_FIRMWARE_DIR="${firmware-pkg}/share/raspberrypi/boot"
                 STARTFILES=("$SRC_FIRMWARE_DIR"/start*.elf)
                 DTBS=("$SRC_FIRMWARE_DIR"/*.dtb)
                 BOOTCODE="$SRC_FIRMWARE_DIR/bootcode.bin"
@@ -195,7 +199,7 @@ in
                     mv -T "$TMPFILE" "$TARGET_OVERLAYS_DIR/$(basename "$SRC")"
                   done
                   echo "${
-                    builtins.toString pkgs.raspberrypifw
+                    builtins.toString firmware-pkg
                   }" > "$STATE_DIRECTORY/firmware-version"
                   rm "$STATE_DIRECTORY/firmware-migration-in-progress"
                 }
@@ -227,7 +231,7 @@ in
                 fi
 
                 if [[ -f "$STATE_DIRECTORY/firmware-migration-in-progress" || ! -f "$STATE_DIRECTORY/firmware-version" || $(< "$STATE_DIRECTORY/firmware-version") != ${
-                  builtins.toString pkgs.raspberrypifw
+                  builtins.toString firmware-pkg
                 } ]]; then
                   migrate_firmware
                 fi
@@ -349,7 +353,7 @@ in
           "reset-raspberrypi" # required for vl805 firmware to load
         ];
       };
-      kernelPackages = pkgs.linuxPackagesFor pkgs.rpi-kernels."${version}"."${board}";
+      kernelPackages = pkgs.linuxPackagesFor kernel-pkg;
       loader = {
         grub.enable = lib.mkDefault false;
         initScript.enable = !cfg.uboot.enable;
